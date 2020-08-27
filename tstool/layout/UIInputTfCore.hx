@@ -1,9 +1,10 @@
 package tstool.layout;
 
-import tstool.layout.UIInputTfCore;
+//import tstool.layout.UIInputTfCore;
+import tstool.layout.IPositionable.Direction;
 import tstool.layout.SaltColor;
 import flixel.FlxG;
-import flixel.FlxSprite;
+//import flixel.FlxSprite;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import lime.utils.Assets;
@@ -11,7 +12,7 @@ import openfl.events.MouseEvent;
 import openfl.text.TextField;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
-import openfl.utils.Function;
+//import openfl.utils.Function;
 import flixel.effects.FlxFlicker;
 import flixel.text.FlxText;
 import js.html.ClipboardEvent;
@@ -21,18 +22,12 @@ import tstool.process.Process;
  * ...
  * @author bb
  */
-enum Direction
-{
-	left;
-	right;
-	bottom;
-	up;
-}
-class UIInputTfCore implements IFlxDestroyable
+
+class UIInputTfCore implements IFlxDestroyable implements IPositionable
 {
 	//var _autoFocus:Bool;
 	public var focusSignal(get, null):FlxTypedSignal<UIInputTfCore->Void>;
-	var positoinToParent:Direction;
+	public var positionsToParent(get, null):Array<Direction>;
 	public var _label(get, null):String;
 	public var _labelValidator(default, set):String;
 	public var inputtextfield(get, null):TextField;
@@ -45,11 +40,11 @@ class UIInputTfCore implements IFlxDestroyable
 	//
 	static var textFieldFormat:TextFormat;
 	//
-	public function new(textFieldWidth:Int, inputPrefix:String, ?positoinToParent:Direction=bottom)
+	public function new(textFieldWidth:Int, inputPrefix:String, positionsToParent:Array<Direction>)
 	{
 		if (textFieldFormat == null) textFieldFormat = new TextFormat(Assets.getFont("assets/fonts/JetBrainsMono-Regular.ttf").name, 13);
 		focusSignal = new FlxTypedSignal<UIInputTfCore->Void>();
-		this.positoinToParent = positoinToParent;
+		this.positionsToParent = positionsToParent;
 		//var dummy:UIInputTf = null;
 		_label = inputPrefix;
 		_labelValidator = "";
@@ -69,8 +64,8 @@ class UIInputTfCore implements IFlxDestroyable
 	function onClick(e:MouseEvent):Void
 	{
 		#if debug
-		trace(this._label);
-		trace(e.currentTarget);
+		//trace(this._label);
+		//trace(e.currentTarget);
 		#end
 		this.blink(false);
 		this.focusSignal.dispatch(this);
@@ -84,33 +79,39 @@ class UIInputTfCore implements IFlxDestroyable
 		FlxG.addChildBelowMouse( inputtextfield);
 
 	}
-	public function positionMe(parent:Rectangle, ?padding:Int=20, ?direction:Direction=null)
+	//public function positionMe(parent:Rectangle, ?padding:Int=20, ?direction:Direction=null)
+	//public function positionMe(parent:Rectangle, ?padding:Int=20, ?directions:Array<Direction>=null)
+	public function positionMe(parent:Rectangle, ?padding:Int=4, ?directions:Array<Direction>=null):Void
 	{
-		//trace(direction);
+		
 		//trace(parent);
 		//trace(parent.y + parent.height + (padding / 4));
-		var d:Direction = direction == null ? positoinToParent : direction;
-		switch (d)
+		var d:Array<Direction> = directions == null ? this.positionsToParent : directions;
+		var p = parent;
+		//trace(parent);
+		//trace(d);
+		switch (d[0])
 		{
 			case bottom:
 				//trace("bottom");
-				inputtextfield.x  = imputLabel.x = parent.x;
-				imputLabel.y = parent.y + parent.height + (padding / 4);
+				//trace(d[1] == right? "right":"left");
+				inputtextfield.x  = imputLabel.x = p.x + (d[1] == right ? p.width + (padding/4): 0);
+				imputLabel.y = p.y + p.height /*+ (padding / 4)*/;
 				inputtextfield.y = this.imputLabel.y + this.imputLabel.height;
-			case up :
-				//trace("up");
-				inputtextfield.x  = imputLabel.x = parent.x;
-				imputLabel.y = parent.y - (imputLabel.height + inputtextfield.height) + (padding/4);
+			case top :
+				//trace("top");
+				inputtextfield.x  = imputLabel.x = p.x + (d[1] == right ? p.width + (padding/4): 0);
+				imputLabel.y = p.y;
 				inputtextfield.y = this.imputLabel.y + this.imputLabel.height;
 			case left:
 				//trace("left");
 				inputtextfield.x  = imputLabel.x = parent.x - Math.max(inputtextfield.width, imputLabel.width ) + (padding/2);
-				imputLabel.y = parent.y;
+				imputLabel.y = (d[1] == top ? 0 : p.height + (padding/2) ) + p.y;
 				inputtextfield.y = this.imputLabel.y + this.imputLabel.height;
 			case right:
 				//trace("right");
-				inputtextfield.x  = imputLabel.x = parent.x + parent.width + (padding/4);
-				imputLabel.y = parent.y;
+				inputtextfield.x  = imputLabel.x = parent.x + p.width + (padding/4);
+				imputLabel.y = (d[1] == top ? 0 : p.height + (padding/2) ) + p.y;
 				inputtextfield.y = this.imputLabel.y + this.imputLabel.height;
 
 		}
@@ -118,6 +119,8 @@ class UIInputTfCore implements IFlxDestroyable
 		this.boundingRect.y = this.imputLabel.y;
 		this.boundingRect.width = Math.max(this.imputLabel.width, this.inputtextfield.width);
 		this.boundingRect.height = this.imputLabel.height + this.imputLabel.height;
+		//trace(this.boundingRect);
+		//trace("---");
 	}
 	function onPaste(e: ClipboardEvent):Void
 	{
@@ -232,7 +235,7 @@ class UIInputTfCore implements IFlxDestroyable
 		return this.imputLabel.y;
 	}
 
-	function get_boundingRect():Rectangle
+	 function get_boundingRect():Rectangle
 	{
 		return boundingRect;
 	}
@@ -241,6 +244,11 @@ class UIInputTfCore implements IFlxDestroyable
 	{
 		return focusSignal;
 	}
+
+function get_positionsToParent():Array<Direction> 
+{
+	return positionsToParent;
+}
 
 	public function destroy()
 	{

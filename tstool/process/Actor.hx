@@ -8,9 +8,9 @@ class Actor
 {
 	@:isVar public var authorized(get, set):Bool;
 	@:isVar public var iri(get, set):String;
-	public function new(?id:String, ?authorised:Bool) 
+	public function new(?id:String="", ?authorised:Bool=true) 
 	{
-		this.iri = id;
+		this.iri = StringTools.trim(id);
 		this.authorized = authorised;
 	}
 	function set_authorized(value:Bool):Bool
@@ -28,6 +28,6 @@ class Actor
 	}
 	function set_iri(value:String):String
 	{
-		return iri = value;
+		return iri = StringTools.trim(value);
 	}
 }

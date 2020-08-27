@@ -39,10 +39,8 @@ class DescisionMultipleInput extends Descision
 	}
 	override public function create( ):Void
 	{
-
 		multipleInputs = new MultipleInput(this, [for (i in inputs) i.input]);
 		super.create();
-
 	}
 
 	override public function update(elapsed)
@@ -98,10 +96,12 @@ class DescisionMultipleInput extends Descision
 			noValidatedSignal.dispatch(false);
 		//#end
 	}
-	override function positionThis()
+	override function positionThis(?detailsTop:Float = 0)
 	{
-		super.positionThis();
+		//super.positionThis();
 		multipleInputs.positionThis();
+		var last:UIInputTfCore = multipleInputs.inputs.get( inputs[inputs.length - 1].input.prefix ); // @todo AU SECOURS !!!
+		super.positionThis(last.y + last.height + _padding);
 	}
 	override function pushToHistory( buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null)
 	{
@@ -114,18 +114,18 @@ class DescisionMultipleInput extends Descision
 	/**
 	 * Override by final child if need different behaviour based on the fields content
 	 */
-	function validateYes()
+	public function validateYes():Bool
 	{
 		return validate();
 	}
 	/**
 	 * Override by final child if need different behaviour based on the fields content
 	 */
-	function validateNo()
+	public function validateNo():Bool
 	{
 		return validate();
 	}
-	function validate()
+	function validate():Bool
 	{
 		#if debug
 		trace("DescisionMultipleInput.validate");

@@ -9,12 +9,12 @@ import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxSave;
-import flow.Intro;
-import flow.TutoTree;
+//import flow.Intro;
+//import flow.TutoTree;
 //import openfl.text.TextField;
 //import openfl.text.TextFieldType;
 
-import flow.TutoTree;
+//import flow.TutoTree;
 import haxe.Http;
 import haxe.Json;
 import haxe.crypto.Base64;
@@ -24,7 +24,7 @@ import js.html.ClipboardEvent;
 import js.html.Event;
 import js.html.Permissions;
 import lime.system.Clipboard;
-import salt.Agent;
+import tstool.salt.Agent;
 
 //@:bitmap("assets/images/CustomPreload/default.png") class LogoImage extends BitmapData { }
 /**
@@ -48,7 +48,7 @@ class Login extends FlxState
 	var _focused: openfl.display.InteractiveObject;
 	var loginUrl:haxe.Http;
 	var markerFormat:FlxTextFormatMarkerPair;
-	var dummyAgent:salt.Agent;
+	var dummyAgent:tstool.salt.Agent;
 	override public function create()
 	{
 		super.create();
@@ -70,7 +70,7 @@ class Login extends FlxState
 			{
 				Main.user.mainLanguage = lang;
 			}
-			moveOn(true); // launch APPbbaudry
+			Main.MOVE_ON(true); // launch APPbbaudry
 		}
 		else
 		{
@@ -186,18 +186,18 @@ class Login extends FlxState
 		var a = {
 			authorized : true,
 			attributes:{
-			company : "Qook",
-			department : "Service Design",
-			division : "Customer Operations",
-			givenname : "Bruno",
-			initials : "bb",
-			iri : "bruno.abaudry@salt.ch",
-			isAdmin : true,
-			msexchuserculture : "en",
-			samaccountname : "bbaudry",
-			sn : "Baudry",
-			title : "Factotum",
-			l : "Biel"
+				company : "Qook",
+				department : "Service Design",
+				division : "Customer Operations",
+				givenname : "Bruno",
+				initials : "bb",
+				mail : "bruno.baudry@salt.ch",
+				isAdmin : true,
+				msexchuserculture : "en",
+				samaccountname : "bbaudry",
+				sn : "Baudry",
+				title : "Factotum",
+				l : "Biel"
 			}
 		}
 		return new Agent(a);
@@ -232,7 +232,7 @@ class Login extends FlxState
 			Main.user = dummyAgent;
 			Main.COOKIE.data.user = Main.user;
 			Main.COOKIE.flush();
-			moveOn(); // launch APP
+			Main.MOVE_ON(); // launch APP
 		#else
 		var d = Json.parse(data);
 		
@@ -245,7 +245,7 @@ class Login extends FlxState
 				Main.user.mainLanguage = lang;
 			}
 			Main.COOKIE.flush();
-			moveOn(); // launch APP
+			Main.MOVE_ON(); // launch APP
 		}
 		else
 		{
@@ -253,13 +253,13 @@ class Login extends FlxState
 		}
 		#end
 	}
-	function moveOn(?old:Bool=false)
-	{
-		Main.setUpSystemDefault(true);
-		Main.track.setActor();
-		var next = old ? new Intro():new TutoTree();
-		Main.tongue.init(Main.user.mainLanguage, ()->(FlxG.switchState( next )) );
-	}
+	//function moveOn(?old:Bool=false)
+	//{
+		//Main.setUpSystemDefault(true);
+		//Main.track.setActor();
+		////var next = old ? new Intro():new TutoTree();
+		////Main.tongue.init(Main.user.mainLanguage, ()->(FlxG.switchState( next )) );
+	//}
 	function onSubmit()
 	{
 		#if debug

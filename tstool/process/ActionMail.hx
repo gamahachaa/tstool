@@ -6,9 +6,10 @@ import lime.utils.Assets;
 import openfl.text.TextField;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
-import salt.SOTickets;
+import tstool.salt.SOTickets;
 import tstool.utils.Csv;
 import tstool.utils.Mail;
+import tstool.utils.SwiftMailWrapper;
 /**
  * ...
  * @author bb
@@ -35,9 +36,10 @@ class ActionMail extends Action
 	override public function create()
 	{
 		var textFieldFormat:TextFormat = new TextFormat(Assets.getFont("assets/fonts/Lato-Regular.ttf").name, 12, 0);
+		/*///// Cycle time //////
 		var eta = translate("cycleTime", "UI1", "meta");
-		
 		eta = StringTools.replace(eta, "<X>", prepareCycleTime());
+		////////////////////////*/
 		memoDefault = translate("describeIssue", "UI1", "meta");
 		tf = new TextField();
 		tf.multiline = true;
@@ -66,7 +68,7 @@ class ActionMail extends Action
 		this.question.text += "\n" + ticket.desc;
 		
 	}
-	override function positionThis()
+	override function positionThis(?detailsTop:Float = 0)
 	{
 		super.positionThis();
 		this.tf.x = this.question.x;

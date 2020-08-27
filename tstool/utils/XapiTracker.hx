@@ -4,7 +4,7 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 import haxe.Exception;
 import haxe.Http;
 import haxe.Json;
-import salt.SOTickets;
+import tstool.salt.SOTickets;
 
 /**
  * ...

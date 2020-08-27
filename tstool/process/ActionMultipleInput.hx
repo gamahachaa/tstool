@@ -28,10 +28,11 @@ class ActionMultipleInput extends Action
 	}
 	override public function create( ):Void
 	{
-		multipleInputs = new MultipleInput(this, [for (i in inputs) i.input]);
-		//itetateme = multipleInputs.inputs.iterator();
 		
+		//itetateme = multipleInputs.inputs.iterator();
+		multipleInputs = new MultipleInput(this, [for (i in inputs) i.input]);
 		super.create();
+		
 		//multipleInputs.getNextFocus();
 	}
 	override public function update(elapsed)
@@ -60,10 +61,13 @@ class ActionMultipleInput extends Action
 			nextValidatedSignal.dispatch(false);
 
 	}
-	override function positionThis()
+	override function positionThis(?detailsTop:Float = 0)
 	{
-		super.positionThis();
+		//super.positionThis();
+		//multipleInputs.positionThis();
 		multipleInputs.positionThis();
+		var last:UIInputTfCore = multipleInputs.inputs.get( inputs[inputs.length - 1].input.prefix ); // @todo AU SECOURS !!!
+		super.positionThis(last.y + last.height + _padding);
 
 	}
 	override public function setStyle()

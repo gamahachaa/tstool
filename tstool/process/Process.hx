@@ -1,5 +1,9 @@
 package tstool.process;
+//import _AddMemoVti;
+import flow._AddMemoVti;
+import lime.math.Rectangle;
 import tstool.layout.History;
+import tstool.layout.Question;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -9,10 +13,10 @@ import flixel.addons.ui.FlxUIButton;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
-import flixel.text.FlxTextBB;
+//import flixel.text.FlxTextBB;
 import flixel.ui.FlxButton;
-import flow.TutoTree;
-import flow.all.vti._AddMemoVti;
+//import flow.TutoTree;
+//import flow.all.vti._AddMemoVti;
 import haxe.ds.Either;
 import haxe.ds.StringMap;
 import js.Browser;
@@ -34,7 +38,7 @@ class Process extends FlxState
 {
 	static public var STORAGE:StringMap<Dynamic> = new StringMap<Dynamic>();
 	public var _padding(get, null):Int = 30;
-	public var question(get, null):FlxText;
+	public var question(get, null):Question;
 	#if debug
 		//public var details(get, null):FlxTextBB;
 		public var details(get, null):FlxText;
@@ -75,6 +79,7 @@ class Process extends FlxState
 	var isFocused:Bool;
 	var howTo:flixel.ui.FlxButton;
 	var howToSubState:Instructions;
+	var isAnimated:Bool;
 
 	//var _myClass:Class<T>;
 
@@ -88,6 +93,7 @@ class Process extends FlxState
 		_detailTxt = translate(_detailTxt, "DETAILS");
 		_illustration = translate(_illustration, "ILLUSTRATION");
 		_qookLink = translate(_qook, "QOOK").split("|");
+		isAnimated = false;
 		parseAllLinksForNames();
 	}
 
@@ -95,7 +101,7 @@ class Process extends FlxState
 	{
 		super.create();
 		#if debug
-		trace(Main.VERSION);
+		//trace(Main.VERSION);
 		#end
 		var ptNo:FlxPoint = new FlxPoint( -4, -20);
 		menuBG = new FlxShapeBox(0, 0, FlxG.width, 50, {thickness:0, color:0x00000000}, SaltColor.BLACK);
@@ -174,22 +180,22 @@ class Process extends FlxState
 		add(trainingMode);
 
 		// PROCESS UI		
-		question = new FlxText(0, 0, 1000, _titleTxt, 24, true);
+		//question = new FlxText(0, 0, 1000, _titleTxt, 24, true);
+		question = new Question(0, 0, 1000, _titleTxt, 24, true);
 		
 		
 		#if debug
-		details = new FlxText(0, 0, hasIllustration ? FlxG.width / 3 : FlxG.width-_padding, _detailTxt, hasIllustration? 16:20 , true);
+		details = new FlxText(0, 0, hasIllustration ? FlxG.width / 3 : FlxG.width-_padding, _detailTxt, hasIllustration? 16:24 , true);
 		#else
-		details = new FlxText(0, 0, hasIllustration ? FlxG.width / 3 : FlxG.width-_padding, _detailTxt, hasIllustration? 16:20 , true);
+		details = new FlxText(0, 0, hasIllustration ? FlxG.width / 3 : FlxG.width-_padding, _detailTxt, hasIllustration? 16:24 , true);
 		#end
 		
 		question.setFormat(Main.TITLE_FMT.font, Main.TITLE_FMT.size);
-		details.setFormat(Main.BASIC_FMT.font, Main.BASIC_FMT.size);
+		details.setFormat(Main.BASIC_FMT.font, hasIllustration ? Main.BASIC_FMT.size: Main.BASIC_FMT.size+4);
 		details.autoSize = question.autoSize = false;
 		
 		add(question);
 		add(details);
-		
 
 		if (hasQook)
 		{
@@ -207,7 +213,18 @@ class Process extends FlxState
 
 		if (hasIllustration)
 		{
-			illustration = new FlxSprite(0, 0, "assets/images/" + _illustration + ".png");
+			var tmp = [];
+			
+			if (_illustration.indexOf("#") > 0)
+			{
+				isAnimated = true;
+				tmp = _illustration.split("#") ;
+				illustration = new FlxSprite();
+				illustration.loadGraphic("assets/images/" + tmp[0] + ".png", true, Std.parseInt(tmp[1]), Std.parseInt(tmp[2]));
+				illustration.animation.add("anim", [for (i in 0...Std.parseInt(tmp[3])) i], 12, true);
+			}
+			else
+				illustration = new FlxSprite(0, 0, "assets/images/" + _illustration + ".png");
 			add(separatorV);
 			add(illustration);
 
@@ -237,6 +254,7 @@ class Process extends FlxState
 			registerButton(backBtn);
 			add(backBtn);
 		}
+		question.positionMe(new Rectangle(_padding, _padding * 2, 0, 0));
 		question.x = _padding;
 		question.y = _padding * 2;
 
@@ -250,11 +268,11 @@ class Process extends FlxState
 	{
 		Main.user.mainLanguage = lang;
 		Main.COOKIE.flush();
-		Main.tongue.init(lang , ()->(
+		Main.tongue.initialize(lang , ()->(
 										FlxG.switchState( 
 											Type.createInstance( Type.getClass(this), [])
 											)
-										) 
+										)
 						);
 	}
 	function onClipBoardClick() 
@@ -273,6 +291,41 @@ class Process extends FlxState
 		//trainingMode.status = Main.user.canDispach ? FlxButton.NORMAL : FlxButton.HIGHLIGHT;
 	}
 	function positionMain( ?detailsTop:Float )
+	{
+		menuPosition();
+		//question.positionMe(new Rectangle(_padding, _padding * 2, 0, 0));
+		separatorH.x = 0;
+		separatorH.y = detailsTop;
+
+		details.x = _padding/2;
+		details.y = separatorH.y + _padding;
+
+		if (hasQook)
+		{
+			qook.y = this.details.y + this.details.height + (_padding * 2);
+			//qook.y = _padding;
+			//qook.x = FlxG.width - (qook.width + (_padding*2));
+			qook.x = _padding/2;
+		}
+		if (hasIllustration)
+		{
+			illustration.x = FlxG.width/3 + _padding;
+			illustration.y = details.y;
+			separatorV.x = details.x + details.width - (separatorV.width/2);
+			separatorV.y = separatorH.y;
+			if (isAnimated) illustration.animation.play("anim");
+		}
+		if (hasVoip)
+		{
+			//clipBoardBtn.y = 4;
+			//clipBoardBtn.x = 0;
+			voipReminder.y = menuBG.height/2 - (voipReminder.height/2);
+			voipReminder.x = _padding/2 ;
+			//voipReminder.x = clipBoardBtn.x + clipBoardBtn.width + (_padding/2) ;
+		}
+
+	}
+	function menuPosition()
 	{
 		bucket.y = 4;
 		bucket.x = FlxG.width / 2;
@@ -293,40 +346,11 @@ class Process extends FlxState
 		howTo.y = 4;
 		comment.x = howTo.x - (_padding * 3) - comment.width;
 		comment.y = 4;
-		separatorH.x = 0;
-		separatorH.y = detailsTop;
-
-		details.x = _padding/2;
-		details.y = separatorH.y + _padding;
-
-		if (hasQook)
-		{
-			qook.y = this.details.y + this.details.height + (_padding * 2);
-			//qook.y = _padding;
-			//qook.x = FlxG.width - (qook.width + (_padding*2));
-			qook.x = _padding/2;
-		}
-		if (hasIllustration)
-		{
-			illustration.x = FlxG.width/3 + _padding;
-			illustration.y = details.y;
-			separatorV.x = details.x + details.width - (separatorV.width/2);
-			separatorV.y = separatorH.y;
-		}
-		if (hasVoip)
-		{
-			//clipBoardBtn.y = 4;
-			//clipBoardBtn.x = 0;
-			voipReminder.y = menuBG.height/2 - (voipReminder.height/2);
-			voipReminder.x = _padding/2 ;
-			//voipReminder.x = clipBoardBtn.x + clipBoardBtn.width + (_padding/2) ;
-		}
-
 	}
 	function onExit()
 	{
 		pushToHistory("ALL GOOD", Interactions.Exit);
-		FlxG.switchState(new _AddMemoVti() );
+		FlxG.switchState(new flow._AddMemoVti() );
 	}
 	function onQook():Void
 	{
@@ -414,9 +438,9 @@ class Process extends FlxState
 		
 		var t = context == "data" ? Main.tongue.get("$" + this._name + "_" + suffix, context) : Main.tongue.get("$" + txt + "_" + suffix, context);
 		#if debug
-			trace(defaultString);
-			trace(customString);
-			trace(t);
+			//trace(defaultString);
+			//trace(customString);
+			//trace(t);
 		#end
 		return t.indexOf("$") == 0 || StringTools.trim(t) == "" ? txt : t;
 	}
@@ -424,6 +448,9 @@ class Process extends FlxState
 	function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
 		Main.HISTORY.add(_name, interactionType, _titleTxt, buttonTxt, values);
+		#if debug
+			trace(_name, interactionType, _titleTxt, buttonTxt, values);
+		#end
 		//trace(Main.HISTORY.history);
 		// HISTORY.push({processName : this._name, interaction: buttonTxt});
 	}
@@ -545,7 +572,7 @@ class Process extends FlxState
 		return _padding;
 	}
 	
-	function get_question():FlxText 
+	function get_question():Question 
 	{
 		return question;
 	}

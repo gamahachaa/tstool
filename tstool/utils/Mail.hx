@@ -1,82 +1,98 @@
 package tstool.utils;
-import tstool.layout.History;
+import Main;
+import tstool.utils.SwiftMailWrapper.Result;
+
 import flixel.util.FlxSignal.FlxTypedSignal;
-import haxe.Http;
 import haxe.Json;
 import js.Browser;
 import tstool.layout.History.Snapshot;
 import tstool.process.Process;
-import Main;
-import salt.SOTickets;
+import tstool.salt.SOTickets;
 /**
  * ...
  * @author bbaudry
  */
-enum Parameters
-{
-	subject;
-	from_email;
-	from_full_name;
-	to_email;
-	to_full_name;
-	cc_email;
-	cc_full_name;
-	bcc_email;
-	bcc_full_name;
-	body;
-}
-typedef Result =
-{
-	var status:String;
-	var error:String;
-	var additional:String;
-}
-typedef MailReciepient =
-{
-	var to:String;
-	var fullName:String;
-}
+//enum Parameters
+//{
+	//subject;
+	//from_email;
+	//from_full_name;
+	//to_email;
+	//to_full_name;
+	//cc_email;
+	//cc_full_name;
+	//bcc_email;
+	//bcc_full_name;
+	//body;
+//}
+//typedef Result =
+//{
+	//var status:String;
+	//var error:String;
+	//var additional:String;
+//}
+//typedef MailReciepient =
+//{
+	//var to:String;
+	//var fullName:String;
+//}
 class Mail
 {
-	var http:Http;
+	//var http:Http;
 	var _mailSubject:String;
 	//var _queue:String;
 	var _ticket:SOTickets;
+	var mailWrapper:tstool.utils.SwiftMailWrapper;
 	var _currentProcess(default, set):Process;
-	public var successSignal(get, null):FlxTypedSignal<Result->Void>;
-	public var statusSignal(get, null):FlxTypedSignal<Int->Void>;
-	public var errorSignal(get, null):FlxTypedSignal<Dynamic->Void>;
+	var _mailBody:String;
+	@:isVar public var successSignal(get, set):FlxTypedSignal<Result->Void>;
+	@:isVar public var statusSignal(get, set):FlxTypedSignal<Int->Void>;
+	@:isVar public var errorSignal(get, set):FlxTypedSignal<Dynamic->Void>;
 
-	@:isVar public var params(get, set):haxe.ds.Map<Parameters,Dynamic>;
+	//@:isVar public var params(get, set):haxe.ds.Map<Parameters,Dynamic>;
 
-	public function new(ticket:SOTickets, currentProcess:Process)
+	public function new(ticket:SOTickets, currentProcess:Process, ?phpMailPath:String = "php/mail/index.php")
 	{
 		_ticket = ticket;
-
+		
 		//_mailSubject = ticket.desc;
 		_currentProcess = currentProcess;
-		successSignal = new FlxTypedSignal<Result->Void>();
-		statusSignal = new FlxTypedSignal<Int->Void>();
-		errorSignal = new FlxTypedSignal<Dynamic->Void>();
+		mailWrapper = new SwiftMailWrapper(Browser.location.origin + Browser.location.pathname + phpMailPath);
+		_mailBody = mailWrapper.setCommonStyle();
+		successSignal = mailWrapper.successSignal;
+		statusSignal = mailWrapper.statusSignal;
+		errorSignal = mailWrapper.errorSignal;
 		//params = new Map<Parameters,String>();
-		params = new Map<Parameters,Dynamic>();
-		setStyle();
+		//params = new Map<Parameters,Dynamic>();
+		//setStyle();
 		
 		#if debug
 		//params.set(to_email, "superofficetest@salt.ch"); // Test on cs-sit.test
-		params.set(to_email, "bruno.baudry@salt.ch");
-
+		mailWrapper.setTo(["bruno.baudry@salt.ch"]);
+		//mailWrapper.setTo(["superofficetest@salt.ch"]);
+		//mailWrapper.setCc(['${Main.user.iri}']);
+		//mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
+		//params.set(to_email, "bruno.baudry@salt.ch");
+		
 		//params.set(to_email, ticket.email); // Test on SO prod cs.salt.ch
 		#else
 		if (Main.DEBUG)
 		{
-			params.set(to_email, "bruno.baudry@salt.ch");
+			//params.set(to_email, "bruno.baudry@salt.ch");
+			//mailWrapper.setTo(["bruno.baudry@salt.ch"]);
+			//mailWrapper.setTo(["superofficetest@salt.ch"]);
+			mailWrapper.setCc(['${Main.user.iri}']);
+			//mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
 		}
 		else
 		{
-			params.set(to_email, ticket.email);
-			params.set(cc_email, '${Main.user.iri}');
-			params.set(bcc_email, "qook@salt.ch");
+			//params.set(to_email, ticket.email);
+			mailWrapper.setTo([ticket.email]);
+			
+			//params.set(cc_email, '${Main.user.iri}');
+			mailWrapper.setCc(['${Main.user.iri}']);
+			//params.set(bcc_email, "qook@salt.ch");
+			mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
 		}
 		
 		//params.set(bcc_full_name, "qook");
@@ -84,28 +100,31 @@ class Mail
 		//params.set(subject, '[${Main.customer.iri}] $mailSubject' );
 
 
-		http = new Http(Browser.location.origin + Browser.location.pathname+ "php/mail/index.php" );
-		http.async = true;
-		http.onData = onData;
-		http.onError = onError;
-		http.onStatus = onStatus;
-		//trace(Browser.location.origin + Browser.location.pathname+ "php/mail/index.php" );
+		
+		//http = new Http(Browser.location.origin + Browser.location.pathname + phpMailPath );
+		//http.async = true;
+		//http.onData = onData;
+		//http.onError = onError;
+		//http.onStatus = onStatus;
+		//trace(Browser.location.origin + Browser.location.pathname+ phpMailPath );
 	}
-	function setStyle()
-	{
-		var b = '<style type="text/css">';
-		b += 'table {border-collapse: collapse;}';
-		b += '@font-face {font-family: "Superior"; src: url("http://intranet.salt.ch/static/fonts/superior/SuperiorTitle-Black.woff") format("woff"); font-weight: normal;}';
-		b += '@font-face {font-family: "Univers"; src: url("http://intranet.salt.ch/static/fonts/univers/ecf89914-1896-43f6-a0a0-fe733d1db6e7.woff") format("woff"); font-weight: normal;}';
-		b += 'h3,h4,h5,h5 {color: #65a63c;}';
-		b += 'body, table, td, li, span, h3,h4,h5,h5  {font-family: "Univers", Arial, Helvetica, sans-serif !important;}';
-		b += 'h2{color: #000000; font-family: "Superior" !important;}';
-		b += 'li{font-size: 11pt !important; padding-top:8px !important;  margin-top:8px !important;}';
-		b += 'li em{font-size: 9pt !important;}';
-		b += '</style>';
-		//http://intranet.salt.ch/static/fonts/superior/SuperiorTitle-Black.woff
-		params.set(body, b);
-	}
+	//function setStyle()
+	//{
+		//var b = '<style type="text/css">';
+		//b += 'table {border-collapse: collapse;}';
+		//b += '@font-face {font-family: "Superior"; src: url("http://intranet.salt.ch/static/fonts/superior/SuperiorTitle-Black.woff") format("woff"); font-weight: normal;}';
+		//b += '@font-face {font-family: "Univers"; src: url("http://intranet.salt.ch/static/fonts/univers/ecf89914-1896-43f6-a0a0-fe733d1db6e7.woff") format("woff"); font-weight: normal;}';
+		//b += 'h3,h4,h5,h5 {color: #65a63c;}';
+		//b += 'body, table, td, li, span, h3,h4,h5,h5  {font-family: "Univers", Arial, Helvetica, sans-serif !important;}';
+		//b += 'h2{color: #000000; font-family: "Superior" !important;}';
+		//b += 'li{font-size: 11pt !important; padding-top:8px !important;  margin-top:8px !important;}';
+		//b += 'li em{font-size: 9pt !important;}';
+		//b += '</style>';
+		////http://intranet.salt.ch/static/fonts/superior/SuperiorTitle-Black.woff
+		////params.set(body, b);
+		////params.set(body, b);
+		//return b;
+	//}
 	function setSubject()
 	{
 		// test GIT DEV
@@ -118,41 +137,48 @@ class Mail
 			_queue =_ticket.queue + "_"; // Nico change 25.03.2020
 		#end
 		_mailSubject = _ticket.domain + "-" + _ticket.number + " " + _ticket.desc;
-		params.set(subject, '[${Main.customer.voIP}][$_queue] $_mailSubject' );
+		//params.set(subject, '[${Main.customer.voIP}][$_queue] $_mailSubject' );
+		if(Main.DEBUG)
+			//mailWrapper.setSubject('[${Main.customer.voIP}][$_queue][${Main.user.sAMAccountName}] $_mailSubject' );
+			mailWrapper.setSubject('[${Main.customer.voIP}][$_queue][sgiardie] $_mailSubject' );
+		else
+			mailWrapper.setSubject('[${Main.customer.voIP}][$_queue][${Main.user.sAMAccountName}] $_mailSubject' );
 	}
 
 	public function send(memo:String= "")
 	{
-		
 		setSubject();
 		buildCustomerBody(memo);
 		buildHistoryBody();
 		buildAgentBody();
-		params.set(body, "<body>" + params.get(body) + "</body>" );
-		for (key => value in params)
-		{
-			http.setParameter(Std.string(key), value);
-			if (Main.DEBUG) trace(key, value);
-		}
+		//params.set(body, "<body>" + params.get(body) + "</body>" );
+		mailWrapper.setBody("<body>" + _mailBody + "</body>" );
+		//for (key => value in params)
+		//{
+			//http.setParameter(Std.string(key), value);
+			//if (Main.DEBUG) trace(key, value);
+		//}
 		// do not create ticket in training mode
-		if (Main.user.canDispach)
-		{
-			#if debug
-			trace("testing");
-			trace(params.get(body));
-			
-			#else
-			http.request(true);
-			#end
-		}
-		else
-		{
-			successSignal.dispatch({status:"success",error:"", additional:"training"});
-		}
+		mailWrapper.send(Main.user.canDispach);
+		//if (Main.user.canDispach)
+		//{
+			//#if debug
+			//trace("testing");
+			//trace(params.get(body));
+			//
+			//#else
+			//http.request(true);
+			//#end
+		//}
+		//else
+		//{
+			//successSignal.dispatch({status:"success",error:"", additional:"training"});
+		//}
 	}
 	function buildCustomerBody(memo:String= "")
 	{
-		var  b = params.exists(body)?params.get(body):"";
+		//var  b = params.exists(body)?params.get(body):"";
+		var  b = _mailBody;
 		//var bodyList = "";
 		#if debug
 		trace(Main.customer);
@@ -164,7 +190,7 @@ class Mail
 			b += '<h2>Contractor: ${Main.customer.iri} ';
 			b += 'VoIP: ${Main.customer.voIP}';
 			b += '</h2>';
-			if(Main.customer.contract.owner.name !="")
+			if(Main.customer.contract.owner != null && Main.customer.contract.owner.name !="")
 				b += '<h3>${Main.customer.contract.owner.name}</h3>';
 			if (Main.customer.shipingAdress != null && Main.customer.shipingAdress._zip != "")
 			{
@@ -183,14 +209,17 @@ class Mail
 		{
 			trace(e);
 		}
-		params.set(body, b);
+		//params.set(body, b);
+		_mailBody = b;
 	}
 	function buildAgentBody()
 	{
-		var  b = params.exists(body)?params.get(body):"";
+		//var  b = params.exists(body)?params.get(body):"";
+		var  b = _mailBody;
 		var bodyList = "";
-		params.set(from_email, Main.user.iri);
-		params.set(from_full_name, Main.user.sAMAccountName);
+		mailWrapper.setFrom(Main.user.iri, Main.user.sAMAccountName);
+		//params.set(from_email, );
+		//params.set(from_full_name, );
 		//Main.user.firstName;
 		#if debug
 		trace(Main.user);
@@ -207,12 +236,14 @@ class Mail
 		}
 
 		b += '<h5>Troubleshot in ${Main.user.mainLanguage} by:</h5><ul>$bodyList</ul>';
-		params.set(body, b);
+		//params.set(body, b);
+		_mailBody = b;
 
 	}
 	function buildHistoryBody()
 	{
-		var  b = params.exists(body)?params.get(body):"";
+		//var  b = params.exists(body)?params.get(body):"";
+		var  b = _mailBody;
 		var bodyList = "";
 		var start:Date = Main.HISTORY.getFirst().start;
 		var end:Date = Main.HISTORY.getLast().start;
@@ -223,7 +254,7 @@ class Mail
 			bodyList += getItInEnglsh(i);
 			if (i.values != null) {
 				
-				bodyList += i.values.toString();
+				bodyList += " " + i.values.toString();
 			}
 			if(!isEnglish){
 				bodyList += "<br/><em>";
@@ -237,12 +268,13 @@ class Mail
 		
 		bodyList += "<li><strong>"+_currentProcess.question.text +"</strong></li>";
 		b += '<h4>Start: ${start.toString()}</h4><ol>$bodyList</ol><h4>End: ${end.toString()}</h4>';
-		params.set(body, b);
+		//params.set(body, b);
+		_mailBody = b;
 	}
 	
 	function getItInEnglsh(i:Snapshot):String
 	{
-		Main.tongue.init("en-GB");
+		Main.tongue.initialize("en-GB");
 		var s = "";
 		var interaction = switch(i.interaction){
 			case Yes: "RIGHT-BTN";
@@ -263,54 +295,64 @@ class Mail
 		
 		s += Main.tongue.get("$" + i.processName + "_TITLE", "data") + " : " + interactionEN;
 		#if debug
-		Main.tongue.init("fr-FR");
+		Main.tongue.initialize("fr-FR");
 		#else
-		Main.tongue.init(Main.user.mainLanguage);
+		Main.tongue.initialize(Main.user.mainLanguage);
 		#end
 		return s;
 	}
-	function onStatus(s:Int)
-	{
-		//trace(s);
-		statusSignal.dispatch(s);
-	}
+	//function onStatus(s:Int)
+	//{
+		////trace(s);
+		//statusSignal.dispatch(s);
+	//}
+//
+	//function onError(e:Dynamic):Void
+	//{
+		////trace(e);
+		//errorSignal.dispatch(e);
+	//}
+//
+	//function onData(data:Dynamic)
+	//{
+		////trace(data);
+		//var s:Result = Json.parse(data);
+		//successSignal.dispatch(s);
+	//}
 
-	function onError(e:Dynamic):Void
-	{
-		//trace(e);
-		errorSignal.dispatch(e);
-	}
-
-	function onData(data:Dynamic)
-	{
-		//trace(data);
-		var s:Result = Json.parse(data);
-		successSignal.dispatch(s);
-	}
-
-	function get_params():haxe.ds.Map<Parameters, Dynamic>
-	{
-		return params;
-	}
+	//function get_params():haxe.ds.Map<Parameters, Dynamic>
+	//{
+		//return params;
+	//}
 
 	function get_successSignal():FlxTypedSignal<Result->Void>
 	{
 		return successSignal;
+	}
+	
+	function set_successSignal(value:FlxTypedSignal<Result->Void>):FlxTypedSignal<Result->Void> 
+	{
+		return successSignal = value;
 	}
 
 	function get_statusSignal():flixel.util.FlxSignal.FlxTypedSignal<Int->Void>
 	{
 		return statusSignal;
 	}
+	
+	function set_statusSignal(value:FlxTypedSignal<Int->Void>):FlxTypedSignal<Int->Void> 
+	{
+		return statusSignal = value;
+	}
 
 	function get_errorSignal():flixel.util.FlxSignal.FlxTypedSignal<Dynamic->Void>
 	{
 		return errorSignal;
 	}
-
-	function set_params(value:haxe.ds.Map<Parameters, Dynamic>):haxe.ds.Map<Parameters, Dynamic>
+	
+	function set_errorSignal(value:FlxTypedSignal<Dynamic->Void>):FlxTypedSignal<Dynamic->Void> 
 	{
-		return params = value;
+		return errorSignal = value;
 	}
 
 	function set__currentProcess(value:Process):Process
