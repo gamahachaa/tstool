@@ -78,8 +78,8 @@ class Mail
 		#else
 		if (Main.DEBUG)
 		{
-			//params.set(to_email, "bruno.baudry@salt.ch");
-			//mailWrapper.setTo(["bruno.baudry@salt.ch"]);
+			
+			mailWrapper.setTo(["bruno.baudry@salt.ch"]);
 			//mailWrapper.setTo(["superofficetest@salt.ch"]);
 			mailWrapper.setCc(['${Main.user.iri}']);
 			//mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
@@ -160,20 +160,7 @@ class Mail
 		//}
 		// do not create ticket in training mode
 		mailWrapper.send(Main.user.canDispach);
-		//if (Main.user.canDispach)
-		//{
-			//#if debug
-			//trace("testing");
-			//trace(params.get(body));
-			//
-			//#else
-			//http.request(true);
-			//#end
-		//}
-		//else
-		//{
-			//successSignal.dispatch({status:"success",error:"", additional:"training"});
-		//}
+		
 	}
 	function buildCustomerBody(memo:String= "")
 	{
@@ -248,6 +235,64 @@ class Mail
 		var start:Date = Main.HISTORY.getFirst().start;
 		var end:Date = Main.HISTORY.getLast().start;
 		var isEnglish = Main.user.mainLanguage == "en-GB";
+		var histroryArray = Main.HISTORY.getStoredStepsArray();
+		var historyList = "";
+		var englishLst = "";
+		for (h in histroryArray)
+		{
+			historyList += '<li>${h.step} &rarr; <strong>${h.interaction}</strong> ${h.values}</li>';
+			
+		}
+		historyList += "<li><strong>"+_currentProcess.question.text +"</strong></li>";
+		if (!isEnglish)
+		{
+			var englishHistroryArray = Main.HISTORY.getStoredStepsTranslatedArray();
+			
+		
+			for (i in englishHistroryArray)
+			{
+				
+				englishLst += '<li>${i.step} &rarr; <strong>${i.interaction}</strong> ${i.values}</li>';
+			}
+		}
+		/*
+		for (i in Main.HISTORY.history)
+		{
+			bodyList += "<li>";
+			bodyList += getItInEnglsh(i);
+			if (i.values != null) {
+				
+				bodyList += " " + i.values.toString();
+			}
+			if(!isEnglish){
+				bodyList += "<br/><em>";
+				bodyList += '${i.processTitle} : <strong>${i.iteractionTitle}</strong>';
+				bodyList += "</em>";
+			}
+			bodyList += "</li>";
+		}
+		*/
+		//bodyList += "<li><strong>"+_currentProcess.question.text +"</strong></li>";
+		b += '<h4>Start: ${start.toString()} End: ${end.toString()}</h4>';
+		b += '<h4>Steps:</h4>';
+		b += '<ol>$historyList</ol>';
+		if (!isEnglish)
+		{
+			b += '<h4>English:</h4>';
+			b += '<ol>$englishLst</ol>';
+		}
+		//params.set(body, b);
+		_mailBody = b;
+	}
+	/**
+	function buildHistoryBody()
+	{
+		//var  b = params.exists(body)?params.get(body):"";
+		var  b = _mailBody;
+		var bodyList = "";
+		var start:Date = Main.HISTORY.getFirst().start;
+		var end:Date = Main.HISTORY.getLast().start;
+		var isEnglish = Main.user.mainLanguage == "en-GB";
 		for (i in Main.HISTORY.history)
 		{
 			bodyList += "<li>";
@@ -270,7 +315,7 @@ class Mail
 		b += '<h4>Start: ${start.toString()}</h4><ol>$bodyList</ol><h4>End: ${end.toString()}</h4>';
 		//params.set(body, b);
 		_mailBody = b;
-	}
+	}*/
 	
 	function getItInEnglsh(i:Snapshot):String
 	{

@@ -449,7 +449,7 @@ class Process extends FlxState
 	{
 		Main.HISTORY.add(_name, interactionType, _titleTxt, buttonTxt, values);
 		#if debug
-			trace(_name, interactionType, _titleTxt, buttonTxt, values);
+			//trace(_name, interactionType, _titleTxt, buttonTxt, values);
 		#end
 		//trace(Main.HISTORY.history);
 		// HISTORY.push({processName : this._name, interaction: buttonTxt});

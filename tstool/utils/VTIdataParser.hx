@@ -199,12 +199,18 @@ class VTIdataParser
 		{
 			var b = "language " + lng + "<br/><ul>";
 			for (a in noMatch) b += '<li>TOPIC ${a.mainTopic} VAR ${a.subtopic} NOT FOUND: "${a.textNotFound}"</li>';
+			
 			var mail = new SwiftMailWrapper(Browser.location.origin + Browser.location.pathname + Main.MAIL_WRAPPER_URL);
+			
 			mail.setSubject('[TSTOOL ALERT] VTI customer profile $lng'  );
 			mail.setFrom("bruno.baudry@salt.ch");
 			mail.setTo(["bruno.baudry@salt.ch"]);
 			mail.setBody("<body>" + b + "</ul>"+Main.user.iri + " " + Browser.navigator.userAgent+"<br/>" + content +"</body>");
-			mail.send(true);
+			
+			
+			
+			mail.send(true);//sending copy paste failure report
+			
 			#if debug
 			trace("mail should be sent" );
 			#end

@@ -65,7 +65,20 @@ class XapiTracker
 	public function setResolution()
 	{
 		//setVerb("resolved");
-		u.setParameter("steps", Json.stringify( Main.HISTORY.getRawSteps()) );
+		var steps = "";
+		var values = "";
+		var h = Main.HISTORY.getStoredStepsTranslatedArray();
+		for (i in h)
+		{
+			steps += '${i.step}|${i.interaction}£';
+		}
+		for (j in h)
+		{
+			if(j.values != "") values += '${j.values}|';
+		}
+		u.setParameter("total_steps",  Std.string(h.length) );
+		u.setParameter("values", values );
+		u.setParameter("steps",  steps);
 	}
 	public function setActivity(object:String)
 	{

@@ -24,14 +24,11 @@ class ActionMail extends Action
 	{
 		super();
 		this.ticket = ticket;
-		mail = new Mail(ticket, this);
+		//mail = new Mail(ticket, this);
 		#if debug
-		trace(ticket);
+		//trace(ticket);
 		#end
-		//mail.currentProcess = this;
-		//mail.statusSignal.add(onMailStatus);
-
-		//mail.errorSignal.add(onMailError);
+	
 	}
 	override public function create()
 	{
@@ -63,7 +60,9 @@ class ActionMail extends Action
 		tf.y = 10;
 		//if(Main.DEBUG) _detailTxt += '\n- $eta'; // en test seulement pour l'instant
 		_detailTxt += prepareHistory();
+		mail = new Mail(ticket, this);
 		super.create();
+		
 		//FlxG.keys.preventDefaultKeys = [ FlxKey.TAB];
 		this.question.text += "\n" + ticket.desc;
 		
@@ -88,7 +87,7 @@ class ActionMail extends Action
 		
 		switch data.status {
 			case "success" : super.onClick();
-			case "failed" : openSubState(new DataView(Main.THEME.bg, this._name, "\n\nCould not create the ticket !!!\n\nPlease do a print screen of this and send it to qook@salt.ch\n"+data.error));
+			case "failed" : openSubState(new DataView(Main.THEME.bg, this._name, '\n\nCould not create the ticket !!!\n\nPlease do a print screen of this and send it to qook@salt.ch\n+${data.error} (${data.additional})'));
 		}
 	}
 
@@ -113,7 +112,7 @@ class ActionMail extends Action
 			t += i.processTitle + " :: " + i.iteractionTitle + (i.values==null? "": i.values.toString()) + "\n" ;
 		}
 		#if debug
-		trace(t);
+		//trace(t);
 		#end
 		return t;
 	}
@@ -124,5 +123,10 @@ class ActionMail extends Action
 		var csv:Csv = new Csv(Assets.getText("assets/data/20200402_CycleTimeExpectedNextWeek_BB.csv"), ";", false);
 		var cycleTime = csv.dict.exists(this.ticket.queue) ? csv.dict.get(this.ticket.queue).get(lang) : "";
 		return cycleTime ;
+	}
+	override public function destroy()
+    {
+		super.destroy();
+		this.mail = null;
 	}
 }

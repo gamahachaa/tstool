@@ -145,14 +145,90 @@ class History
 		}
 		return tab;
 	}
-	public function getRawSteps()
+	public function getStoredStepsArray( )
 	{
 		var t = [];
 		var s = 0;
 		for (i in history)
 		{
-			t.push({nb:s++, step:i.processName, interaction: i.iteractionTitle});
+			t.push({nb:s++, step:i.processTitle, interaction: i.iteractionTitle, values: i.values==null?"":i.values.toString()});
 		}
 		return t;
+	}
+	public function getStepsAsString( toLangPair:String="en-GB" )
+	{
+		var t = "";
+		var h = getStoredStepsTranslatedArray(toLangPair);
+		var v = "";
+		for (i in h)
+		{
+			t += '${i.nb}|${i.step}|${i.interaction}|${i.values}_';
+		}
+		return t;
+	}
+	public function getRawStepsArray()
+	{
+		var t = [];
+		var s = 0;
+		for (i in history)
+		{
+			t.push({nb:s++, step:i.processName, interaction: i.interaction, values: i.values==null?"":i.values.toString()});
+		}
+		return t;
+	}
+	/**
+	 * Default to English
+	 * @param	toLangPair
+	 */
+	public function getStoredStepsTranslatedArray( toLangPair:String="en-GB" )
+	{
+		var t = [];
+		var s = 0;
+		
+		var question = "";
+		var choice = "";
+		Main.tongue.initialize( toLangPair );
+		for (i in history)
+		{
+			question = Main.tongue.get("$" + i.processName + "_TITLE", "data");
+			choice = getDefaultOrCutomChoice( i.processName, i.interaction);
+			t.push({nb:s++, step: question, interaction: choice, values: i.values==null?"":i.values.toString()});
+		}
+		#if debug
+		Main.tongue.initialize("fr-FR");
+		#else
+		Main.tongue.initialize(Main.user.mainLanguage);
+		#end
+		return t;
+	}
+	function getDefaultOrCutomChoice( process:String, interaction:Interactions): String
+	{
+		var choice = Main.tongue.get("$" + process + "_" + getCustomInteractionTranslationHeader(interaction), "data");
+		if (choice == "" || choice == null || choice.indexOf("$") == 0)
+		{
+			choice = Main.tongue.get("$defaultBtn_" + getDefaultInteractionTranslationHeader(interaction), "meta");
+		}
+		
+		return choice;
+	}
+	function getDefaultInteractionTranslationHeader( interaction:Interactions)
+	{
+		return switch(interaction)
+		{
+			case Yes: "UI3";
+			case No: "UI1";
+			case Next: "UI2";
+			default: "UI2";
+		}
+	}
+	function getCustomInteractionTranslationHeader( interaction:Interactions)
+	{
+		return switch(interaction)
+		{
+			case Yes: "RIGHT-BTN";
+			case No: "LEFT-BTN";
+			case Next: "MID-BTN";
+			default: "MID-BTN";
+		}
 	}
 }
