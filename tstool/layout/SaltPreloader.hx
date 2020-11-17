@@ -11,7 +11,7 @@ import openfl.text.TextFormat;
  * ...
  * @author ...
  */
-@:bitmap("assets/images/CustomPreload/default.png") class LogoImage extends BitmapData { }
+//@:bitmap("assets/images/CustomPreload/default.png") class LogoImage extends BitmapData { }
 //@:font("assets/data/GameBoy.ttf") class CustomFont extends Font {}
 class SaltPreloader extends FlxBasePreloader
 {

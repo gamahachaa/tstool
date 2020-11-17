@@ -1,6 +1,8 @@
 package tstool.process;
 import flixel.FlxG;
+import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
+import tstool.layout.History.Interactions;
 import tstool.layout.IPositionable;
 import tstool.layout.IPositionable.Direction;
 import tstool.layout.UIInputTfCore;
@@ -19,8 +21,11 @@ typedef ValidatedInputs = {
 typedef Input = {
 	var ?buddy:String;
 	var width:Int;
+	var ?inputHeight:Int;
 	var prefix:String;
 	var ?position:Array<Direction>;
+	var ?debug:String;
+	var ?mustValidate:Array<Interactions>;
 } 
  
 class MultipleInput implements IFlxDestroyable
@@ -46,12 +51,15 @@ class MultipleInput implements IFlxDestroyable
 	public function create(ins:Array<Input>):Void
 	{
 		var tmp:UIInputTfCore = null;
-		var perv:IPositionable= this.parent.question;
+		//var perv:IPositionable= this.parent.question;
 		//var tab = 1;
 		for ( i in ins)
 		{
 			tmp = new UIInputTfCore(Std.int(i.width), i.prefix, i.position);
 			tmp.addToParent(this.parent);
+			#if debug
+			tmp.inputtextfield.text = i.debug == null || i.debug == "" ? "":i.debug;
+			#end
 			tabOrder.push(i.prefix);
 			tmp.focusSignal.add( onChildFocus );
 			inputs.set(i.prefix, tmp);
@@ -110,6 +118,7 @@ class MultipleInput implements IFlxDestroyable
 	public function positionThis()
 	{
 		var ui = null;
+		var pt :FlxPoint = new FlxPoint(0, 0);
 		for ( k => v in positionings)
 		{
 			ui = inputs.get(k);
@@ -120,7 +129,19 @@ class MultipleInput implements IFlxDestroyable
 			else{
 				ui.positionMe(inputs.get(v.buddy).boundingRect);
 			}
+			//trace(ui.x + ui.width, ui.x + ui.width > pt.x);
+			if (ui.x + ui.width > pt.x)
+			{
+				pt.x = ui.x + ui.width ;
+			}
+			//trace(ui.y + ui.height, ui.y + ui.height > pt.y);
+			if (ui.y + ui.height > pt.y)
+			{
+				pt.y = ui.y + ui.height;
+			}
 		}
+		//trace(pt);
+		return pt;
 		/*
 		var current:UIInputTfCore = inputs.get(tabOrder[0]);
 		var tmp:UIInputTfCore = current;

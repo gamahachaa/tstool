@@ -1,5 +1,7 @@
 package tstool.layout;
 import flixel.FlxSprite;
+import tstool.process.ActionLoop;
+import tstool.process.DescisionLoop;
 
 /**
  * ...
@@ -64,6 +66,20 @@ class History
 	public function onStepBack()
 	{
 		var last = history.pop();
+		var lastObject = Type.resolveClass( last.processName);
+		//trace(Type.getSuperClass(lastObject) == DescisionLoop,Std.is(lastObject, DescisionLoop), Std.isOfType(lastObject, DescisionLoop), " = is instance of descision loop ", last);
+		
+		if (Type.getSuperClass(lastObject) == DescisionLoop || Type.getSuperClass(lastObject) == ActionLoop)
+		{
+			last = history.pop();
+			lastObject = Type.resolveClass( last.processName);
+		} 
+		return Type.createInstance( lastObject, [] );
+	}
+	public function twoStepsBack()
+	{
+		var last = history.pop();
+		last = history.pop();
 		return Type.createInstance( Type.resolveClass( last.processName), [] );
 	}
 	public function getIterations(processName:String, ?interaction:Interactions):Int
@@ -106,6 +122,18 @@ class History
 		for ( i in history )
 		{
 			if (interaction == i.interaction && i.processName == processName )
+			{
+				return true;
+			}
+
+		}
+		return false;
+	}
+	public function isProcessInHistory(processName:String)
+	{
+		for ( i in history )
+		{
+			if (i.processName == processName )
 			{
 				return true;
 			}

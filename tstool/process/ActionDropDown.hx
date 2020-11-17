@@ -22,9 +22,8 @@ class ActionDropDown extends Action
 	}
 	override public function create()
 	{
-		
 		super.create();
-		dp = new FlxUIDropDownMenu(this._padding, this.question.y + this.question.height + _padding, choiceList, function(e){  choice = e; });
+		dp = new FlxUIDropDownMenu(this._padding, this.question.y + this.question.height + _padding, choiceList, function(e){  choice = e; }, new FlxUIDropDownHeader(320));
 		add( dp );
 	}
 	override public function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void

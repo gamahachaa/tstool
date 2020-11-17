@@ -10,16 +10,16 @@ import firetongue.FireTongue.Framework;
  */
 class Translator extends FireTongue 
 {
-	var indexFile:String;
+	
 	var folder:String;
 	
-	public function new(indexFile:String, ?folder:String="assets/locales/") 
+	public function new(?folder:String="assets/locales/") 
 	{
 		super();
 		this.folder = folder;
-		this.indexFile = indexFile;
+		
 	}
 	public function initialize(lang:String, ?callback:Void->Void= null){
-		this.init(lang, callback, false, false, folder, indexFile);
+		this.init(lang, callback, false, false, folder);
 	}
 }

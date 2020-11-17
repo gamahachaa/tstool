@@ -1,4 +1,6 @@
 package tstool.layout;
+import flixel.math.FlxPoint;
+import haxe.Exception;
 import tstool.layout.IPositionable.Direction;
 import tstool.layout.IPositionable;
 
@@ -11,12 +13,13 @@ import lime.math.Rectangle;
  */
 class Question extends FlxText implements IPositionable 
 {
+	var pt:FlxPoint;
 
 	public function new(X:Float=0, Y:Float=0, FieldWidth:Float=0, ?Text:String, Size:Int=8, EmbeddedFont:Bool=true) 
 	{
 		super(X, Y, FieldWidth, Text, Size, EmbeddedFont);
 		boundingRect = new Rectangle(this.x ,this.y, this.width, this.height);
-		
+		pt = new FlxPoint(0, 0);
 	}
 	
 	
@@ -26,41 +29,71 @@ class Question extends FlxText implements IPositionable
 	
 	function get_boundingRect():Rectangle 
 	{
+		this.boundingRect.x = this.x;
+		this.boundingRect.y = this.y;
+		this.boundingRect.width = this.width;
+		this.boundingRect.height = this.height;
 		return boundingRect;
 	}
 	
-	public function positionMe(parent:Rectangle, ?padding:Int = 4, ?positionsToParent:Array<Direction> = null):Void 
+	public function positionMe(p:Rectangle, ?padding:Int = 4, ?positionsToParent:Array<Direction> = null):FlxPoint 
 	{
 		var d:Array<Direction> = positionsToParent==null ? [bottom, left]: positionsToParent;
-		var p = parent;
-		//trace(parent);
+		//var p = parent;
+		//trace(p);
 		//trace(d);
 		switch (d[0])
 		{
 			case bottom:
+				switch(d[1])
+				{
+					case left : this.x = p.x;
+					case right : this.x = p.x + p.width + padding;
+					case bottom : throw new Exception('cant position $[d[0]} and $[d[1]}');
+					case top : throw new Exception('cant position $[d[0]} and $[d[1]}');
+					//this.x  = p.x + (d[1] == right ? p.width + padding : 0);
+					
+				}
+				this.y = p.y + p.height ;
 				//trace("bottom");
-				//trace(d[1] == right? "right":"left");
-				this.x  = p.x + (d[1] == right ? p.width + padding : 0);
-				this.y = p.y + p.height /*+ (padding / 4)*/;
-				
 			case top :
-				//trace("top");
-				this.x  = p.x + (d[1] == right ? p.width + padding: 0);
+				switch(d[1])
+				{
+					case left : this.x = p.x;
+					case right : this.x = p.x + p.width + padding;
+					case bottom : throw new Exception('cant position $[d[0]} and $[d[1]}');
+					case top : throw new Exception('cant position $[d[0]} and $[d[1]}');
+					
+					
+				}
 				this.y = p.y;
-				
+				//trace("top");
 			case left:
-				//trace("left");
+				switch(d[1])
+				{
+					case bottom: this.y = p.height + p.y + padding ;
+					case top : this.y = p.y;
+					case left : throw new Exception('cant position $[d[0]} and $[d[1]}');
+					case right : throw new Exception('cant position $[d[0]} and $[d[1]}');
+				}
 				this.x  =  p.x ;
-				this.y =  p.y + (d[1] == top ? 0 : p.height + padding) ;
+				//this.y =  p.y + (d[1] == top ? 0 : p.height + padding) ;
 				//inputtextfield.y = this.imputLabel.y + this.imputLabel.height;
 			case right:
-				//trace("right");
+				switch(d[1])
+				{
+					case bottom: this.y = p.height + p.y + padding ;
+					case top : this.y = p.y;
+					case left : throw new Exception('cant position $[d[0]} and $[d[1]}');
+					case right : throw new Exception('cant position $[d[0]} and $[d[1]}');
+				}
 				this.x  = p.x + p.width + padding;
-				this.y =  p.y + (d[1] == top ? 0 : p.height + padding );
+				//this.y =  p.y + (d[1] == top ? 0 : p.height + padding );
 
 		}
-		this.boundingRect.x = this.x;
-		this.boundingRect.y = this.y;
+		pt.x = boundingRect.x + boundingRect.width;
+		pt.y = boundingRect.y + boundingRect.height;
+		return pt;
 	}
 	
 }

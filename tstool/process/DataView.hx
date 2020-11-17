@@ -91,6 +91,12 @@ class DataView extends ClosableSubState
 	}
 	function simplifyString(s:String)
 	{
+		var tmp = [];
+		if (s.indexOf("\n") > 0)
+		{
+			tmp = s.split("\n");
+			s = tmp[0];
+		}
 		if (s.length >= FlxG.width - padding )
 		{
 			var tmp = s.substr(0,  FlxG.width - padding).split(" ");

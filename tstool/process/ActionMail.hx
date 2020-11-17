@@ -1,13 +1,16 @@
 package tstool.process;
 import Main;
 import flixel.FlxG;
-import tstool.layout.SaltColor;
-import lime.utils.Assets;
-import openfl.text.TextField;
-import openfl.text.TextFieldType;
-import openfl.text.TextFormat;
+import flixel.math.FlxPoint;
+//import openfl.events.FocusEvent;
+import tstool.layout.BIGUIInputTfCore;
+//import tstool.layout.SaltColor;
+//import lime.utils.Assets;
+//import openfl.text.TextField;
+//import openfl.text.TextFieldType;
+//import openfl.text.TextFormat;
 import tstool.salt.SOTickets;
-import tstool.utils.Csv;
+//import tstool.utils.Csv;
 import tstool.utils.Mail;
 import tstool.utils.SwiftMailWrapper;
 /**
@@ -19,11 +22,16 @@ class ActionMail extends Action
 	var memoDefault:String;
 	var mail:Mail;
 	var ticket:SOTickets;
-	var tf:TextField;
-	public function new(ticket: SOTickets)
+	//var tf:TextField;
+	var hasFocus:Bool;
+	var memoTxtArea:tstool.layout.BIGUIInputTfCore;
+	var resolved:Bool;
+	var verfifyContctNumber:String;
+	public function new(ticket: SOTickets, ?resolved:Bool=false)
 	{
 		super();
 		this.ticket = ticket;
+		this.resolved = resolved;
 		//mail = new Mail(ticket, this);
 		#if debug
 		//trace(ticket);
@@ -32,51 +40,52 @@ class ActionMail extends Action
 	}
 	override public function create()
 	{
-		var textFieldFormat:TextFormat = new TextFormat(Assets.getFont("assets/fonts/Lato-Regular.ttf").name, 12, 0);
+		
 		/*///// Cycle time //////
 		var eta = translate("cycleTime", "UI1", "meta");
 		eta = StringTools.replace(eta, "<X>", prepareCycleTime());
 		////////////////////////*/
+
+		hasFocus = false;
+		verfifyContctNumber = translate("verifiyContactDetails", "UI1", "meta");
+		//trace(verfifyContctNumber);
 		memoDefault = translate("describeIssue", "UI1", "meta");
-		tf = new TextField();
-		tf.multiline = true;
-		tf.type = tf.type = TextFieldType.INPUT;
-		//tf.autoSize = TextFieldAutoSize.LEFT;
-		tf.width = 500;
-		tf.height = 50;
-		tf.wordWrap = true;
-		//tf.textWidth = 500;
-		tf.backgroundColor = SaltColor.WHITE;
-		tf.textColor = SaltColor.BLACK;
-		tf.text = memoDefault;
-		tf.border = true;
-		tf.borderColor = SaltColor.BLACK;
-		tf.background = true;
-		tf.defaultTextFormat = textFieldFormat;
-		// special Texfield  positioning
-		FlxG.addChildBelowMouse( tf );
-		//
-		tf.x = 10;
-		tf.y = 10;
-		//if(Main.DEBUG) _detailTxt += '\n- $eta'; // en test seulement pour l'instant
-		_detailTxt += prepareHistory();
-		mail = new Mail(ticket, this);
+		memoTxtArea = new BIGUIInputTfCore(750, 50, memoDefault, [bottom, left]);
+		memoTxtArea.inputtextfield.text = "CONTACT: " + Main.customer.contract.mobile + " ";
+		
+		//_detailTxt += verfifyContctNumber + prepareHistory();
+		_detailTxt = verfifyContctNumber + _detailTxt + prepareHistory();
+		//details.textField.html = true;
+		//_detailTxt += "FAUCK";
+		mail = new Mail(ticket, this, resolved);
+		
 		super.create();
-		
-		//FlxG.keys.preventDefaultKeys = [ FlxKey.TAB];
+		//this.details.text = verfifyContctNumber + "\n" + this._detailTxt;
 		this.question.text += "\n" + ticket.desc;
+		this.details.textField.htmlText = _detailTxt;
 		
+		memoTxtArea.addToParent(this);
 	}
-	override function positionThis(?detailsTop:Float = 0)
+	override function positionThis(?offSet:FlxPoint)
 	{
 		super.positionThis();
-		this.tf.x = this.question.x;
-		this.tf.y = this.question.y + this.question.height + (this._padding*2);
+		var r = this.question.boundingRect;
+		//r.height = r.height  + _padding;
+		var p = this.memoTxtArea.positionMe(r, _padding);
+		positionBottom(p);
+		positionButtons(p);
+		
+
 	}
+	override public function setStyle()
+	{
+		super.setStyle();
+		memoTxtArea.setStyle();
+	}
+	
 	function onMailError(parameter0:Dynamic):Void
 	{
 		closeSubState();
-		//openSubState(new DataView(0xEE000000, this._name, "\n\nCould not create the ticket !!!\n\nPlease do a print screen of this and send it to qook@salt.ch");
 	}
 
 	function onMailSuccess(data:Result):Void
@@ -87,7 +96,7 @@ class ActionMail extends Action
 		
 		switch data.status {
 			case "success" : super.onClick();
-			case "failed" : openSubState(new DataView(Main.THEME.bg, this._name, '\n\nCould not create the ticket !!!\n\nPlease do a print screen of this and send it to qook@salt.ch\n+${data.error} (${data.additional})'));
+			case "failed" : openSubState(new DataView(Main.THEME.bg, this._name, '\nFailed to create the ticket !!!\n\nPlease do a print screen of this and send it to qook@salt.ch\n+${data.error} (${data.additional}). Also make note of the steps and raise the same S.O. ${ticket.number} ticket manually '));
 		}
 	}
 
@@ -98,10 +107,24 @@ class ActionMail extends Action
 	}
 	override public function onClick()
 	{
-		tf.visible = false;
-		openSubState(new TicketSendSub(Main.THEME.bg));
-		mail.successSignal.addOnce(onMailSuccess);
-		mail.send( tf.text == memoDefault ?'': tf.text);
+		var txt = memoTxtArea.getInputedText();
+		var content = memoTxtArea.getInputedText().split(" ");
+		if (content.length < 3)
+		{
+			memoTxtArea.blink(true);
+		}
+		else{
+			memoTxtArea.inputtextfield.visible = false;
+			#if debug
+			trace(txt);
+			mail.send( txt );
+			#else
+			openSubState(new TicketSendSub(Main.THEME.bg));
+			
+			mail.successSignal.addOnce(onMailSuccess);
+			mail.send( txt );
+			#end
+		}
 	}
 	function prepareHistory()
 	{
@@ -116,6 +139,7 @@ class ActionMail extends Action
 		#end
 		return t;
 	}
+	/*
 	function prepareCycleTime()
 	{
 		var lang = Main.user.mainLanguage == null ? "EN" : Main.user.mainLanguage.split("-")[1];
@@ -123,10 +147,20 @@ class ActionMail extends Action
 		var csv:Csv = new Csv(Assets.getText("assets/data/20200402_CycleTimeExpectedNextWeek_BB.csv"), ";", false);
 		var cycleTime = csv.dict.exists(this.ticket.queue) ? csv.dict.get(this.ticket.queue).get(lang) : "";
 		return cycleTime ;
-	}
+	}*/
 	override public function destroy()
     {
 		super.destroy();
 		this.mail = null;
 	}
+	override public function update(elapsed)
+	{
+		super.update(elapsed);
+		if (FlxG.keys.justReleased.BACKSPACE)
+		{
+			memoTxtArea.clearText();
+		}
+	
+	}
+	
 }

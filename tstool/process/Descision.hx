@@ -64,14 +64,9 @@ class Descision extends Process
 		btnNo.updateHitbox();
 		positionThis();
 	}
-	function positionThis(?detailsTop:Float = 0)
+	function positionThis(?offSet:FlxPoint)
 	{
-		btnNo.x = FlxG.width /3 + _padding;
-		btnYes.x = 2*FlxG.width / 3;
-
-		btnNo.y = btnYes.y = this.question.y + this.question.height + (_padding * 2);
-		
-		positionMain( Math.max(btnYes.y + btnYes.height + _padding, detailsTop )) ;
+		positionMain( [btnNo,btnYes] , offSet) ;	
 	}
 	override public function setStyle()
 	{

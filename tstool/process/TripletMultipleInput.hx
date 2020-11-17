@@ -71,32 +71,25 @@ class TripletMultipleInput extends Triplet
 		super.setStyle();
 		multipleInputs.setStyle();
 	}
-		override function positionThis()
+	override function positionThis()
 	{
 		super.positionThis();
-		multipleInputs.positionThis();
+		//trace(this.question.height);
+		var p = multipleInputs.positionThis();
+		//positionButtons(p);
+		positionBottom(p);
 	}
 	override function pushToHistory( buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>= null)
 	{
-		//var inputDisplay = singleInput.uiInput.getInputedText().length>0?" (" + singleInput.uiInput._label + " " + singleInput.uiInput.getInputedText() + ")":"";
-		//super.pushToHistory( buttonTxt + inputDisplay, interactionType,  [inputPrefix => singleInput.uiInput.getInputedText()]);
-		//var m:Map<String, Dynamic> = new Map<String, Dynamic>();
 		
-		//var inputDisplay = [for (i in inputs) i.input.prefix];
-		//var inputValues = [for (k=>v in multipleInputs.inputs) k => v.getInputedText()];
-
-		super.pushToHistory( buttonTxt, interactionType, [for (k=>v in multipleInputs.inputs) k => v.getInputedText()]);
+		super.pushToHistory( buttonTxt, interactionType, values== null ? [for (k=>v in multipleInputs.inputs) k => v.getInputedText()]: values);
 	}
 	override public function onYesClick():Void
 	{
-		//#if debug
-		//super.onYesClick(); // test only
-		//#else
 		if (validateYes())
 		{
 			super.onYesClick();
 		}
-		//#end
 	}
 	override public function onNoClick():Void
 	{
@@ -127,29 +120,30 @@ class TripletMultipleInput extends Triplet
 	 */
 	function validateYes()
 	{
-		return validate();
+		return validate(Yes);
 	}
 	/**
 	 * Override by final child if need different behaviour based on the fields content
 	 */
 	function validateNo()
 	{
-		return validate();
+		return validate(No);
 	}
 	/**
 	 * Override by final child if need different behaviour based on the fields content
 	 */
 	function validateMid()
 	{
-		return validate();
+		return validate(Mid);
 	}
-	function validate()
+	function validate(interaction:Interactions)
 	{
 		var inp:UIInputTfCore = null;
 		for ( i in this.inputs)
 		{
 			//trace(i);
 			if (i.ereg == null) continue;
+			if (i.input.mustValidate != null && i.input.mustValidate.indexOf(interaction) == -1) continue;
 			inp = this.multipleInputs.inputs.get(i.input.prefix);
 			if (!i.ereg.match(inp.getInputedText()))
 			{

@@ -1,13 +1,9 @@
 package tstool.process;
 import flixel.FlxG;
-import tstool.layout.History;
-//import flixel.effects.FlxFlicker;
+import flixel.math.FlxPoint;
 import flixel.util.FlxSignal.FlxTypedSignal;
-import tstool.layout.UIInputTfCore;
-import tstool.process.MultipleInput.ValidatedInputs;
-//import flixel.util.FlxSignal.FlxTypedSignal;
 import tstool.layout.History.Interactions;
-//import layout.UIInputTf;
+import tstool.layout.UIInputTfCore;
 import tstool.process.MultipleInput;
 
 /**
@@ -16,20 +12,14 @@ import tstool.process.MultipleInput;
  */
 class DescisionMultipleInput extends Descision
 {
-	//var yesValidator:EReg;
-	//var noValidator:EReg;
-	//var singleInput:process.SingleInput;
-	//var textFieldWidth:Int;
-	//var inputPrefix:String;
-	// new
-	var inputs:Array<ValidatedInputs>;
+	
+	var inputs:Array<tstool.process.MultipleInput.ValidatedInputs>;
 	var multipleInputs:MultipleInput;
-	//var itetateme:Iterator<UIInputTfCore>;
-	//var _focus:UIInputTfCore;
+
 
 	public var yesValidatedSignal(get, null):FlxTypedSignal<Bool->Void>;
 	public var noValidatedSignal(get, null):FlxTypedSignal<Bool->Void>;
-	public function new(inputs:Array<ValidatedInputs>)
+	public function new(inputs:Array<tstool.process.MultipleInput.ValidatedInputs>)
 	{
 		super();
 		this.inputs = inputs;
@@ -96,14 +86,17 @@ class DescisionMultipleInput extends Descision
 			noValidatedSignal.dispatch(false);
 		//#end
 	}
-	override function positionThis(?detailsTop:Float = 0)
+	override function positionThis(?offSet:FlxPoint)
 	{
-		//super.positionThis();
-		multipleInputs.positionThis();
-		var last:UIInputTfCore = multipleInputs.inputs.get( inputs[inputs.length - 1].input.prefix ); // @todo AU SECOURS !!!
-		super.positionThis(last.y + last.height + _padding);
+		super.positionThis();
+		var p = multipleInputs.positionThis();
+		//trace(p);
+		positionBottom(p);
+		positionButtons(p);
+		
+		//var last:UIInputTfCore = multipleInputs.inputs.get( inputs[inputs.length - 1].input.prefix ); // @todo AU SECOURS !!!
 	}
-	override function pushToHistory( buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null)
+	override function pushToHistory( buttonTxt:String, interactionType:tstool.layout.History.Interactions,?values:Map<String,Dynamic>=null)
 	{
 		super.pushToHistory( buttonTxt, interactionType, [for (k=>v in multipleInputs.inputs) k => v.getInputedText()]);
 	}
@@ -116,27 +109,29 @@ class DescisionMultipleInput extends Descision
 	 */
 	public function validateYes():Bool
 	{
-		return validate();
+		return validate(Yes);
 	}
 	/**
 	 * Override by final child if need different behaviour based on the fields content
 	 */
 	public function validateNo():Bool
 	{
-		return validate();
+		return validate(No);
 	}
-	function validate():Bool
+	function validate(interaction:Interactions):Bool
 	{
-		#if debug
-		trace("DescisionMultipleInput.validate");
-		#end
+		//#if debug
+		//trace("DescisionMultipleInput.validate");
+		//return true;
+		//#else
 		var inp:UIInputTfCore = null;
 		for ( i in this.inputs)
 		{
 			#if debug
-			trace(i);
+			//trace(i);
 			#end
 			if (i.ereg == null) continue;
+			if (i.input.mustValidate != null && i.input.mustValidate.indexOf(interaction) == -1) continue;
 			inp = this.multipleInputs.inputs.get(i.input.prefix);
 			if (!i.ereg.match(inp.getInputedText()))
 			{
@@ -145,6 +140,7 @@ class DescisionMultipleInput extends Descision
 			}
 		}
 		return true;
+		//#end
 	}
 	function get_yesValidatedSignal():FlxTypedSignal<Bool->Void>
 	{

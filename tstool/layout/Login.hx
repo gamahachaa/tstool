@@ -229,10 +229,17 @@ class Login extends FlxState
 	function ondata(data:String)
 	{
 		#if debug
-			Main.user = dummyAgent;
-			Main.COOKIE.data.user = Main.user;
-			Main.COOKIE.flush();
-			Main.MOVE_ON(); // launch APP
+			trace("tstool.layout.Login::ondata");
+			if (!Main.DEBUG){
+				
+				Main.user = dummyAgent;
+				Main.COOKIE.data.user = Main.user;
+				Main.COOKIE.flush();
+				Main.MOVE_ON(); // launch APP
+			}
+			
+			trace("tstool.layout.Login::ondata::",Main.user);
+
 		#else
 		var d = Json.parse(data);
 		
@@ -262,7 +269,9 @@ class Login extends FlxState
 	//}
 	function onSubmit()
 	{
+		
 		#if debug
+		trace("tstool.layout.Login::onSubmit");
 		ondata("");
 		#else
 		pwdTxtInfo.text = "";
@@ -285,6 +294,7 @@ class Login extends FlxState
 		loginUrl.onStatus = onStatus;
 
 		loginUrl.request(true);
+		
 		//u.request(true);
 		#end
 	}

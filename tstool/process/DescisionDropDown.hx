@@ -20,7 +20,6 @@ class DescisionDropDown extends Descision
 	}
 	override public function create()
 	{
-		
 		super.create();
 		dp = new FlxUIDropDownMenu(this._padding, this.question.y + this.question.height + _padding, choiceList, function(e){  choice = e; });
 		add( dp );

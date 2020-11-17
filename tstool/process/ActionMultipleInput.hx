@@ -1,5 +1,6 @@
 package tstool.process;
 import flixel.FlxG;
+import flixel.math.FlxPoint;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import tstool.layout.UIInputTfCore;
 import tstool.layout.History.Interactions;
@@ -61,13 +62,15 @@ class ActionMultipleInput extends Action
 			nextValidatedSignal.dispatch(false);
 
 	}
-	override function positionThis(?detailsTop:Float = 0)
+	override function positionThis(?offSet:FlxPoint)
 	{
 		//super.positionThis();
 		//multipleInputs.positionThis();
-		multipleInputs.positionThis();
-		var last:UIInputTfCore = multipleInputs.inputs.get( inputs[inputs.length - 1].input.prefix ); // @todo AU SECOURS !!!
-		super.positionThis(last.y + last.height + _padding);
+		//var last:UIInputTfCore = multipleInputs.inputs.get( inputs[inputs.length - 1].input.prefix ); // @todo AU SECOURS !!!
+		super.positionThis();
+		var p = multipleInputs.positionThis();
+		positionButtons(p);
+		positionBottom(p);
 
 	}
 	override public function setStyle()
@@ -93,6 +96,7 @@ class ActionMultipleInput extends Action
 			//trace(i);
 			
 			if (i.ereg == null) continue;
+			//if (i.input.mustValidate != null && i.input.mustValidate.indexOf(interaction) == -1) continue;
 			inp = this.multipleInputs.inputs.get(i.input.prefix);
 			inp.blink(false);
 			if (!i.ereg.match(inp.getInputedText()))

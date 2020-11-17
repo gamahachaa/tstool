@@ -3,6 +3,7 @@ package tstool.utils;
 import haxe.Http;
 import js.Browser;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import js.html.HTMLCollection;
 /**
  * ...
  * @author bb
@@ -20,8 +21,25 @@ class VersionTracker extends Http
 		this.onData = ondata;
 		this.onError = onerror;
 		this.onStatus = onstatus;
+		#if debug
 		reg = ~/^\.\/nointernet_(\d{8}_\d{6}).js$/;
-		scriptFileVersion = Browser.document.getElementsByTagName("script")[0].attributes.getNamedItem('src').nodeValue;
+		#else
+		reg = ~/^\.\/nointernet_(\d{8}_\d{6}).min.js$/;
+		#end
+		var scripts:HTMLCollection = Browser.document.getElementsByTagName("script");
+		//trace(scripts.length);
+		for (i in 0...scripts.length){
+			//trace(scripts[i]);
+			//trace(scripts[i].attributes.getNamedItem('src'));
+			if (scripts[i].attributes.getNamedItem('src') != null && scripts[i].attributes.getNamedItem('src').nodeValue.indexOf("./nointernet_") == 0)
+			{
+				//trace(scripts[i].attributes.getNamedItem('src').nodeValue);
+				scriptFileVersion = scripts[i].attributes.getNamedItem('src').nodeValue;
+			}
+			
+		}
+		
+		//scriptFileVersion = Browser.document.getElementsByTagName("script")[0].attributes.getNamedItem('src').nodeValue;
 		if (reg.match(scriptFileVersion))
 		{
 			Main.VERSION = reg.matched(1);

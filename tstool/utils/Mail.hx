@@ -48,16 +48,18 @@ class Mail
 	@:isVar public var successSignal(get, set):FlxTypedSignal<Result->Void>;
 	@:isVar public var statusSignal(get, set):FlxTypedSignal<Int->Void>;
 	@:isVar public var errorSignal(get, set):FlxTypedSignal<Dynamic->Void>;
+	static inline var PHP_MAIL_PATH:String = "php/mail/index.php";
+	var resolved:Bool;
 
 	//@:isVar public var params(get, set):haxe.ds.Map<Parameters,Dynamic>;
 
-	public function new(ticket:SOTickets, currentProcess:Process, ?phpMailPath:String = "php/mail/index.php")
+	public function new(ticket:SOTickets, currentProcess:Process, ?resolved:Bool= false)
 	{
 		_ticket = ticket;
-		
+		this.resolved = resolved;
 		//_mailSubject = ticket.desc;
 		_currentProcess = currentProcess;
-		mailWrapper = new SwiftMailWrapper(Browser.location.origin + Browser.location.pathname + phpMailPath);
+		mailWrapper = new SwiftMailWrapper(Browser.location.origin + Browser.location.pathname + PHP_MAIL_PATH);
 		_mailBody = mailWrapper.setCommonStyle();
 		successSignal = mailWrapper.successSignal;
 		statusSignal = mailWrapper.statusSignal;
@@ -68,7 +70,10 @@ class Mail
 		
 		#if debug
 		//params.set(to_email, "superofficetest@salt.ch"); // Test on cs-sit.test
-		mailWrapper.setTo(["bruno.baudry@salt.ch"]);
+		//mailWrapper.setTo(["bruno.baudry@salt.ch"]);
+		mailWrapper.setTo(["superofficetest@salt.ch"]);
+		mailWrapper.setCc(['${Main.user.iri}']);
+		mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
 		//mailWrapper.setTo(["superofficetest@salt.ch"]);
 		//mailWrapper.setCc(['${Main.user.iri}']);
 		//mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
@@ -79,9 +84,10 @@ class Mail
 		if (Main.DEBUG)
 		{
 			
-			mailWrapper.setTo(["bruno.baudry@salt.ch"]);
-			//mailWrapper.setTo(["superofficetest@salt.ch"]);
+			//mailWrapper.setTo(["bruno.baudry@salt.ch"]);
+			mailWrapper.setTo(["superofficetest@salt.ch"]);
 			mailWrapper.setCc(['${Main.user.iri}']);
+			mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
 			//mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
 		}
 		else
@@ -129,6 +135,9 @@ class Mail
 	{
 		// test GIT DEV
 		var _queue = "";
+		var isResolved = resolved?"[RESOLVED]":"";
+		
+		
 		#if debug
 			//_queue =_ticket.queue + "_EN" ;
 			_queue =_ticket.queue + "_"; // Nico change 24.03.2020
@@ -137,12 +146,13 @@ class Mail
 			_queue =_ticket.queue + "_"; // Nico change 25.03.2020
 		#end
 		_mailSubject = _ticket.domain + "-" + _ticket.number + " " + _ticket.desc;
+		
 		//params.set(subject, '[${Main.customer.voIP}][$_queue] $_mailSubject' );
 		if(Main.DEBUG)
 			//mailWrapper.setSubject('[${Main.customer.voIP}][$_queue][${Main.user.sAMAccountName}] $_mailSubject' );
-			mailWrapper.setSubject('[${Main.customer.voIP}][$_queue][sgiardie] $_mailSubject' );
+			mailWrapper.setSubject('[${Main.customer.voIP}][$_queue][${Main.user.sAMAccountName}]$isResolved $_mailSubject' );
 		else
-			mailWrapper.setSubject('[${Main.customer.voIP}][$_queue][${Main.user.sAMAccountName}] $_mailSubject' );
+			mailWrapper.setSubject('[${Main.customer.voIP}][$_queue][${Main.user.sAMAccountName}]$isResolved $_mailSubject' );
 	}
 
 	public function send(memo:String= "")
@@ -159,7 +169,11 @@ class Mail
 			//if (Main.DEBUG) trace(key, value);
 		//}
 		// do not create ticket in training mode
+		#if debug
+		trace("<body>" + _mailBody + "</body>");
+		#else
 		mailWrapper.send(Main.user.canDispach);
+		#end
 		
 	}
 	function buildCustomerBody(memo:String= "")
@@ -179,6 +193,7 @@ class Mail
 			b += '</h2>';
 			if(Main.customer.contract.owner != null && Main.customer.contract.owner.name !="")
 				b += '<h3>${Main.customer.contract.owner.name}</h3>';
+			
 			if (Main.customer.shipingAdress != null && Main.customer.shipingAdress._zip != "")
 			{
 				//b += "<h4>Adress :</h4>";
@@ -240,7 +255,7 @@ class Mail
 		var englishLst = "";
 		for (h in histroryArray)
 		{
-			historyList += '<li>${h.step} &rarr; <strong>${h.interaction}</strong> ${h.values}</li>';
+			historyList += '<li>${h.step} _ <strong>${h.interaction}</strong> ${h.values}</li>';
 			
 		}
 		historyList += "<li><strong>"+_currentProcess.question.text +"</strong></li>";
@@ -252,7 +267,8 @@ class Mail
 			for (i in englishHistroryArray)
 			{
 				
-				englishLst += '<li>${i.step} &rarr; <strong>${i.interaction}</strong> ${i.values}</li>';
+				//englishLst += '<li>${i.step} &rarr; <strong>${i.interaction}</strong> ${i.values}</li>';
+				englishLst += '<li>${i.step} _ <strong>${i.interaction}</strong> ${i.values}</li>';
 			}
 		}
 		/*

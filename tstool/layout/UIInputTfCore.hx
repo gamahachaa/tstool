@@ -1,6 +1,8 @@
 package tstool.layout;
 
 //import tstool.layout.UIInputTfCore;
+import flixel.math.FlxPoint;
+import haxe.Exception;
 import tstool.layout.IPositionable.Direction;
 import tstool.layout.SaltColor;
 import flixel.FlxG;
@@ -39,10 +41,14 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 	public var boundingRect(get, null):Rectangle;
 	//
 	static var textFieldFormat:TextFormat;
+	var pt:FlxPoint;
 	//
+	//public function new(textFieldWidth:Int, inputPrefix:String, positionsToParent:Array<Direction>, ?inpuHeight:Int=20)
 	public function new(textFieldWidth:Int, inputPrefix:String, positionsToParent:Array<Direction>)
 	{
+		var inpuHeight:Int = 20;
 		if (textFieldFormat == null) textFieldFormat = new TextFormat(Assets.getFont("assets/fonts/JetBrainsMono-Regular.ttf").name, 13);
+		pt = new FlxPoint(0, 0);
 		focusSignal = new FlxTypedSignal<UIInputTfCore->Void>();
 		this.positionsToParent = positionsToParent;
 		//var dummy:UIInputTf = null;
@@ -54,7 +60,7 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 
 		//inputtextfield = new FlxInputText(0, 0, textFieldWidth, 14);
 		inputtextfield = new TextField();
-		inputtextfield.height = 20;
+		inputtextfield.height = inpuHeight;
 		inputtextfield.width = textFieldWidth;
 		inputtextfield.addEventListener(MouseEvent.CLICK, onClick);
 
@@ -81,46 +87,71 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 	}
 	//public function positionMe(parent:Rectangle, ?padding:Int=20, ?direction:Direction=null)
 	//public function positionMe(parent:Rectangle, ?padding:Int=20, ?directions:Array<Direction>=null)
-	public function positionMe(parent:Rectangle, ?padding:Int=4, ?directions:Array<Direction>=null):Void
+	public function positionMe(p:Rectangle, ?padding:Int=4, ?directions:Array<Direction>=null):FlxPoint
 	{
 		
 		//trace(parent);
 		//trace(parent.y + parent.height + (padding / 4));
 		var d:Array<Direction> = directions == null ? this.positionsToParent : directions;
-		var p = parent;
+		//var p:Rectangle = parent;
 		//trace(parent);
 		//trace(d);
 		switch (d[0])
 		{
 			case bottom:
-				//trace("bottom");
-				//trace(d[1] == right? "right":"left");
-				inputtextfield.x  = imputLabel.x = p.x + (d[1] == right ? p.width + (padding/4): 0);
-				imputLabel.y = p.y + p.height /*+ (padding / 4)*/;
-				inputtextfield.y = this.imputLabel.y + this.imputLabel.height;
+				switch(d[1])
+				{
+					case left : imputLabel.x = p.x;
+					case right : imputLabel.x = p.x + p.width + padding;
+					case bottom : throw new Exception('cant position $[d[0]} and $[d[1]}');
+					case top : throw new Exception('cant position $[d[0]} and $[d[1]}');
+				}
+				//inputtextfield.x  = imputLabel.x = p.x + (d[1] == right ? p.width + (padding/4): 0);
+				imputLabel.y = p.y + p.height + padding;
+				
 			case top :
-				//trace("top");
-				inputtextfield.x  = imputLabel.x = p.x + (d[1] == right ? p.width + (padding/4): 0);
+				switch(d[1])
+				{
+					case left : imputLabel.x = p.x;
+					case right : imputLabel.x = p.x + p.width + padding;
+					case bottom : throw new Exception('cant position $[d[0]} and $[d[1]}');
+					case top : throw new Exception('cant position $[d[0]} and $[d[1]}');
+				}
 				imputLabel.y = p.y;
-				inputtextfield.y = this.imputLabel.y + this.imputLabel.height;
+				
 			case left:
-				//trace("left");
-				inputtextfield.x  = imputLabel.x = parent.x - Math.max(inputtextfield.width, imputLabel.width ) + (padding/2);
-				imputLabel.y = (d[1] == top ? 0 : p.height + (padding/2) ) + p.y;
-				inputtextfield.y = this.imputLabel.y + this.imputLabel.height;
+				switch(d[1])
+				{
+					case bottom: imputLabel.y = p.height + p.y + padding ;
+					case top : imputLabel.y = p.y;
+					case left : throw new Exception('cant position $[d[0]} and $[d[1]}');
+					case right : throw new Exception('cant position $[d[0]} and $[d[1]}');
+				}
+				imputLabel.x = p.x - Math.max(inputtextfield.width, imputLabel.width ) + padding ;
+				
 			case right:
-				//trace("right");
-				inputtextfield.x  = imputLabel.x = parent.x + p.width + (padding/4);
-				imputLabel.y = (d[1] == top ? 0 : p.height + (padding/2) ) + p.y;
-				inputtextfield.y = this.imputLabel.y + this.imputLabel.height;
+				switch(d[1])
+				{
+					case bottom: imputLabel.y = p.height + p.y + padding ;
+					case top : imputLabel.y = p.y;
+					case left : throw new Exception('cant position $[d[0]} and $[d[1]}');
+					case right : throw new Exception('cant position $[d[0]} and $[d[1]}');
+				}
+				imputLabel.x = p.x + p.width + padding ;
+				
 
 		}
+		
+		inputtextfield.y = this.imputLabel.y + this.imputLabel.height;
+		inputtextfield.x  = imputLabel.x;
+		
 		this.boundingRect.x = this.imputLabel.x;
 		this.boundingRect.y = this.imputLabel.y;
 		this.boundingRect.width = Math.max(this.imputLabel.width, this.inputtextfield.width);
 		this.boundingRect.height = this.imputLabel.height + this.imputLabel.height;
-		//trace(this.boundingRect);
-		//trace("---");
+		pt.x = boundingRect.x + boundingRect.width;
+		pt.y = boundingRect.y + boundingRect.height;
+		return pt; 
 	}
 	function onPaste(e: ClipboardEvent):Void
 	{

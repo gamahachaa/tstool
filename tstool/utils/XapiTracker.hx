@@ -66,11 +66,17 @@ class XapiTracker
 	{
 		//setVerb("resolved");
 		var steps = "";
+		var step = "";
+		var interaction = "";
 		var values = "";
 		var h = Main.HISTORY.getStoredStepsTranslatedArray();
 		for (i in h)
 		{
-			steps += '${i.step}|${i.interaction}£';
+			step = StringTools.replace(i.step, "\n", " ");
+			interaction = StringTools.replace(i.interaction, "\n", " ");
+			step = StringTools.replace(i.step, "\r", " ");
+			interaction = StringTools.replace(i.interaction, "\r", " ");
+			steps += '$step|$interaction£';
 		}
 		for (j in h)
 		{

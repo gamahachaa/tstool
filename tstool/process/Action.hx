@@ -39,11 +39,12 @@ class Action extends Process
 		add(btn);
 		positionThis();
 	}
-	function positionThis(?detailsTop:Float = 0)
+	function positionThis(?offSet:FlxPoint)
 	{
-		btn.x =  2*FlxG.width / 3 + _padding;
-		btn.y = this.question.y + this.question.height + (_padding * 2);
-		positionMain( Math.max(btn.y + btn.height + _padding, detailsTop) );
+		
+		positionMain( [btn], offSet );
+		//btn.x =  2*FlxG.width / 3 + _padding;
+		//btn.y = this.question.y + this.question.height + _padding ;
 
 		//btn.y = (this.illustration == null ? this.details.y + this.details.height :  Math.max( this.details.y + this.details.height, this.illustration.y + this.illustration.height)) + _padding;
 		//btn.x = FlxG.width /2;
