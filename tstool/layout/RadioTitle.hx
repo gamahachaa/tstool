@@ -27,16 +27,16 @@ class RadioTitle extends FlxGroup implements IPositionable
 	var pt:FlxPoint;
 	var width:Int;
 	
-	public function new(title:String, ids:Array<String>, ?padding:Int = 20) 
+	public function new(title:String, ids:Array<String>, ?labels:Array<String>, ?padding:Int = 20) 
 	{
 		super();
-		width = setWidth(title, ids);
+		width = setWidth(title, labels==null?ids:labels);
 		changeSignal = new FlxTypedSignal<String->String->Void>();
 		pt = new FlxPoint(0, 0);
 		//this.status = status;
 		this.padding = padding;
 		titleUI = new FlxText(0, 0, width , title, TITLE_SIZE);
-		rd = new FlxUIRadioGroup(0, 0, ids, ids, callback, 25, width, 25, width);
+		rd = new FlxUIRadioGroup(0, 0, ids, labels==null?ids:labels, callback, 20, width, 25, width);
 		rd.set_width(width);
 		updateRadioText();
 		this.boundingRect = new Rectangle();
@@ -94,7 +94,7 @@ class RadioTitle extends FlxGroup implements IPositionable
 	{
 		if (start)
 		{
-			FlxFlicker.flicker(titleUI, 0, .1);
+			FlxFlicker.flicker( titleUI, 0, .3);
 		}
 		else
 		{
@@ -112,12 +112,13 @@ class RadioTitle extends FlxGroup implements IPositionable
 	}
 	function setWidth( s:String, a:Array<String>)
 	{
-		var w = s.length > 14 ? s.length * 8: 110;
+		//trace(s.length);
+		var w = s.length > TITLE_SIZE ? s.length * TITLE_SIZE: 110;
 		for(i in a)
 		{
-			if (i.length * 8 > w) w = i.length * 8;
-			
+			if (i.length * RADIO_SIZE > w) w = i.length * RADIO_SIZE;
 		}
+		//trace(w);
 		return w;
 	}
 	function get_boundingRect():Rectangle 

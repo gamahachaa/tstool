@@ -174,10 +174,15 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 		//this.bgColor = Main.THEME.bg;
 		this.details.color = Main.THEME.basic;
 		this.details.applyMarkup(this.details.text, [Main.THEME.basicStrong, Main.THEME.basicEmphasis]);
+		
 		this.question.color = Main.THEME.title;
+		this.question.applyMarkup(this.question.text, [Main.THEME.basicStrong, Main.THEME.basicEmphasis]);
 		//if (hasQook)
 		this.qook.label.color = Main.THEME.meta;
 		//menu.exitBtn.label.color = Main.THEME.meta;
+		question.drawFrame();
+		details.drawFrame();
+		this.qook.label.drawFrame();
 		stringSignal.dispatch("setStyle");
 	}
 	public function showHowto(?show:Bool = true)

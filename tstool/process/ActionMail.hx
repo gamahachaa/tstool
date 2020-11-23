@@ -27,6 +27,7 @@ class ActionMail extends Action
 	var memoTxtArea:tstool.layout.BIGUIInputTfCore;
 	var resolved:Bool;
 	var verfifyContctNumber:String;
+	
 	public function new(ticket: SOTickets, ?resolved:Bool=false)
 	{
 		super();
@@ -85,11 +86,17 @@ class ActionMail extends Action
 	
 	function onMailError(parameter0:Dynamic):Void
 	{
+		#if debug
+		trace("tstool.process.ActionMail::onMailError::onMailError", parameter0 );
+		#end
 		closeSubState();
 	}
 
 	function onMailSuccess(data:Result):Void
 	{
+		#if debug
+		trace("tstool.process.ActionMail::onMailSuccess::data", data );
+		#end
 		closeSubState();
 		Main.track.setCase(this.ticket);
 		Main.track.setVerb("submitted");
@@ -116,11 +123,15 @@ class ActionMail extends Action
 		else{
 			memoTxtArea.inputtextfield.visible = false;
 			#if debug
-			trace(txt);
+			//trace(txt);
+			trace("tstool.process.ActionMail::onClick");
+			if(Main.DEBUG){
+				openSubState(new TicketSendSub(Main.THEME.bg));
+				mail.successSignal.addOnce(onMailSuccess);
+			}
 			mail.send( txt );
 			#else
 			openSubState(new TicketSendSub(Main.THEME.bg));
-			
 			mail.successSignal.addOnce(onMailSuccess);
 			mail.send( txt );
 			#end
@@ -132,7 +143,7 @@ class ActionMail extends Action
 		var t = "\n\nSummrary :\n";
 		for ( i in hist )
 		{
-			t += i.processTitle + " :: " + i.iteractionTitle + (i.values==null? "": i.values.toString()) + "\n" ;
+			t += stripTags(i.processTitle) + " :: " + i.iteractionTitle + (i.values==null? "": i.values.toString()) + "\n" ;
 		}
 		#if debug
 		//trace(t);

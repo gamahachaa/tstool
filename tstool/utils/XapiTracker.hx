@@ -18,11 +18,9 @@ class XapiTracker
 	public function new() 
 	{
 		dispatcher = new FlxTypedSignal<Bool->Void>();
-		u = new Http(Main.LOCATION.origin + Main.LOCATION.pathname+ "php/xapi/index.php");
+		u = new Http(Main.LOCATION.origin + Main.LOCATION.pathname + Main.LIB_FOLDER + "php/xapi/index.php");
 		u.async = true;
 		u.onData = onData;
-		//u.onError = onError;
-		//u.onStatus = onStatus;
 	}
 	
 	function onData(data:String) 

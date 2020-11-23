@@ -9,6 +9,7 @@ import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxSave;
+import haxe.Exception;
 //import flow.Intro;
 //import flow.TutoTree;
 //import openfl.text.TextField;
@@ -55,7 +56,7 @@ class Login extends FlxState
 		dummyAgent = cretaDummyAgent();
 		//new Agent();
 		
-		loginUrl = new Http(Main.LOCATION.origin + Main.LOCATION.pathname+ "php/login/index.php" );
+		loginUrl = new Http(Main.LOCATION.origin + Main.LOCATION.pathname + Main.LIB_FOLDER + "php/login/index.php" );
 		Main.setUpSystemDefault(false);
 		//lang =  // default
 		//trace(Main.COOKIE);
@@ -77,7 +78,7 @@ class Login extends FlxState
 			var textFieldFormat = new openfl.text.TextFormat( lime.utils.Assets.getFont("assets/fonts/Lato-Regular.ttf").name, 12, 0);
 			var testFormat:FlxTextFormat = new FlxTextFormat(SaltColor.ORANGE, true);
 			markerFormat = new FlxTextFormatMarkerPair( testFormat, "<b>");
-			var logo = new FlxSprite(0, 0, "assets/images/" + "default" + ".png");
+			var logo = new FlxSprite(0, 0, "assets/images/intro/" + "baby_shocked" + ".png");
 			var showPwd:FlxUIButton = new FlxUIButton(0, 0, "", onShowPwd);
 			showPwd.loadGraphic("assets/images/ui/showPwd.png", true, 40, 40);
 			showPwd.has_toggle = true;
@@ -144,18 +145,19 @@ class Login extends FlxState
 			pwdTxt.screenCenter();
 			
 			//pwd.screenCenter();
-			add( loginTxt );
+			
 			// special Texfield  positioning
 			FlxG.addChildBelowMouse( username );
 			//add( username );
 			FlxG.addChildBelowMouse( pwd );
 			//add( pwd );
 			//
-
+			add( logo );
+			add( loginTxt );
 			add( pwdTxt );
 			add( pwdTxtInfo  );
 
-			add( logo );
+			
 			add( showPwd );
 
 			var submitButton = new FlxButton(0, 0, "LET'S GO", onSubmit);
@@ -228,45 +230,39 @@ class Login extends FlxState
 	}
 	function ondata(data:String)
 	{
+		trace("tstool.layout.Login::ondata");
+		var d:Dynamic = {};
 		#if debug
-			trace("tstool.layout.Login::ondata");
-			if (!Main.DEBUG){
-				
-				Main.user = dummyAgent;
-				Main.COOKIE.data.user = Main.user;
-				Main.COOKIE.flush();
-				Main.MOVE_ON(); // launch APP
-			}
 			
-			trace("tstool.layout.Login::ondata::",Main.user);
-
+			d.authorized = true;
+			Main.user = dummyAgent;	
 		#else
-		var d = Json.parse(data);
-		
+		d = Json.parse(data);
+		#end
 		if (d.authorized)
 		{
-			Main.user = new Agent(d);
-			Main.COOKIE.data.user = Main.user;
-			if (Main.user.mainLanguage == null || Main.user.mainLanguage == "")
-			{
-				Main.user.mainLanguage = lang;
+			try{
+				Main.user = new Agent(d);
 			}
-			Main.COOKIE.flush();
+			catch (e: Exception)
+			{
+				trace(e.details,e.message,e.previous,e.native, e.stack);
+			}
+			#if !debug
+				
+				Main.track.setActor();
+			#else 
+				trace("tstool.layout.Login::ondata::Main.user", Main.user );
+			#end
+			
+			flushCookie();
 			Main.MOVE_ON(); // launch APP
 		}
 		else
 		{
 			pwdTxtInfo.applyMarkup ("\n\nNT login + password <b>did not match<b>.",[markerFormat]);
 		}
-		#end
 	}
-	//function moveOn(?old:Bool=false)
-	//{
-		//Main.setUpSystemDefault(true);
-		//Main.track.setActor();
-		////var next = old ? new Intro():new TutoTree();
-		////Main.tongue.init(Main.user.mainLanguage, ()->(FlxG.switchState( next )) );
-	//}
 	function onSubmit()
 	{
 		
@@ -330,5 +326,15 @@ class Login extends FlxState
 		trace(e);
 		#end
 		//pwdTxtInfo.text += "\n\n"+ e;
+	}
+	
+	function flushCookie():Void 
+	{
+		if (Main.user.mainLanguage == null || Main.user.mainLanguage == "")
+		{
+			Main.user.mainLanguage = lang;
+		}
+		Main.COOKIE.data.user = Main.user;
+		Main.COOKIE.flush();
 	}
 }

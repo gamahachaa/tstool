@@ -1,6 +1,5 @@
 package tstool.process;
 import flixel.math.FlxPoint;
-import lime.math.Rectangle;
 import tstool.layout.IPositionable;
 import tstool.layout.RadioTitle;
 
@@ -11,6 +10,7 @@ import tstool.layout.RadioTitle;
 typedef RadioDef = {
 	var title:String;
 	var values:Array<String>;
+	var ?labels:Array<String>;
 	var ?buddy:IPositionable; //@todo
 	var ?position:Array<Direction>;
 }
@@ -41,7 +41,7 @@ class ActionRadios extends Action
 		for (i in radios)
 		{
 			//r = new RadioTitle(i.title, i.values, status);
-			r = new RadioTitle(i.title, i.values);
+			r = new RadioTitle(i.title, i.values, i.labels);
 			//trace(r.boundingRect.x + r.boundingRect.width > p.x);
 			r.changeSignal.add(changeListener);
 			rds.push( r );
@@ -78,6 +78,7 @@ class ActionRadios extends Action
 	}
 	function changeListener(radioID:String, value:String)
 	{
+		//trace("tstool.process.ActionRadios::changeListener::radioID, value", radioID, value );
 		status.set(radioID, value);
 	}
 	public function validate() 

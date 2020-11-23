@@ -35,6 +35,15 @@ class History
 		history = new Array<Snapshot>();
 		//stack = new FlxSprite();
 	}
+	/**
+	 * @todo pass proceses as Class and buil only when needed (not here)
+	 * @param	process
+	 * @param	interaction
+	 * @param	title
+	 * @param	iteractionTitle
+	 * @param	values
+	 * @param	Dynamic>=nul
+	 */
 	public function add( process:String, interaction:Interactions, title:String, iteractionTitle:String, ?values:Map<String,Dynamic>=null)
 	{
 		history.push(

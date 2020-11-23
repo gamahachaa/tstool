@@ -35,7 +35,7 @@ import openfl.ui.MouseCursor;
  */
 class Process extends FlxState
 {
-	static public var STORAGE:StringMap<Dynamic> = new StringMap<Dynamic>();
+	static public var STORAGE:Map<String,Dynamic> = new Map<String,Dynamic>();
 	
 
 	var _titleTxt(default, set):String = "";
@@ -44,12 +44,13 @@ class Process extends FlxState
 	var _qook(default, set):String = "";
 	
 	public var _name(get, null):String;
+	public var _class(get, null):Class<Process>;
 	
 	var _historyTxt:String = "";
 	var _qookLink:Array<String>;
 	var hasQook:Bool;
 	var hasIllustration:Bool;
-	var hasVoip:Bool;
+	var hasReminder:Bool;
 	//var isFocused:Bool;
 	var isAnimated:Bool;
 	
@@ -70,10 +71,13 @@ class Process extends FlxState
 	{
 		super();
 		//isFocused = false;
-		_name = Type.getClassName(Type.getClass(this));
-		_titleTxt = translate(_titleTxt, "TITLE");
-		_detailTxt = translate(_detailTxt, "DETAILS");
-		_illustration = translate(_illustration, "ILLUSTRATION");
+		_class = Type.getClass(this);
+		_name = Type.getClassName(_class);
+		
+		
+		_titleTxt = translate( _titleTxt, "TITLE");
+		_detailTxt = translate( _detailTxt, "DETAILS");
+		_illustration = translate( _illustration, "ILLUSTRATION");
 		_qookLink = translate(_qook, "QOOK").split("|");
 		isAnimated = false;
 		parseAllLinksForNames();
@@ -110,7 +114,7 @@ class Process extends FlxState
 		
 		hasQook = _qookLink.length>0 && _qookLink[0]!="";
 		hasIllustration = _illustration != "";
-		hasVoip = !Main.customer.isInitial();
+		//hasReminder = !Main.customer.isInitial();
 		
 		ui.showHowto(!Std.is(this, DescisionMultipleInput) && !Std.is(this, ActionMultipleInput) && !Std.is(this, ActionMail) );
 		
@@ -124,29 +128,27 @@ class Process extends FlxState
 		{
 			ui.loadIllustrationGraphics(_illustration);
 		}
-		if (hasVoip)
+		if (!Lambda.empty(STORAGE))
 		{
-			//081 304 10 13
-			var voip = Main.customer.voIP.split("");
-			voip.insert(8, " ");
-			voip.insert(6, " ");
-			voip.insert(3, " ");
-			
-			var displayVoip = voip.join("");
-			var owner = Main.customer.contract.owner == null? "": Main.customer.contract.owner.name == null?"":Main.customer.contract.owner.name;
-			var mobile = Main.customer.contract.mobile == "" ? "": "(" + Main.customer.contract.mobile + ")";
-			var iri  = Main.customer.iri == "" ? "" : "(" + Main.customer.iri + ")";
-			ui.setReminder('$displayVoip $iri\n$owner $mobile');
-
-			/**
-			 * @TODO keep clipboard trick to fill clipboard with data
-			 */
-			//Browser.document.addEventListener("copy", function(e){e.clipboardData.setData('text/plain', Main.customer.voIP);e.preventDefault();});
+			ui.setReminder(buildReminderString());
 		}
 		ui.backBtn.visible = Main.HISTORY.history.length > 0;
 		
 	}
-	
+	function buildReminderString():String
+	{
+		var s = "";
+		var i = 0;
+		var separator = "\t";
+		for ( k => v in STORAGE )
+		{
+			
+			separator = ( i % 2 == 0) ?".\t": "\n";
+			s += k + ": " + v + separator;
+			i++;
+		}
+		return s;
+	}
 	function positionMain(btns:Array<FlxButton>, ?offSet:FlxPoint)
 	{
 		ui.position(btns);
@@ -202,6 +204,7 @@ class Process extends FlxState
 	static public function INIT()
 	{
 		FlxG.keys.preventDefaultKeys = [FlxKey.BACKSPACE, FlxKey.TAB];
+		STORAGE = [];
 		Main.customer.reset();
 		Main.HISTORY.init();
 		//Main.CHECK_NEW_VERSION();
@@ -222,7 +225,6 @@ class Process extends FlxState
 			case "onExit" : onExit();
 			case "onBack" : onBack();
 			case "onHowTo" : onHowTo();
-			//case "toggleStyle" : toggleStyle();
 			case "toogleTrainingMode" : toogleTrainingMode();
 			case "onComment" : onComment();
 			case "setStyle" : setStyle();
@@ -348,7 +350,9 @@ class Process extends FlxState
 			//trace(defaultString);
 			//trace(customString);
 			//trace(t);
-		return t;
+		//return t;
+		//return StringTools.trim(t) == "" ? txt : t;
+		return t.indexOf("$") == 0 || StringTools.trim(t) == "" ? txt : t;
 		#else
 		return t.indexOf("$") == 0 || StringTools.trim(t) == "" ? txt : t;
 		#end
@@ -390,6 +394,10 @@ class Process extends FlxState
 		var index = iteration >= nexts.length ? nexts.length - 1 : iteration;
 		FlxG.switchState(nexts[index]);
 	}
+	function moveToNextClassProcess(nexts:Array<Class<Dynamic>>, interaction:Interactions)
+	{
+		FlxG.switchState(Type.createInstance(nexts[0],[]));
+	}
 	override public function destroy():Void
 	{
 		dataView.destroy();
@@ -400,6 +408,24 @@ class Process extends FlxState
 	{
 		return _name;
 	}
+	
+	public static function STORE(k:String,v:Dynamic):Void 
+	{
+		//trace("tstool.process.Process::STORE");
+		if (STORAGE.exists(k) && STORAGE.get(k).indexOf(v) == -1)
+		{
+			STORAGE.set(k, STORAGE.get(k) + v);
+		}
+		else{
+			STORAGE.set(k, v);
+		}
+	}
+	
+	function get__class():Class<Process> 
+	{
+		return _class;
+	}
+	
 	function onBack()
 	{
 		/*if (Std.is(this, DescisionLoop) || Std.is(this, ActionLoop) )

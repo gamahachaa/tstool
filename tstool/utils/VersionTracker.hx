@@ -12,26 +12,33 @@ class VersionTracker extends Http
 {
 	var reg:EReg;
 	var scriptFileVersion:String;
+	static inline var SCRIPT_NAME:String = "nointernet";
+	var scriptStart:String;
 	public var scriptChangedSignal(get, null):FlxTypedSignal<Bool->Void>;
-	public function new(url:String)
+	public function new(url:String, ?scriptStart:String="")
 	{
 		super(url);
+		scriptStart = scriptStart == ""?SCRIPT_NAME: scriptStart;
 		scriptChangedSignal = new FlxTypedSignal<Bool->Void>();
 		this.async = true;
 		this.onData = ondata;
 		this.onError = onerror;
 		this.onStatus = onstatus;
 		#if debug
-		reg = ~/^\.\/nointernet_(\d{8}_\d{6}).js$/;
+		//reg = ~/^\.\/scriptStart(\d{8}_\d{6}).js$/;
+		reg = new EReg('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).js$', "g");
+		trace('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).js$');
 		#else
-		reg = ~/^\.\/nointernet_(\d{8}_\d{6}).min.js$/;
+		//reg = ~/^\.\/scriptStart(\d{8}_\d{6}).min.js$/;
+		reg = new EReg('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).min.js$', "g");
+		trace('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).min.js$');
 		#end
 		var scripts:HTMLCollection = Browser.document.getElementsByTagName("script");
 		//trace(scripts.length);
 		for (i in 0...scripts.length){
 			//trace(scripts[i]);
 			//trace(scripts[i].attributes.getNamedItem('src'));
-			if (scripts[i].attributes.getNamedItem('src') != null && scripts[i].attributes.getNamedItem('src').nodeValue.indexOf("./nointernet_") == 0)
+			if (scripts[i].attributes.getNamedItem('src') != null && scripts[i].attributes.getNamedItem('src').nodeValue.indexOf("./"+scriptStart+"_") == 0)
 			{
 				//trace(scripts[i].attributes.getNamedItem('src').nodeValue);
 				scriptFileVersion = scripts[i].attributes.getNamedItem('src').nodeValue;
@@ -62,10 +69,6 @@ class VersionTracker extends Http
 			trace('update ${Main.VERSION} to $data');
 			#end
 			scriptChangedSignal.dispatch(true);
-			//trace('update ${Main.VERSION} to $data');
-			//Browser.alert(tongue.get("$needUpdate_UI1", "meta"));
-			//Browser.location.reload(true);
-			//Browser.window.history.go(0);
 		}
 		else
 		{
@@ -73,7 +76,6 @@ class VersionTracker extends Http
 			trace('current version ${Main.VERSION} is aligned with $data');
 			#end
 			scriptChangedSignal.dispatch(false);
-			//trace('current version ${Main.VERSION} is aligned with $data');
 		}
 
 	}
@@ -94,43 +96,3 @@ class VersionTracker extends Http
 		#end
 	}
 }
-
-//static public function CHECK_NEW_VERSION()
-//{
-//
-//var versionTracker = new Http(LOCATION.origin + LOCATION.pathname+ "php/version/index.php");
-//scriptFileVersion = Browser.document.getElementsByTagName("script")[0].attributes.getNamedItem('src').nodeValue;
-//#if debug
-//trace(scriptFileVersion);
-//trace(reg.match(scriptFileVersion));
-//#end
-//versionTracker.async = true;
-//versionTracker.onData = function(data:String)
-//{
-//if (reg.match(scriptFileVersion))
-//{
-//VERSION = reg.matched(1);
-//if (data > VERSION)
-//{
-//#if debug
-//trace('update $VERSION to $data');
-//#end
-//Browser.alert(tongue.get("$needUpdate_UI1", "meta"));
-//Browser.location.reload(true);
-////Browser.window.history.go(0);
-//}
-//else
-//{
-//#if debug
-//trace('current version $VERSION is aligned with $data');
-//#end
-//}
-//}
-//else
-//{
-//trace(scriptFileVersion + " JS Script doesn't match version format ");
-//}
-//
-//};
-//versionTracker.request();
-//}

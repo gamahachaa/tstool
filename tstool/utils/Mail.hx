@@ -48,7 +48,7 @@ class Mail
 	@:isVar public var successSignal(get, set):FlxTypedSignal<Result->Void>;
 	@:isVar public var statusSignal(get, set):FlxTypedSignal<Int->Void>;
 	@:isVar public var errorSignal(get, set):FlxTypedSignal<Dynamic->Void>;
-	static inline var PHP_MAIL_PATH:String = "php/mail/index.php";
+	static inline var PHP_MAIL_PATH:String = Main.LIB_FOLDER + "php/mail/index.php";
 	var resolved:Bool;
 
 	//@:isVar public var params(get, set):haxe.ds.Map<Parameters,Dynamic>;
@@ -70,8 +70,14 @@ class Mail
 		
 		#if debug
 		//params.set(to_email, "superofficetest@salt.ch"); // Test on cs-sit.test
-		//mailWrapper.setTo(["bruno.baudry@salt.ch"]);
-		mailWrapper.setTo(["superofficetest@salt.ch"]);
+		if (!Main.DEBUG)
+		{
+			mailWrapper.setTo(["bruno.baudry@salt.ch"]);
+		}
+		else{
+			mailWrapper.setTo(["superofficetest@salt.ch"]);
+		}
+		
 		mailWrapper.setCc(['${Main.user.iri}']);
 		mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
 		//mailWrapper.setTo(["superofficetest@salt.ch"]);
@@ -103,34 +109,9 @@ class Mail
 		
 		//params.set(bcc_full_name, "qook");
 		#end
-		//params.set(subject, '[${Main.customer.iri}] $mailSubject' );
 
-
-		
-		//http = new Http(Browser.location.origin + Browser.location.pathname + phpMailPath );
-		//http.async = true;
-		//http.onData = onData;
-		//http.onError = onError;
-		//http.onStatus = onStatus;
-		//trace(Browser.location.origin + Browser.location.pathname+ phpMailPath );
 	}
-	//function setStyle()
-	//{
-		//var b = '<style type="text/css">';
-		//b += 'table {border-collapse: collapse;}';
-		//b += '@font-face {font-family: "Superior"; src: url("http://intranet.salt.ch/static/fonts/superior/SuperiorTitle-Black.woff") format("woff"); font-weight: normal;}';
-		//b += '@font-face {font-family: "Univers"; src: url("http://intranet.salt.ch/static/fonts/univers/ecf89914-1896-43f6-a0a0-fe733d1db6e7.woff") format("woff"); font-weight: normal;}';
-		//b += 'h3,h4,h5,h5 {color: #65a63c;}';
-		//b += 'body, table, td, li, span, h3,h4,h5,h5  {font-family: "Univers", Arial, Helvetica, sans-serif !important;}';
-		//b += 'h2{color: #000000; font-family: "Superior" !important;}';
-		//b += 'li{font-size: 11pt !important; padding-top:8px !important;  margin-top:8px !important;}';
-		//b += 'li em{font-size: 9pt !important;}';
-		//b += '</style>';
-		////http://intranet.salt.ch/static/fonts/superior/SuperiorTitle-Black.woff
-		////params.set(body, b);
-		////params.set(body, b);
-		//return b;
-	//}
+
 	function setSubject()
 	{
 		// test GIT DEV
@@ -163,16 +144,15 @@ class Mail
 		buildAgentBody();
 		//params.set(body, "<body>" + params.get(body) + "</body>" );
 		mailWrapper.setBody("<body>" + _mailBody + "</body>" );
-		//for (key => value in params)
-		//{
-			//http.setParameter(Std.string(key), value);
-			//if (Main.DEBUG) trace(key, value);
-		//}
-		// do not create ticket in training mode
+
 		#if debug
-		trace("<body>" + _mailBody + "</body>");
+		if (Main.DEBUG)
+			mailWrapper.send(Main.user.canDispach);
+		else
+			trace("<body>" + _mailBody + "</body>");
+		
 		#else
-		mailWrapper.send(Main.user.canDispach);
+			mailWrapper.send(Main.user.canDispach);
 		#end
 		
 	}
@@ -188,8 +168,13 @@ class Mail
 		{
 			//b += '<h1>$_mailSubject</h1>';
 			if (memo != "") b += '<p>$memo</p>';
-			b += '<h2>Contractor: ${Main.customer.iri} ';
-			b += 'VoIP: ${Main.customer.voIP}';
+			b += '<h2>';
+			if(Main.customer.iri !="" || Main.customer.iri != "not found")
+				b += 'ID: ${Main.customer.iri} ';
+			if(Main.customer.voIP !="")
+				b += 'MSISDN: ${Main.customer.voIP}';
+			if(Main.customer.contract.mobile !="")
+				b += 'CONTACT: ${Main.customer.contract.mobile}';
 			b += '</h2>';
 			if(Main.customer.contract.owner != null && Main.customer.contract.owner.name !="")
 				b += '<h3>${Main.customer.contract.owner.name}</h3>';
@@ -271,23 +256,7 @@ class Mail
 				englishLst += '<li>${i.step} _ <strong>${i.interaction}</strong> ${i.values}</li>';
 			}
 		}
-		/*
-		for (i in Main.HISTORY.history)
-		{
-			bodyList += "<li>";
-			bodyList += getItInEnglsh(i);
-			if (i.values != null) {
-				
-				bodyList += " " + i.values.toString();
-			}
-			if(!isEnglish){
-				bodyList += "<br/><em>";
-				bodyList += '${i.processTitle} : <strong>${i.iteractionTitle}</strong>';
-				bodyList += "</em>";
-			}
-			bodyList += "</li>";
-		}
-		*/
+
 		//bodyList += "<li><strong>"+_currentProcess.question.text +"</strong></li>";
 		b += '<h4>Start: ${start.toString()} End: ${end.toString()}</h4>';
 		b += '<h4>Steps:</h4>';
@@ -300,38 +269,6 @@ class Mail
 		//params.set(body, b);
 		_mailBody = b;
 	}
-	/**
-	function buildHistoryBody()
-	{
-		//var  b = params.exists(body)?params.get(body):"";
-		var  b = _mailBody;
-		var bodyList = "";
-		var start:Date = Main.HISTORY.getFirst().start;
-		var end:Date = Main.HISTORY.getLast().start;
-		var isEnglish = Main.user.mainLanguage == "en-GB";
-		for (i in Main.HISTORY.history)
-		{
-			bodyList += "<li>";
-			bodyList += getItInEnglsh(i);
-			if (i.values != null) {
-				
-				bodyList += " " + i.values.toString();
-			}
-			if(!isEnglish){
-				bodyList += "<br/><em>";
-				bodyList += '${i.processTitle} : <strong>${i.iteractionTitle}</strong>';
-				bodyList += "</em>";
-			}
-			bodyList += "</li>";
-			//bodyList += Main.tongue.get("$"+i.processName + "_TITLE","data") + " : " + Main.tongue.get(i.processName,"data")}:${i.interaction}</li>';
-			
-		}
-		
-		bodyList += "<li><strong>"+_currentProcess.question.text +"</strong></li>";
-		b += '<h4>Start: ${start.toString()}</h4><ol>$bodyList</ol><h4>End: ${end.toString()}</h4>';
-		//params.set(body, b);
-		_mailBody = b;
-	}*/
 	
 	function getItInEnglsh(i:Snapshot):String
 	{
@@ -362,29 +299,6 @@ class Mail
 		#end
 		return s;
 	}
-	//function onStatus(s:Int)
-	//{
-		////trace(s);
-		//statusSignal.dispatch(s);
-	//}
-//
-	//function onError(e:Dynamic):Void
-	//{
-		////trace(e);
-		//errorSignal.dispatch(e);
-	//}
-//
-	//function onData(data:Dynamic)
-	//{
-		////trace(data);
-		//var s:Result = Json.parse(data);
-		//successSignal.dispatch(s);
-	//}
-
-	//function get_params():haxe.ds.Map<Parameters, Dynamic>
-	//{
-		//return params;
-	//}
 
 	function get_successSignal():FlxTypedSignal<Result->Void>
 	{

@@ -57,12 +57,15 @@ class SwiftMailWrapper extends Http
 	{
 		var s:Result = Json.parse(data);
 		#if debug
-		//trace(s);
+		trace("tstool.utils.SwiftMailWrapper::ondata::s", s );
 		#end
 		successSignal.dispatch(s);
 	}
 	public function onstatus(status:Int)
 	{
+		#if debug
+		trace("tstool.utils.SwiftMailWrapper::onstatus::onstatus", status );
+		#end
 		statusSignal.dispatch(status);
 	}
 	public function setFrom(reciepient:String,?fullname:String="")
@@ -132,7 +135,7 @@ class SwiftMailWrapper extends Http
 		if (dispatch){
 			
 			#if debug
-			//trace(values.get(body));
+			trace(values);
 			if (Main.DEBUG)
 				this.request(true);
 			else {
