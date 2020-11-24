@@ -9,7 +9,7 @@ import tstool.process.MultipleInput.ValidatedInputs;
 //import layout.UIInputTf;
 
 /**
- * ...
+ *  @todo factorise all multiple input redundancy
  * @author bb
  */
 
@@ -64,9 +64,6 @@ class ActionMultipleInput extends Action
 	}
 	override function positionThis(?offSet:FlxPoint)
 	{
-		//super.positionThis();
-		//multipleInputs.positionThis();
-		//var last:UIInputTfCore = multipleInputs.inputs.get( inputs[inputs.length - 1].input.prefix ); // @todo AU SECOURS !!!
 		super.positionThis();
 		var p = multipleInputs.positionThis();
 		positionButtons(p);

@@ -14,6 +14,9 @@ class DescisionLoop extends Descision
 		_nextYesProcess = yesProcess;
 		_nextNoProcess = noProcess;
 	}
+	/**
+	* @todo String to Class<Process>
+	*/
 	override public function create():Void
 	{
 		this._nextYesProcesses = [_nextYesProcess == null ? Process.GET_PREVIOUS_INSTANCE() : _nextYesProcess];

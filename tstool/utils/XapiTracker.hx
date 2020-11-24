@@ -67,6 +67,10 @@ class XapiTracker
 		var step = "";
 		var interaction = "";
 		var values = "";
+		/**
+		 * @todo String to Class<Process> / isInHistory
+		 */
+		
 		var h = Main.HISTORY.getStoredStepsTranslatedArray();
 		for (i in h)
 		{

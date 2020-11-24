@@ -7,7 +7,7 @@ import tstool.layout.UIInputTfCore;
 import tstool.process.MultipleInput;
 
 /**
- * ...
+ * @todo factorise all multiple input redundancy
  * @author bb
  */
 class DescisionMultipleInput extends Descision
@@ -90,11 +90,8 @@ class DescisionMultipleInput extends Descision
 	{
 		super.positionThis();
 		var p = multipleInputs.positionThis();
-		//trace(p);
 		positionBottom(p);
 		positionButtons(p);
-		
-		//var last:UIInputTfCore = multipleInputs.inputs.get( inputs[inputs.length - 1].input.prefix ); // @todo AU SECOURS !!!
 	}
 	override function pushToHistory( buttonTxt:String, interactionType:tstool.layout.History.Interactions,?values:Map<String,Dynamic>=null)
 	{

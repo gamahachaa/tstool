@@ -87,6 +87,9 @@ class DataView extends ClosableSubState
 
 	function onStepClicked(h:HitoryItem):Void
 	{
+		/**
+		* @todo TEST String to Class<Process>
+		*/
 		FlxG.switchState( Main.HISTORY.clearHistoryFrom(h.index) );
 	}
 	function simplifyString(s:String)

@@ -2,6 +2,7 @@ package tstool.layout;
 import flixel.FlxSprite;
 import tstool.process.ActionLoop;
 import tstool.process.DescisionLoop;
+import tstool.process.Process;
 
 /**
  * ...
@@ -15,6 +16,7 @@ typedef Snapshot =
 	var iteractionTitle:String;
 	var values:Map<String,Dynamic>;
 	var start:Date;
+	var ?_class:Class<Process>;
 }
 enum Interactions
 {
@@ -46,6 +48,9 @@ class History
 	 */
 	public function add( process:String, interaction:Interactions, title:String, iteractionTitle:String, ?values:Map<String,Dynamic>=null)
 	{
+		/**
+		 * @todo String to Class<Process>
+		 */
 		history.push(
 		{
 			processName : process,
@@ -70,11 +75,17 @@ class History
 		//trace(history.length - index -1);
 		#end
 		var old = history.splice(index, history.length - index);
+		/**
+		 * @todo String to Class<Process>
+		 */
 		return Type.createInstance( Type.resolveClass( old[0].processName), [] );
 	}
 	public function onStepBack()
 	{
 		var last = history.pop();
+		/**
+		 * @todo String to Class<Process>
+		 */
 		var lastObject = Type.resolveClass( last.processName);
 		//trace(Type.getSuperClass(lastObject) == DescisionLoop,Std.is(lastObject, DescisionLoop), Std.isOfType(lastObject, DescisionLoop), " = is instance of descision loop ", last);
 		
@@ -85,14 +96,21 @@ class History
 		} 
 		return Type.createInstance( lastObject, [] );
 	}
+	/**
+	 * @todo Remove
+	 *
 	public function twoStepsBack()
 	{
 		var last = history.pop();
 		last = history.pop();
+
 		return Type.createInstance( Type.resolveClass( last.processName), [] );
-	}
+	}*/
 	public function getIterations(processName:String, ?interaction:Interactions):Int
 	{
+		/**
+		 * @todo String to Class<Process>
+		 */
 		var count = 0;
 		for ( i in history )
 		{
@@ -111,6 +129,9 @@ class History
 
 	inline public function getPreviousInstance()
 	{
+		/**
+		 * @todo String to Class<Process>
+		 */
 		return Type.createInstance( Type.resolveClass( getPreviousProcess().processName), [] );
 	}
 
@@ -126,6 +147,9 @@ class History
 	{
 		return history[history.length-1];
 	}
+	/**
+	 * @todo String to Class<Process>
+	 */
 	public function isInHistory(processName:String, interaction:Interactions)
 	{
 		for ( i in history )
@@ -138,6 +162,9 @@ class History
 		}
 		return false;
 	}
+	/**
+	* @todo String to Class<Process>
+	*/
 	public function isProcessInHistory(processName:String)
 	{
 		for ( i in history )
@@ -150,6 +177,9 @@ class History
 		}
 		return false;
 	}
+	/**
+	* @todo String to Class<Process>
+	*/
 	public function findStepsInHistory(processName:String, ?times:Int=1, ?fromBegining:Bool=true):Array<Snapshot>
 	{
 		var tab = [];
@@ -203,6 +233,9 @@ class History
 		}
 		return t;
 	}
+	/**
+	* @todo String to Class<Process>
+	*/	
 	public function getRawStepsArray()
 	{
 		var t = [];
@@ -227,6 +260,9 @@ class History
 		Main.tongue.initialize( toLangPair );
 		for (i in history)
 		{
+			/**
+			* @todo String to Class<Process>
+			*/
 			question = Main.tongue.get("$" + i.processName + "_TITLE", "data");
 			choice = getDefaultOrCutomChoice( i.processName, i.interaction);
 			t.push({nb:s++, step: question, interaction: choice, values: i.values==null?"":i.values.toString()});

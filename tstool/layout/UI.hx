@@ -54,7 +54,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 		 * @todo resize if hasIllustration
 		 */
 		//details = new FlxText(0, 0, hasIllustration ? FlxG.width / 3 : FlxG.width-PADDING, "", hasIllustration? 16:24 , true);
-			//details.setFormat(Main.BASIC_FMT.font, hasIllustration ? Main.BASIC_FMT.size: Main.BASIC_FMT.size+4);
+		//details.setFormat(Main.BASIC_FMT.font, hasIllustration ? Main.BASIC_FMT.size: Main.BASIC_FMT.size+4);
 		details.setFormat(Main.BASIC_FMT.font, Main.BASIC_FMT.size );
 		
 		illustration = new FlxSprite(0, 0);

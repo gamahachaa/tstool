@@ -129,11 +129,6 @@ class RadioTitle extends FlxGroup implements IPositionable
 	function callback(s:String)
 	{
 		blink(false);
-		/**
-		 * @todo remove this heretic dependency on parent
-		 * */
-		//status.set(this.titleUI.text, s);
-		// Good way
 		changeSignal.dispatch(this.titleUI.text, s);
 	}
 	

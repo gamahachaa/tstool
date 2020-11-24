@@ -98,15 +98,21 @@ class Triplet extends Process
 	public function onMidClick():Void
 	{
 		pushToHistory(_buttonMidTxt, Interactions.Mid);
-		if (this._nextMidProcesses.length > 0) // @todo remove after full refactor
+		/**
+		 * @todo String to Class<Process>
+		 */
+		if (this._nextMidProcesses.length > 0) 
 		{
 			move_to_next(this._nextMidProcesses, Interactions.Mid);
 		}
 	}
 	public function onYesClick():Void
 	{
+		/**
+		 * @todo String to Class<Process>
+		 */		
 		pushToHistory(_buttonYesTxt, Interactions.Yes);
-		if (this._nextYesProcesses.length > 0) // @todo remove after full refactor
+		if (this._nextYesProcesses.length > 0)
 		{
 			move_to_next(this._nextYesProcesses, Interactions.Yes);
 		}
@@ -114,8 +120,11 @@ class Triplet extends Process
 
 	public function onNoClick():Void
 	{
+		/**
+		 * @todo String to Class<Process>
+		 */
 		pushToHistory(_buttonNoTxt,Interactions.No);
-		if (this._nextNoProcesses.length > 0) // @todo remove after full refactor
+		if (this._nextNoProcesses.length > 0)
 		{
 			move_to_next(this._nextNoProcesses, Interactions.No);
 		}

@@ -7,24 +7,17 @@ import tstool.layout.UIInputTfCore;
 import tstool.process.MultipleInput.ValidatedInputs;
 
 /**
- * @todo factorise all multiple inputredundancy
+ * @todo factorise all multiple input redundancy
  * ...
  * @author bb
  */
 class TripletMultipleInput extends Triplet 
 {
-	//var yesValidator:EReg;
-	//var noValidator:EReg;
-	//var midValidator:EReg;
-	//
-	//var singleInput:process.SingleInput;
-	//var textFieldWidth:Int;
-	//var inputPrefix:String;
+
 	
 	var inputs:Array<ValidatedInputs>;
 	var multipleInputs:MultipleInput;
-	//var itetateme:Iterator<UIInputTfCore>;
-	//var _focus:UIInputTfCore;
+
 	
 	public var yesValidatedSignal(get, null):FlxTypedSignal<Bool->Void>;
 	public var noValidatedSignal(get, null):FlxTypedSignal<Bool->Void>;

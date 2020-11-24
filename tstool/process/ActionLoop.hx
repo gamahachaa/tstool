@@ -29,6 +29,10 @@ class ActionLoop extends Action
 		super.create();
 	}
 	*/
+		/**
+		 * @todo String to Class<Process> / isInHistory
+		 */
+
 	override public function onClick():Void
 	{
 		this._nextProcesses = [_next == null ? Process.GET_PREVIOUS_INSTANCE() : _next];

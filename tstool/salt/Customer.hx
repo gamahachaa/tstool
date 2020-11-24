@@ -15,9 +15,6 @@ class Customer extends Actor
 {
 	@:isVar public var dataSet(get, set):Map<String,Map<String,String>>;
 	@:isVar public var contract(get, set):Contractor;
-	//@:isVar public var products(get, set):Array<String>; // @todo makeit a Type
-	//@:isVar public var _history(get, set):Array<String>; // make it a type so far just a ticket then maekit a Customer process Type
-	//@:isVar public var processStage(get, set):CustomerProcess;
 	public var shipingAdress(get, set):Adress;
 	public var voIP(get, set):String;
 	public static inline var TEST_IRI:String = "not found";

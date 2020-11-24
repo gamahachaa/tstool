@@ -15,7 +15,7 @@ class Action extends Process
 
 	var _buttonTxt(default, set):String = Main.tongue.get("$defaultBtn_UI2","meta");
 	var _nextProcesses:Array<Process> = [];
-	var _nextClassProcesses:Array<Class<Dynamic>> = [];
+	var _nextClassProcesses:Array<Class<Process>> = [];
 	var btn:FlxButton;
 	public function new()
 	{
@@ -59,7 +59,7 @@ class Action extends Process
 	public function onClick():Void
 	{
 		pushToHistory(_buttonTxt, Interactions.Next);
-		if (this._nextProcesses.length > 0) // @todo remove after full refactor
+		if (this._nextProcesses.length > 0) // @todo remove after full refactor String to Class<Process>
 		{
 			move_to_next(_nextProcesses, Interactions.Next);
 		}

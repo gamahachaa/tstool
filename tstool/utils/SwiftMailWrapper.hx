@@ -77,23 +77,23 @@ class SwiftMailWrapper extends Http
 	}
 	//////////////////// PUBLIC /////////////////////////
 	/**
-	 * @todo allow multiple
+	 * @todo allow multiple (now we are passing an array but then passing only recipient[0])
 	 * @param	recipient
 	 */
 	public function setTo(recipient:Array<String>)
 	{
 		values.set(to_email, recipient[0]);
 	}
-	/**
-	 * @todo allow multiple
+/**
+	 * @todo allow multiple (now we are passing an array but then passing only recipient[0])
 	 * @param	recipient
 	 */
 	public function setCc(recipient:Array<String>)
 	{
 		values.set(cc_email, recipient[0]);
 	}
-	/**
-	 * @todo allow multiple
+/**
+	 * @todo allow multiple (now we are passing an array but then passing only recipient[0])
 	 * @param	recipient
 	 */
 	public function setBcc(recipient:Array<String>)

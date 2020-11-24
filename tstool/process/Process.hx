@@ -45,6 +45,7 @@ class Process extends FlxState
 	
 	public var _name(get, null):String;
 	public var _class(get, null):Class<Process>;
+	var _nexts:Array<Class<Process>>;
 	
 	var _historyTxt:String = "";
 	var _qookLink:Array<String>;
@@ -73,7 +74,7 @@ class Process extends FlxState
 		//isFocused = false;
 		_class = Type.getClass(this);
 		_name = Type.getClassName(_class);
-		
+		_nexts = [];
 		
 		_titleTxt = translate( _titleTxt, "TITLE");
 		_detailTxt = translate( _detailTxt, "DETAILS");
@@ -99,6 +100,9 @@ class Process extends FlxState
 		ui.stringSignal.add( listener );
 		
 		howToSubState = new Instructions();
+		/**
+		 * @todo change to Class<T>
+		 */
 		dataView = new DataView(Main.THEME.bg, this._name);
 		
 		// PROCESS UI		
@@ -212,6 +216,9 @@ class Process extends FlxState
 
 	static public function GET_PREVIOUS_INSTANCE()
 	{
+		/**
+		 * @todo String to Class<Process>
+		 */
 		return Main.HISTORY.getPreviousInstance();
 	}
 
@@ -237,6 +244,9 @@ class Process extends FlxState
 	
 		Main.user.mainLanguage = lang;
 		Main.COOKIE.flush();
+		/**
+		 * @todo String to Class<T> -> when switchin glang could loose the loops
+		 */
 		Main.tongue.initialize(lang , ()->(
 										FlxG.switchState( 
 											Type.createInstance( Type.getClass(this), [])
@@ -266,8 +276,13 @@ class Process extends FlxState
 	}
 	function onExit()
 	{
+		/**
+		 * @todo String to Class<T> -> pushing last step to history
+		 */
 		pushToHistory("ALL GOOD", Interactions.Exit);
-		
+		/**
+		 * @todo String to Class<T> -> when switchin glang could loose the loops
+		 */
 		FlxG.switchState(Type.createInstance(Main.LAST_STEP, []));
 	}
 	function onQook():Void
@@ -361,6 +376,9 @@ class Process extends FlxState
 
 	function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
+		/**
+		 * @todo String to Class<T>
+		 */
 		Main.HISTORY.add(_name, interactionType, _titleTxt, buttonTxt, values);
 		#if debug
 			//trace(_name, interactionType, _titleTxt, buttonTxt, values);
@@ -384,18 +402,24 @@ class Process extends FlxState
 		return _illustration = value;
 	}
 	/**
-	 * @todo identify branches ()
 	 * @param	buttonTxt
 	 */
 	function move_to_next(nexts:Array<Process>, interaction:Interactions)
 	{
 		// Look in history if same step was passed
+		/**
+		 * @todo String to Class<Process>
+		 */
 		var iteration = Main.HISTORY.getIterations(_name, interaction) - 1;
 		var index = iteration >= nexts.length ? nexts.length - 1 : iteration;
 		FlxG.switchState(nexts[index]);
 	}
-	function moveToNextClassProcess(nexts:Array<Class<Dynamic>>, interaction:Interactions)
+	function moveToNextClassProcess(nexts:Array<Class<Process>>, interaction:Interactions)
 	{
+		/**
+		 * @todo String to Class<T> add params to create Loops
+		 * 
+		 */
 		FlxG.switchState(Type.createInstance(nexts[0],[]));
 	}
 	override public function destroy():Void
@@ -428,15 +452,9 @@ class Process extends FlxState
 	
 	function onBack()
 	{
-		/*if (Std.is(this, DescisionLoop) || Std.is(this, ActionLoop) )
-		{
-			trace("twoo steps back");
-			FlxG.switchState(Main.HISTORY.twoStepsBack());
-		}
-		else{
-			trace("ONe steps back");
-			
-		}*/
+		/**
+		* @todo String to Class<Process>
+		*/
 		FlxG.switchState(Main.HISTORY.onStepBack());
 	}
 }

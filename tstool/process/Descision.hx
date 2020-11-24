@@ -77,7 +77,11 @@ class Descision extends Process
 	public function onYesClick():Void
 	{
 		pushToHistory(_buttonYesTxt, Interactions.Yes);
-		if (this._nextYesProcesses.length > 0) // @todo remove after full refactor
+		/**
+		 * @todo String to Class<Process>
+		 */
+
+		if (this._nextYesProcesses.length > 0) 
 		{
 			move_to_next(this._nextYesProcesses, Interactions.Yes);
 		}
@@ -85,8 +89,14 @@ class Descision extends Process
 
 	public function onNoClick():Void
 	{
-		pushToHistory(_buttonNoTxt,Interactions.No);
-		if (this._nextNoProcesses.length > 0) // @todo remove after full refactor
+		/**
+		 * @todo String to Class<Process>
+		 */
+		pushToHistory(_buttonNoTxt, Interactions.No);
+		/**
+		 * @todo String to Class<Process>
+		 */
+		if (this._nextNoProcesses.length > 0)
 		{
 			move_to_next(this._nextNoProcesses, Interactions.No);
 		}

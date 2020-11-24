@@ -246,6 +246,10 @@ class Mail
 		historyList += "<li><strong>"+_currentProcess.question.text +"</strong></li>";
 		if (!isEnglish)
 		{
+			/**
+			 * @todo String to Class<Process> / isInHistory
+			 */
+
 			var englishHistroryArray = Main.HISTORY.getStoredStepsTranslatedArray();
 			
 		
