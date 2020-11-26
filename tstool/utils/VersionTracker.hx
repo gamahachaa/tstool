@@ -31,7 +31,7 @@ class VersionTracker extends Http
 		#else
 		//reg = ~/^\.\/scriptStart(\d{8}_\d{6}).min.js$/;
 		reg = new EReg('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).min.js$', "g");
-		trace('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).min.js$');
+		//trace('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).min.js$');
 		#end
 		var scripts:HTMLCollection = Browser.document.getElementsByTagName("script");
 		//trace(scripts.length);
