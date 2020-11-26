@@ -17,6 +17,7 @@ typedef Snapshot =
 	var values:Map<String,Dynamic>;
 	var start:Date;
 	var ?_class:Class<Process>;
+	var ?_params:Array<Dynamic>;
 }
 enum Interactions
 {
@@ -46,19 +47,18 @@ class History
 	 * @param	values
 	 * @param	Dynamic>=nul
 	 */
-	public function add( process:String, interaction:Interactions, title:String, iteractionTitle:String, ?values:Map<String,Dynamic>=null)
+	public function add( process:Class<Process>, params:Array<Dynamic>, interaction:Interactions, title:String, iteractionTitle:String, ?values:Map<String,Dynamic>=null)
 	{
-		/**
-		 * @todo String to Class<Process>
-		 */
 		history.push(
 		{
-			processName : process,
+			processName : Type.getClassName(process),
 			interaction: interaction,
 			processTitle:title,
 			iteractionTitle:iteractionTitle,
 			values:values,
-			start: Date.now()
+			start: Date.now(),
+			_class: process,
+			_params: params
 		}
 		);
 	}
@@ -78,23 +78,25 @@ class History
 		/**
 		 * @todo String to Class<Process>
 		 */
-		return Type.createInstance( Type.resolveClass( old[0].processName), [] );
+		//return Type.createInstance( Type.resolveClass( old[0].processName), [] );
+		return Type.createInstance( old[0]._class, old[0]._params);
 	}
 	public function onStepBack()
 	{
 		var last = history.pop();
 		/**
-		 * @todo String to Class<Process>
+		 * @todo String to Class<Process> CHECK IF LOOPING WORKS WITH CLASSES CREATED FROM TYPE
 		 */
-		var lastObject = Type.resolveClass( last.processName);
-		//trace(Type.getSuperClass(lastObject) == DescisionLoop,Std.is(lastObject, DescisionLoop), Std.isOfType(lastObject, DescisionLoop), " = is instance of descision loop ", last);
+		//var lastObject = Type.resolveClass( last.processName);
+		var lastObject = last._class ;
 		
 		if (Type.getSuperClass(lastObject) == DescisionLoop || Type.getSuperClass(lastObject) == ActionLoop)
 		{
 			last = history.pop();
-			lastObject = Type.resolveClass( last.processName);
+			lastObject = Type.resolveClass( last._class );
+			return Type.createInstance( last._class, [] );
 		} 
-		return Type.createInstance( lastObject, [] );
+		
 	}
 	/**
 	 * @todo Remove
@@ -106,6 +108,22 @@ class History
 
 		return Type.createInstance( Type.resolveClass( last.processName), [] );
 	}*/
+	public function getClassIterations(process:Class<Process>, ?interaction:Interactions):Int
+	{
+		/**
+		 * @todo String to Class<Process>
+		 */
+		var count = 0;
+		for ( i in history )
+		{
+			if ((interaction == null && i._class == process) || (interaction == i.interaction && i._class == process) )
+			{
+				count++;
+			}
+
+		}
+		return count;
+	}
 	public function getIterations(processName:String, ?interaction:Interactions):Int
 	{
 		/**
@@ -122,6 +140,7 @@ class History
 		}
 		return count;
 	}
+	
 	inline function getPreviousProcess()
 	{
 		return history[history.length - 1];
@@ -290,7 +309,7 @@ class History
 		{
 			case Yes: "UI3";
 			case No: "UI1";
-			case Next: "UI2";
+			case ProcessContructor: "UI2";
 			default: "UI2";
 		}
 	}
@@ -300,7 +319,7 @@ class History
 		{
 			case Yes: "RIGHT-BTN";
 			case No: "LEFT-BTN";
-			case Next: "MID-BTN";
+			case ProcessContructor: "MID-BTN";
 			default: "MID-BTN";
 		}
 	}

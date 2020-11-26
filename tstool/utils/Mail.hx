@@ -281,7 +281,7 @@ class Mail
 		var interaction = switch(i.interaction){
 			case Yes: "RIGHT-BTN";
 			case No: "LEFT-BTN";
-			case Next: "MID-BTN";
+			case ProcessContructor: "MID-BTN";
 			default: "MID-BTN";
 		};
 		var interactionEN = Main.tongue.get("$" + i.processName + "_" + interaction, "data");
@@ -290,7 +290,7 @@ class Mail
 			interactionEN = Main.tongue.get("$defaultBtn_" + switch(i.interaction){
 			case Yes: "UI3";
 			case No: "UI1";
-			case Next: "UI2";
+			case ProcessContructor: "UI2";
 			default: "UI2";
 		}, "meta");
 		}	

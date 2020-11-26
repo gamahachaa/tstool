@@ -27,12 +27,16 @@ import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
 //import lime.math.Rectangle;
 
-
+typedef ProcessContructor = {
+	var process:Class<Process>;
+	var ?nexts:Array<Class<Process>>;
+}
 /**
  * @TODO Split pureprocess logic / Interactions / Graphic / Main UI
  * ...
  * @author
  */
+
 class Process extends FlxState
 {
 	static public var STORAGE:Map<String,Dynamic> = new Map<String,Dynamic>();
@@ -45,7 +49,7 @@ class Process extends FlxState
 	
 	public var _name(get, null):String;
 	public var _class(get, null):Class<Process>;
-	var _nexts:Array<Class<Process>>;
+	var _nexts:Array<ProcessContructor>;
 	
 	var _historyTxt:String = "";
 	var _qookLink:Array<String>;
@@ -376,10 +380,12 @@ class Process extends FlxState
 
 	function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
+		
+		//Main.HISTORY.add(_name, interactionType, _titleTxt, buttonTxt, values); //
 		/**
-		 * @todo String to Class<T>
+		 * @todo String to Class<T> add params for looping processes
 		 */
-		Main.HISTORY.add(_name, interactionType, _titleTxt, buttonTxt, values);
+		Main.HISTORY.add(_class, [], interactionType, _titleTxt, buttonTxt, values);
 		#if debug
 			//trace(_name, interactionType, _titleTxt, buttonTxt, values);
 		#end
@@ -414,13 +420,15 @@ class Process extends FlxState
 		var index = iteration >= nexts.length ? nexts.length - 1 : iteration;
 		FlxG.switchState(nexts[index]);
 	}
-	function moveToNextClassProcess(nexts:Array<Class<Process>>, interaction:Interactions)
+	function moveToNextClassProcess(interaction:Interactions)
 	{
 		/**
 		 * @todo String to Class<T> add params to create Loops
 		 * 
 		 */
-		FlxG.switchState(Type.createInstance(nexts[0],[]));
+		var iteration = Main.HISTORY.getIterations(_name, interaction) - 1;
+		var index = iteration >= _nexts.length ? _nexts.length - 1 : iteration;
+		FlxG.switchState(Type.createInstance(_nexts[index].process,_nexts[index].nexts));
 	}
 	override public function destroy():Void
 	{

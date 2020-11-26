@@ -5,6 +5,7 @@ import flixel.math.FlxPoint;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import tstool.layout.History;
+import tstool.process.Process.ProcessContructor;
 
 /**
  * ...
@@ -15,7 +16,7 @@ class Action extends Process
 
 	var _buttonTxt(default, set):String = Main.tongue.get("$defaultBtn_UI2","meta");
 	var _nextProcesses:Array<Process> = [];
-	var _nextClassProcesses:Array<Class<Process>> = [];
+	var _nextClassProcesses:Array<ProcessContructor> = [];
 	var btn:FlxButton;
 	public function new()
 	{
@@ -63,9 +64,9 @@ class Action extends Process
 		{
 			move_to_next(_nextProcesses, Interactions.Next);
 		}
-		else if (this._nextClassProcesses.length > 0)
+		else if (this._nexts.length > 0)
 		{
-			moveToNextClassProcess(_nextClassProcesses, Interactions.Next);
+			moveToNextClassProcess(Interactions.Next);
 		}
 	}
 
