@@ -64,15 +64,34 @@ class ActionRadios extends Action
 			}else{
 				rds[i].positionMe(buddy == null ? rds[i-1].boundingRect:buddy.boundingRect , 4,dir == null ?[top,right]:dir);
 			}
-			if (rds[i].boundingRect.x + rds[i].boundingRect.width > p.x) {
+			/*if (rds[i].boundingRect.x + rds[i].boundingRect.width > p.x) {
 				p.x = rds[i].boundingRect.x + rds[i].boundingRect.width;
 			}
 			if (rds[i].boundingRect.y + rds[i].boundingRect.height > p.y) {
 				p.y = rds[i].boundingRect.y + rds[i].boundingRect.height;
+			}*/
+		}
+		position();
+		//p = new FlxPoint(most.x + most.width, most.y + most.height);
+		//positionButtons(p);
+		//positionBottom(p);
+	}
+	public function position()
+	{
+		var p:FlxPoint = new FlxPoint(0, 0);
+		var rd:RadioTitle;
+		for (i in 0...rds.length)
+		{
+			rd = rds[i];
+			if (rd.boundingRect.x + rd.boundingRect.width > p.x) {
+				p.x = rd.boundingRect.x + rd.boundingRect.width;
+			}
+			if (rd.boundingRect.y + rd.boundingRect.height > p.y) {
+				p.y = rd.boundingRect.y + rd.boundingRect.height;
 			}
 		}
-		 
-		//p = new FlxPoint(most.x + most.width, most.y + most.height);
+		trace(p);
+		p.y = p.y + 24;
 		positionButtons(p);
 		positionBottom(p);
 	}

@@ -31,7 +31,7 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 	var trainingMode:FlxUIButton;
 	
 	var menuBG:flixel.addons.display.shapes.FlxShapeBox;
-	var langs:Map< String, FlxUIButton>;
+	//var langs:Map< String, FlxUIButton>;
 	//var backBtn:flixel.ui.FlxButton;
 	public var buttons:Array<Dynamic>;
 	public var reminderMsgBox(get, null):FlxText;
@@ -92,11 +92,11 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		en.loadGraphic("assets/images/ui/en.png", true, 40, 40);
 
 		buttons.push(en);
-		langs = new Map<String,FlxUIButton>();
-		langs.set("en-GB", en);
-		langs.set("it-IT", it);
-		langs.set("de-DE", de);
-		langs.set( "fr-FR", fr);
+		//langs = new Map<String,FlxUIButton>();
+		//langs.set("en-GB", en);
+		//langs.set("it-IT", it);
+		//langs.set("de-DE", de);
+		//langs.set( "fr-FR", fr);
 		
 		comment = new FlxButton(0, 0, "", onComment);
 		comment.loadGraphic("assets/images/ui/comment.png", true, 40, 40);
@@ -107,10 +107,23 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		
 		add(bucket);
 		add(comment);
-		add(fr);
-		add(de);
-		add(it);
-		add(en);
+		if (Main.LANGS != null)
+		{
+			if( Main.LANGS.indexOf("fr-FR")>-1)
+				add(fr);
+			if(Main.LANGS.indexOf("de-DE")>-1)			
+				add(de);
+			if(Main.LANGS.indexOf("it-IT")>-1)		
+				add(it);
+			if(Main.LANGS.indexOf("en-GB")>-1)		
+				add(en);
+		}
+		else{
+			add(fr);
+			add(de);
+			add(it);
+			add(en);
+		}
 		add(exitBtn);
 		add(trainingMode);
 		add(reminderMsgBox);
