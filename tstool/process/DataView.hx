@@ -21,6 +21,9 @@ class DataView extends ClosableSubState
 	var padding:Int;
 	var parentName:String;
 	var additionalMassage:String;
+	/**
+	* @todo String to Class<Process>
+	*/
 	public function new(BGColor:FlxColor=FlxColor.TRANSPARENT, parentName:String, ?additionalMessage="" )
 	{
 		super(BGColor);

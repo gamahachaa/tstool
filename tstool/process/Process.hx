@@ -28,8 +28,8 @@ import openfl.ui.MouseCursor;
 //import lime.math.Rectangle;
 
 typedef ProcessContructor = {
-	var process:Class<Process>;
-	var ?nexts:Array<Class<Process>>;
+	var step:Class<Process>;
+	var ?params:Array<ProcessContructor>;
 }
 /**
  * @TODO Split pureprocess logic / Interactions / Graphic / Main UI
@@ -71,11 +71,28 @@ class Process extends FlxState
 	public var details(get, null):FlxText;
 	public var question(get, null):Question;
 	
-
+	/**
+	 * @todo REMOVE once all tested ok
+	 */
 	public function new()
 	{
 		super();
 		//isFocused = false;
+		/*
+		_class = Type.getClass(this);
+		_name = Type.getClassName(_class);
+		_nexts = [];
+		
+		_titleTxt = translate( _titleTxt, "TITLE");
+		_detailTxt = translate( _detailTxt, "DETAILS");
+		_illustration = translate( _illustration, "ILLUSTRATION");
+		_qookLink = translate(_qook, "QOOK").split("|");
+		isAnimated = false;
+		parseAllLinksForNames();*/
+	}
+
+	override public function create()
+	{
 		_class = Type.getClass(this);
 		_name = Type.getClassName(_class);
 		_nexts = [];
@@ -86,10 +103,6 @@ class Process extends FlxState
 		_qookLink = translate(_qook, "QOOK").split("|");
 		isAnimated = false;
 		parseAllLinksForNames();
-	}
-
-	override public function create()
-	{
 		super.create();
 		#if debug
 		//trace(Main.VERSION);
@@ -122,8 +135,8 @@ class Process extends FlxState
 		
 		hasQook = _qookLink.length>0 && _qookLink[0]!="";
 		hasIllustration = _illustration != "";
-		//hasReminder = !Main.customer.isInitial();
 		
+		//FIXME texet input displays over
 		ui.showHowto(!Std.is(this, DescisionMultipleInput) && !Std.is(this, ActionMultipleInput) && !Std.is(this, ActionMail) );
 		
 		if (hasQook)
@@ -217,15 +230,15 @@ class Process extends FlxState
 		Main.HISTORY.init();
 		//Main.CHECK_NEW_VERSION();
 	}
-
+	/**
+	 * @todo REMOVE
+	 *
 	static public function GET_PREVIOUS_INSTANCE()
 	{
-		/**
-		 * @todo String to Class<Process>
-		 */
+		
 		return Main.HISTORY.getPreviousInstance();
 	}
-
+	*/
 	function listener(s:String):Void 
 	{
 		switch (s){
@@ -248,12 +261,10 @@ class Process extends FlxState
 	
 		Main.user.mainLanguage = lang;
 		Main.COOKIE.flush();
-		/**
-		 * @todo String to Class<T> -> when switchin glang could loose the loops
-		 */
+		
 		Main.tongue.initialize(lang , ()->(
 										FlxG.switchState( 
-											Type.createInstance( Type.getClass(this), [])
+											Type.createInstance( _class, [])
 											)
 										)
 						);
@@ -280,13 +291,7 @@ class Process extends FlxState
 	}
 	function onExit()
 	{
-		/**
-		 * @todo String to Class<T> -> pushing last step to history
-		 */
-		pushToHistory("ALL GOOD", Interactions.Exit);
-		/**
-		 * @todo String to Class<T> -> when switchin glang could loose the loops
-		 */
+		pushToHistory({step: AllGood}, Interactions.Exit);
 		FlxG.switchState(Type.createInstance(Main.LAST_STEP, []));
 	}
 	function onQook():Void
@@ -369,28 +374,28 @@ class Process extends FlxState
 			//trace(defaultString);
 			//trace(customString);
 			//trace(t);
-		//return t;
+		return t;
 		//return StringTools.trim(t) == "" ? txt : t;
-		return t.indexOf("$") == 0 || StringTools.trim(t) == "" ? txt : t;
+		if(Main.DEBUG)
+			return t.indexOf("$") == 0 || StringTools.trim(t) == "" ? txt : t;
+		else	
+			return StringTools.trim(t) == "" ? txt : t;
 		#else
 		return t.indexOf("$") == 0 || StringTools.trim(t) == "" ? txt : t;
 		#end
 		
 	}
-
+	/**
+	 * Override when child class takes contructor parameters
+	 * @param	buttonTxt
+	 * @param	interactionType
+	 * @param	values
+	 * @param	Dynamic>=nul
+	 */
 	function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
 		
-		//Main.HISTORY.add(_name, interactionType, _titleTxt, buttonTxt, values); //
-		/**
-		 * @todo String to Class<T> add params for looping processes
-		 */
-		Main.HISTORY.add(_class, [], interactionType, _titleTxt, buttonTxt, values);
-		#if debug
-			//trace(_name, interactionType, _titleTxt, buttonTxt, values);
-		#end
-		//trace(Main.HISTORY.history);
-		// HISTORY.push({processName : this._name, interaction: buttonTxt});
+		Main.HISTORY.add({step:_class, params:[]}, interactionType, _titleTxt, buttonTxt, values);
 	}
 
 	function set__titleTxt(value:String):String
@@ -412,23 +417,15 @@ class Process extends FlxState
 	 */
 	function move_to_next(nexts:Array<Process>, interaction:Interactions)
 	{
-		// Look in history if same step was passed
-		/**
-		 * @todo String to Class<Process>
-		 */
 		var iteration = Main.HISTORY.getIterations(_name, interaction) - 1;
 		var index = iteration >= nexts.length ? nexts.length - 1 : iteration;
 		FlxG.switchState(nexts[index]);
 	}
 	function moveToNextClassProcess(interaction:Interactions)
 	{
-		/**
-		 * @todo String to Class<T> add params to create Loops
-		 * 
-		 */
 		var iteration = Main.HISTORY.getIterations(_name, interaction) - 1;
 		var index = iteration >= _nexts.length ? _nexts.length - 1 : iteration;
-		FlxG.switchState(Type.createInstance(_nexts[index].process,_nexts[index].nexts));
+		FlxG.switchState(Type.createInstance(_nexts[index].step.step ,_nexts[index].step.params));
 	}
 	override public function destroy():Void
 	{
@@ -460,9 +457,6 @@ class Process extends FlxState
 	
 	function onBack()
 	{
-		/**
-		* @todo String to Class<Process>
-		*/
 		FlxG.switchState(Main.HISTORY.onStepBack());
 	}
 }

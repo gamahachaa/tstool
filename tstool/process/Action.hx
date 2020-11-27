@@ -60,8 +60,12 @@ class Action extends Process
 	public function onClick():Void
 	{
 		pushToHistory(_buttonTxt, Interactions.Next);
-		if (this._nextProcesses.length > 0) // @todo remove after full refactor String to Class<Process>
+		
+		if (this._nextProcesses.length > 0) // @todo 
 		{
+			/**
+			 * @todo  REMOVE ONCE CLAss refactor is cleared
+			 */
 			move_to_next(_nextProcesses, Interactions.Next);
 		}
 		else if (this._nexts.length > 0)

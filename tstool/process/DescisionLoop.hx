@@ -1,4 +1,6 @@
 package tstool.process;
+import tstool.layout.History.Interactions;
+import tstool.process.Process.ProcessContructor;
 
 /**
  * ...
@@ -6,9 +8,9 @@ package tstool.process;
  */
 class DescisionLoop extends Descision
 {
-	var _nextYesProcess:Process;
-	var _nextNoProcess:Process;
-	override public function new(?yesProcess:Process,?noProcess:Process) 
+	var _nextYesProcess:ProcessContructor;
+	var _nextNoProcess:ProcessContructor;
+	override public function new(?yesProcess:ProcessContructor,?noProcess:ProcessContructor) 
 	{
 		super();
 		_nextYesProcess = yesProcess;
@@ -17,11 +19,34 @@ class DescisionLoop extends Descision
 	/**
 	* @todo String to Class<Process>
 	*/
-	override public function create():Void
+	override function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
-		this._nextYesProcesses = [_nextYesProcess == null ? Process.GET_PREVIOUS_INSTANCE() : _nextYesProcess];
-		this._nextNoProcesses= [_nextNoProcess == null ? Process.GET_PREVIOUS_INSTANCE() : _nextNoProcess];
-
-		super.create();
+		Main.HISTORY.add({step:this._class, params: [_nextYesProcess, _nextNoProcess] }, interactionType, _titleTxt, buttonTxt, values);
+	}
+	
+	
+	override public function onYesClick():Void
+	{
+		this._nexts = [_nextYesProcess == null ? Main.HISTORY.getPreviousClass() : _nextYesProcess];
+		//this._nextYesProcesses = [];
+		super.onYesClick();
+	}
+	override public function onNoClick():Void
+	{
+		this._nexts = [_nextNoProcess == null ? Main.HISTORY.getPreviousClass() : _nextNoProcess];
+		super.onNoClick();
+	}
+	override function switchLang(lang:String)
+	{
+	
+		Main.user.mainLanguage = lang;
+		Main.COOKIE.flush();
+		
+		Main.tongue.initialize(lang , ()->(
+										FlxG.switchState( 
+											Type.createInstance( _class, [_nextYesProcess, _nextNoProcess])
+											)
+										)
+						);
 	}
 }

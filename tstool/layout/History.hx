@@ -17,8 +17,9 @@ typedef Snapshot =
 	var iteractionTitle:String;
 	var values:Map<String,Dynamic>;
 	var start:Date;
+	var ?step:ProcessContructor;
 	var ?_class:Class<Process>;
-	var ?_params:Array<Dynamic>;
+	var ?_params:Array<Class<Process>>;
 }
 enum Interactions
 {
@@ -48,18 +49,19 @@ class History
 	 * @param	values
 	 * @param	Dynamic>=nul
 	 */
-	public function add( process:Class<Process>, params:Array<Dynamic>, interaction:Interactions, title:String, iteractionTitle:String, ?values:Map<String,Dynamic>=null)
+	public function add( process:ProcessContructor, interaction:Interactions, title:String, iteractionTitle:String, ?values:Map<String,Dynamic>=null)
 	{
 		history.push(
 		{
-			processName : Type.getClassName(process),
+			processName : Type.getClassName(process.step),
 			interaction: interaction,
 			processTitle:title,
 			iteractionTitle:iteractionTitle,
 			values:values,
 			start: Date.now(),
-			_class: process,
-			_params: params
+			step: process
+			//_class: process.step,
+			//_params: process.params
 		}
 		);
 	}
@@ -80,44 +82,32 @@ class History
 		 * @todo String to Class<Process>
 		 */
 		//return Type.createInstance( Type.resolveClass( old[0].processName), [] );
-		return Type.createInstance( old[0]._class, old[0]._params);
+		return Type.createInstance( old[0].step.step, old[0].step.params);
 	}
 	public function onStepBack()
 	{
 		var last = history.pop();
-		/**
-		 * @todo String to Class<Process> CHECK IF LOOPING WORKS WITH CLASSES CREATED FROM TYPE
-		 */
-		//var lastObject = Type.resolveClass( last.processName);
-		var lastObject = last._class ;
 		
-		if (Type.getSuperClass(lastObject) == DescisionLoop || Type.getSuperClass(lastObject) == ActionLoop)
+		if (Type.getSuperClass(last.step.step) == DescisionLoop || Type.getSuperClass(last.step.step) == ActionLoop)
 		{
+			/**
+			* @todo String to Class<Process> CHECK IF LOOPING WORKS WITH CLASSES CREATED FROM TYPE REMOVE this steps back
+			*/
 			last = history.pop();
-			lastObject = Type.resolveClass( last._class );
-			return Type.createInstance( last._class, [] );
+			//lastObject = Type.resolveClass( last._class );
+			
 		} 
-		
+		return Type.createInstance( last.step.step, last.step.params );
 	}
-	/**
-	 * @todo Remove
-	 *
-	public function twoStepsBack()
-	{
-		var last = history.pop();
-		last = history.pop();
-
-		return Type.createInstance( Type.resolveClass( last.processName), [] );
-	}*/
 	public function getClassIterations(process:Class<Process>, ?interaction:Interactions):Int
 	{
 		/**
-		 * @todo String to Class<Process>
+		 * @testme getClassIterations Class<Process> 
 		 */
 		var count = 0;
 		for ( i in history )
 		{
-			if ((interaction == null && i._class == process) || (interaction == i.interaction && i._class == process) )
+			if ((interaction == null && i.step.step == process) || (interaction == i.interaction && i.step.step == process) )
 			{
 				count++;
 			}
@@ -127,9 +117,6 @@ class History
 	}
 	public function getIterations(processName:String, ?interaction:Interactions):Int
 	{
-		/**
-		 * @todo String to Class<Process>
-		 */
 		var count = 0;
 		for ( i in history )
 		{
@@ -146,13 +133,17 @@ class History
 	{
 		return history[history.length - 1];
 	}
-
+	/**
+	 * @todo  Remove
+	 *
 	inline public function getPreviousInstance()
 	{
-		/**
-		 * @todo String to Class<Process>
-		 */
+		
 		return Type.createInstance( Type.resolveClass( getPreviousProcess().processName), [] );
+	}*/
+	inline public function getPreviousClass():ProcessContructor
+	{
+		return getPreviousProcess().step;
 	}
 
 	function get_history():Array<Snapshot>
@@ -168,7 +159,7 @@ class History
 		return history[history.length-1];
 	}
 	/**
-	 * @todo String to Class<Process>
+	 * @todo Change isInHistory in all sub classes with isClassInteractionInHistory
 	 */
 	public function isInHistory(processName:String, interaction:Interactions)
 	{
@@ -183,8 +174,23 @@ class History
 		return false;
 	}
 	/**
-	* @todo String to Class<Process>
-	*/
+	 * @testme getClassIterations Class<Process>
+	 */
+	public function isClassInteractionInHistory(step:Class<Process>, interaction:Interactions)
+	{
+		for ( i in history )
+		{
+			if (interaction == i.interaction && i.step.step == step )
+			{
+				return true;
+			}
+
+		}
+		return false;
+	}
+	/**
+	 * @todo Change isProcessInHistory in all sub classes with isClassInHistory
+	 */
 	public function isProcessInHistory(processName:String)
 	{
 		for ( i in history )
@@ -197,8 +203,21 @@ class History
 		}
 		return false;
 	}
+	
+	public function isClassInHistory(step:Class<Process>)
+	{
+		for ( i in history )
+		{
+			if (i.step.step == step )
+			{
+				return true;
+			}
+
+		}
+		return false;
+	}
 	/**
-	* @todo String to Class<Process>
+	* @todo Change findStepsInHistory in all sub classes with findStepsClassInHistory
 	*/
 	public function findStepsInHistory(processName:String, ?times:Int=1, ?fromBegining:Bool=true):Array<Snapshot>
 	{
@@ -209,6 +228,38 @@ class History
 			for (i in 0...history.length)
 			{
 				if ( history[i].processName == processName )
+				{
+					tab.push(history[i]);
+					if ( ++count == times) break; 
+					
+				}
+			}
+		}
+		else{
+			var l = history.length;
+		
+			while (l > 0)
+			{
+				--l;
+				if (history[l].processName == processName )
+				{
+					tab.push(history[l]);
+					if ( ++count == times) break; 
+					
+				}
+			}
+		}
+		return tab;
+	}
+	public function findStepsClassInHistory(step:Class<Process>, ?times:Int=1, ?fromBegining:Bool=true):Array<Snapshot>
+	{
+		var tab = [];
+		var count = 0;
+		if (fromBegining)
+		{
+			for (i in 0...history.length)
+			{
+				if ( history[i].step.step == step )
 				{
 					tab.push(history[i]);
 					if ( ++count == times) break; 
@@ -253,16 +304,14 @@ class History
 		}
 		return t;
 	}
-	/**
-	* @todo String to Class<Process>
-	*/	
+	
 	public function getRawStepsArray()
 	{
 		var t = [];
 		var s = 0;
 		for (i in history)
 		{
-			t.push({nb:s++, step:i.processName, interaction: i.interaction, values: i.values==null?"":i.values.toString()});
+			t.push({nb:s++, step:i.step, interaction: i.interaction, values: i.values==null?"":i.values.toString()});
 		}
 		return t;
 	}
@@ -280,9 +329,6 @@ class History
 		Main.tongue.initialize( toLangPair );
 		for (i in history)
 		{
-			/**
-			* @todo String to Class<Process>
-			*/
 			question = Main.tongue.get("$" + i.processName + "_TITLE", "data");
 			choice = getDefaultOrCutomChoice( i.processName, i.interaction);
 			t.push({nb:s++, step: question, interaction: choice, values: i.values==null?"":i.values.toString()});
@@ -310,7 +356,7 @@ class History
 		{
 			case Yes: "UI3";
 			case No: "UI1";
-			case ProcessContructor: "UI2";
+			case Mid: "UI2";
 			default: "UI2";
 		}
 	}
@@ -320,7 +366,7 @@ class History
 		{
 			case Yes: "RIGHT-BTN";
 			case No: "LEFT-BTN";
-			case ProcessContructor: "MID-BTN";
+			case Mid: "MID-BTN";
 			default: "MID-BTN";
 		}
 	}

@@ -41,6 +41,9 @@ class ActionDropDown extends Action
 		}
 		
 	}
+	/**
+	 * @todo String to Class<Process> / isInHistory
+	 */
 	override public function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
 		super.pushToHistory("", Next, ["choice"=>choice]);

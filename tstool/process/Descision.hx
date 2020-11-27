@@ -77,28 +77,35 @@ class Descision extends Process
 	public function onYesClick():Void
 	{
 		pushToHistory(_buttonYesTxt, Interactions.Yes);
-		/**
-		 * @todo String to Class<Process>
-		 */
-
-		if (this._nextYesProcesses.length > 0) 
+		
+		if (this._nextYesProcesses.length > 0) // @todo 
 		{
-			move_to_next(this._nextYesProcesses, Interactions.Yes);
+			/**
+			 * @todo  REMOVE ONCE CLAss refactor is cleared
+			 */
+			move_to_next(_nextYesProcesses, Interactions.Next);
+		}
+		else if (this._nexts.length > 0)
+		{
+			moveToNextClassProcess(Interactions.Next);
 		}
 	}
 
 	public function onNoClick():Void
 	{
-		/**
-		 * @todo String to Class<Process>
-		 */
+		
 		pushToHistory(_buttonNoTxt, Interactions.No);
-		/**
-		 * @todo String to Class<Process>
-		 */
-		if (this._nextNoProcesses.length > 0)
+		
+		if (this._nextNoProcesses.length > 0) 
 		{
-			move_to_next(this._nextNoProcesses, Interactions.No);
+			/**
+			 * @todo  REMOVE ONCE CLAss refactor is cleared
+			 */
+			move_to_next(_nextNoProcesses, Interactions.Next);
+		}
+		else if (this._nexts.length > 0)
+		{
+			moveToNextClassProcess(Interactions.Next);
 		}
 	}
 	override public function update(elapsed:Float):Void
