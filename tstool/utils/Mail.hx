@@ -169,7 +169,7 @@ class Mail
 			//b += '<h1>$_mailSubject</h1>';
 			if (memo != "") b += '<p>$memo</p>';
 			b += '<h2>';
-			if(Main.customer.iri !="" || Main.customer.iri != "not found")
+			if(Main.customer.iri !="" && Main.customer.iri != "not found")
 				b += 'ID: ${Main.customer.iri} ';
 			if(Main.customer.voIP !="")
 				b += 'MSISDN: ${Main.customer.voIP}';
