@@ -78,7 +78,7 @@ class Descision extends Process
 	{
 		pushToHistory(_buttonYesTxt, Interactions.Yes);
 		
-		if (this._nextYesProcesses.length > 0) // @todo 
+		if (this._nextYesProcesses.length > 0) 
 		{
 			/**
 			 * @todo  REMOVE ONCE CLAss refactor is cleared

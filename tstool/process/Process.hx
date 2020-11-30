@@ -291,7 +291,8 @@ class Process extends FlxState
 	}
 	function onExit()
 	{
-		pushToHistory({step: AllGood}, Interactions.Exit);
+		//pushToHistory({step: AllGood}, Interactions.Exit);
+		Main.HISTORY.add({step:AllGood}, Exit,"AllGood","Exit");
 		FlxG.switchState(Type.createInstance(Main.LAST_STEP, []));
 	}
 	function onQook():Void
@@ -425,7 +426,7 @@ class Process extends FlxState
 	{
 		var iteration = Main.HISTORY.getIterations(_name, interaction) - 1;
 		var index = iteration >= _nexts.length ? _nexts.length - 1 : iteration;
-		FlxG.switchState(Type.createInstance(_nexts[index].step.step ,_nexts[index].step.params));
+		FlxG.switchState(Type.createInstance(_nexts[index].step ,_nexts[index].params));
 	}
 	override public function destroy():Void
 	{

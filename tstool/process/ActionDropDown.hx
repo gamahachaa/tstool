@@ -41,19 +41,17 @@ class ActionDropDown extends Action
 		}
 		
 	}
-	/**
-	 * @todo String to Class<Process> / isInHistory
-	 */
-	override public function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
-	{
-		super.pushToHistory("", Next, ["choice"=>choice]);
-	}
+
 	override public function onClick()
 	{
-		if (choice != "")
+		if (validate())
 		{
+			super.pushToHistory(this._buttonTxt, Next, ["choice"=>choice]);
 			super.onClick();
 		}
-		
+	}
+	function validate():Bool
+	{
+		return StringTools.trim(choice) != "";
 	}
 }

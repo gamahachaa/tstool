@@ -24,16 +24,46 @@ class DescisionDropDown extends Descision
 		dp = new FlxUIDropDownMenu(this._padding, this.question.y + this.question.height + _padding, choiceList, function(e){  choice = e; });
 		add( dp );
 	}
-	override public function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
-	{
-		super.pushToHistory("", Next, ["choice"=>choice]);
-	}
+	//override public function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
+	//{
+		//super.pushToHistory(buttonTxt, Next, ["choice"=>choice]);
+	//}
 	override public function onYesClick()
 	{
-		if (choice != "")
+		if (validateYes())
 		{
+			pushToHistory(this._buttonYesTxt, Yes, ["choice"=>choice]);
 			super.onYesClick();
 		}
 		
+	}
+	override public function onNoClick()
+	{
+		if (validateNo())
+		{
+			pushToHistory(this._buttonNoTxt, No, ["choice"=>choice]);
+			super.onNoClick();
+		}
+		
+	}
+	/**
+	 * Override to skip validation
+	 * @return
+	 */
+	function validateYes():Bool
+	{
+		return validate();
+	}
+	/**
+	 * Override to skip validation
+	 * @return
+	 */
+	function validateNo():Bool
+	{
+		return validate();
+	}
+	function validate():Bool
+	{
+		return StringTools.trim(choice) != "";
 	}
 }

@@ -18,8 +18,6 @@ typedef Snapshot =
 	var values:Map<String,Dynamic>;
 	var start:Date;
 	var ?step:ProcessContructor;
-	var ?_class:Class<Process>;
-	var ?_params:Array<Class<Process>>;
 }
 enum Interactions
 {
@@ -41,7 +39,7 @@ class History
 		//stack = new FlxSprite();
 	}
 	/**
-	 * @todo pass proceses as Class and buil only when needed (not here)
+	 * @testme pass proceses as Class and build only when needed (not here)
 	 * @param	process
 	 * @param	interaction
 	 * @param	title
@@ -79,7 +77,7 @@ class History
 		#end
 		var old = history.splice(index, history.length - index);
 		/**
-		 * @todo String to Class<Process>
+		 * @testme String to Class<Process>
 		 */
 		//return Type.createInstance( Type.resolveClass( old[0].processName), [] );
 		return Type.createInstance( old[0].step.step, old[0].step.params);
@@ -91,7 +89,7 @@ class History
 		if (Type.getSuperClass(last.step.step) == DescisionLoop || Type.getSuperClass(last.step.step) == ActionLoop)
 		{
 			/**
-			* @todo String to Class<Process> CHECK IF LOOPING WORKS WITH CLASSES CREATED FROM TYPE REMOVE this steps back
+			* @testme String to Class<Process> CHECK IF LOOPING WORKS WITH CLASSES CREATED FROM TYPE REMOVE this steps back
 			*/
 			last = history.pop();
 			//lastObject = Type.resolveClass( last._class );
@@ -273,7 +271,7 @@ class History
 			while (l > 0)
 			{
 				--l;
-				if (history[l].processName == processName )
+				if (history[l].step.step == step )
 				{
 					tab.push(history[l]);
 					if ( ++count == times) break; 
