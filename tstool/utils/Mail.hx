@@ -91,7 +91,8 @@ class Mail
 		{
 			
 			//mailWrapper.setTo(["bruno.baudry@salt.ch"]);
-			mailWrapper.setTo(["superofficetest@salt.ch"]);
+			mailWrapper.setTo([ticket.email]);
+			//mailWrapper.setTo(["superofficetest@salt.ch"]);
 			mailWrapper.setCc(['${Main.user.iri}']);
 			mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
 			//mailWrapper.setBcc(["bruno.baudry@salt.ch"]);

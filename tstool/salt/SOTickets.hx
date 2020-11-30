@@ -138,7 +138,7 @@ public static var FIX_313:SOTickets = new SOTickets('FIX','3.1.3','FIBER_REMINDE
 public static var FIX_424:SOTickets = new SOTickets('FIX','4.2.4','FIBER_ACCESSORIES_SO','4.Order 2.Logistics 4.Fiber Accessory Delivery Issue','fiber.tech.qtool@salt.ch');
 
 //
-public static var MOBILE_511:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_FINANCIAL_COMPLAINT_SO','5.Escalation 1.Compensation 1.Request for Compensation','fiber.tech.qtool@salt.ch');
+public static var MOBILE_511:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_FINANCIAL_COMPLAINT_SO','5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch');
 
 
 	public function new(domain:String,number:String,queue:String,desc:String,email:String) 
