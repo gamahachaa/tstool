@@ -80,10 +80,19 @@ class Mail
 		
 		mailWrapper.setCc(['${Main.user.iri}']);
 		mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
+		//mailWrapper.setTo(["superofficetest@salt.ch"]);
+		//mailWrapper.setCc(['${Main.user.iri}']);
+		//mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
+		//params.set(to_email, "bruno.baudry@salt.ch");
+		
+		//params.set(to_email, ticket.email); // Test on SO prod cs.salt.ch
 		#else
 		if (Main.DEBUG)
 		{
-			mailWrapper.setTo(["superofficetest@salt.ch"]);
+			
+			//mailWrapper.setTo(["bruno.baudry@salt.ch"]);
+			mailWrapper.setTo([ticket.email]);
+			//mailWrapper.setTo(["superofficetest@salt.ch"]);
 			mailWrapper.setCc(['${Main.user.iri}']);
 			mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
 			//mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
@@ -238,10 +247,6 @@ class Mail
 		historyList += "<li><strong>"+_currentProcess.question.text +"</strong></li>";
 		if (!isEnglish)
 		{
-			/**
-			 * @todo String to Class<Process> / isInHistory
-			 */
-
 			var englishHistroryArray = Main.HISTORY.getStoredStepsTranslatedArray();
 			
 		
@@ -273,7 +278,7 @@ class Mail
 		var interaction = switch(i.interaction){
 			case Yes: "RIGHT-BTN";
 			case No: "LEFT-BTN";
-			case Mid: "MID-BTN";
+			case Next: "MID-BTN";
 			default: "MID-BTN";
 		};
 		var interactionEN = Main.tongue.get("$" + i.processName + "_" + interaction, "data");
@@ -282,7 +287,7 @@ class Mail
 			interactionEN = Main.tongue.get("$defaultBtn_" + switch(i.interaction){
 			case Yes: "UI3";
 			case No: "UI1";
-			case Mid: "UI2";
+			case Next: "UI2";
 			default: "UI2";
 		}, "meta");
 		}	
