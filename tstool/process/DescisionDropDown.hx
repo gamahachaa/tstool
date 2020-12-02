@@ -16,18 +16,15 @@ class DescisionDropDown extends Descision
 	{
 		super();
 		choiceList = choices;
-		choice = "";
+		
 	}
 	override public function create()
 	{
+		choice = "";
 		super.create();
 		dp = new FlxUIDropDownMenu(this._padding, this.question.y + this.question.height + _padding, choiceList, function(e){  choice = e; });
 		add( dp );
 	}
-	//override public function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
-	//{
-		//super.pushToHistory(buttonTxt, Next, ["choice"=>choice]);
-	//}
 	override public function onYesClick()
 	{
 		if (validateYes())

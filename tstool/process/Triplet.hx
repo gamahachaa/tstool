@@ -24,16 +24,18 @@ class Triplet extends Process
 	var btnYes:FlxButton;
 	var btnMid:FlxButton;
 	//var seperator:flixel.addons.display.shapes.FlxShapeBox;
-	override public function new()
-	{
-		super();
-		_buttonYesTxt = translate(_buttonYesTxt, "RIGHT-BTN");
-		_buttonMidTxt = translate(_buttonMidTxt, "MID-BTN");
-		//_buttonYesTxt = " \u2B62";
-		_buttonNoTxt =  translate(_buttonNoTxt, "LEFT-BTN") ;
-	}
+	//override public function new()
+	//{
+		//super();
+	//}
 	override public function create():Void
 	{
+		//trace("tstool.process.Triplet::create::_buttonYesTxt BEFORE", _buttonYesTxt );
+		_buttonYesTxt = translate(_buttonYesTxt, "RIGHT-BTN");
+		//trace("tstool.process.Triplet::create::_buttonYesTxt AFTER", _buttonYesTxt );
+		_buttonMidTxt = translate(_buttonMidTxt, "MID-BTN");
+		_buttonNoTxt =  translate(_buttonNoTxt, "LEFT-BTN") ;
+
 		super.create();
 		btnYes = new FlxButton(0, 0, _buttonYesTxt, onYesClick);
 		registerButton(btnYes);	

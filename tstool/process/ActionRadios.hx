@@ -26,15 +26,14 @@ class ActionRadios extends Action
 	{
 		super();
 		this.radios = radios;
+	}
+	override public function create()
+	{
 		this.rds = [];
 		this.radiosMap = [];
 		status = [];
 		positions = [];
 		
-		
-	}
-	override public function create()
-	{
 		var p:FlxPoint = new FlxPoint(0, 0);
 		var r:RadioTitle;
 		//var most:Rectangle = new Rectangle(0, 0,0,0);
@@ -90,7 +89,7 @@ class ActionRadios extends Action
 				p.y = rd.boundingRect.y + rd.boundingRect.height;
 			}
 		}
-		trace(p);
+		//trace(p);
 		p.y = p.y + 24;
 		positionButtons(p);
 		positionBottom(p);

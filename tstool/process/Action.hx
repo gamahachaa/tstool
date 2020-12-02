@@ -18,13 +18,14 @@ class Action extends Process
 	var _nextProcesses:Array<Process> = [];
 	var _nextClassProcesses:Array<ProcessContructor> = [];
 	var btn:FlxButton;
-	public function new()
-	{
-		super();
-		_buttonTxt = translate( _buttonTxt, "MID-BTN" );
-	}
+	//public function new()
+	//{
+		//super();
+		//
+	//}
 	override public function create():Void
 	{
+		_buttonTxt = translate( _buttonTxt, "MID-BTN" );
 		super.create();
 
 		btn = new FlxButton(0, 0, _buttonTxt, onClick);

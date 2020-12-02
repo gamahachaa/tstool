@@ -23,14 +23,13 @@ class ActionMultipleInput extends Action
 	{
 		super();
 		this.inputs = inputs;
-		
 		nextValidatedSignal = new FlxTypedSignal<Bool->Void>();
+		
 		//_focus == null;
 	}
 	override public function create( ):Void
 	{
 		
-		//itetateme = multipleInputs.inputs.iterator();
 		multipleInputs = new MultipleInput(this, [for (i in inputs) i.input]);
 		super.create();
 		

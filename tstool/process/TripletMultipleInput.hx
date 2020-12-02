@@ -1,5 +1,5 @@
 package tstool.process;
-import tstool.layout.History;
+
 import flixel.FlxG;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import tstool.layout.History.Interactions;
@@ -34,6 +34,7 @@ class TripletMultipleInput extends Triplet
 	}
 	override public function create( ):Void
 	{
+
 		multipleInputs = new MultipleInput(this, [for (i in inputs) i.input]);
 		//itetateme = multipleInputs.inputs.iterator();
 		super.create();

@@ -29,6 +29,7 @@ class DescisionMultipleInput extends Descision
 	}
 	override public function create( ):Void
 	{
+
 		multipleInputs = new MultipleInput(this, [for (i in inputs) i.input]);
 		super.create();
 	}
@@ -59,10 +60,10 @@ class DescisionMultipleInput extends Descision
 	}
 	override public function onYesClick():Void
 	{
-		//#if debug
+		#if debug
 		////super.onYesClick(); // test only
-		//trace("DescisionMultipleInput.onYesClick");
-		//#end
+		trace("DescisionMultipleInput.onYesClick");
+		#end
 		if (validateYes())
 		{
 			yesValidatedSignal.dispatch(true);
@@ -74,16 +75,20 @@ class DescisionMultipleInput extends Descision
 	}
 	override public function onNoClick():Void
 	{
-		//#if debug
+		#if debug
 		//super.onNoClick(); // test only
-		//#end
+		
+		#end
 		if (validateNo())
 		{
 			noValidatedSignal.dispatch(true);
+			//trace("tstool.process.DescisionMultipleInput::noValidated :: Signal.dispatch(true)");
 			super.onNoClick();
 		}
-		else
+		else{
+			//trace("tstool.process.DescisionMultipleInput::noValidated :: Signal.dispatch(false)");
 			noValidatedSignal.dispatch(false);
+		}
 		//#end
 	}
 	override function positionThis(?offSet:FlxPoint)

@@ -24,13 +24,16 @@ class Descision extends Process
 	override public function new()
 	{
 		super();
-		_buttonYesTxt = translate(_buttonYesTxt, "RIGHT-BTN");
-		//_buttonYesTxt = " \u2B62";
-		_buttonNoTxt =  translate(_buttonNoTxt, "LEFT-BTN") ;
+		
 	}
 	override public function create():Void
 	{
+		_buttonYesTxt = translate(_buttonYesTxt, "RIGHT-BTN");
+		_buttonNoTxt =  translate(_buttonNoTxt, "LEFT-BTN") ;
 		super.create();
+		/**
+		 * @todo SPEARATE layout items
+		 */
 		btnYes = new FlxButton(0, 0, _buttonYesTxt, onYesClick);
 		registerButton(btnYes);
 		btnNo = new FlxButton(0, 0, _buttonNoTxt, onNoClick);
@@ -47,12 +50,7 @@ class Descision extends Process
 		btnNo.labelAlphas = [1,1,1];
 		btnYes.label.setFormat(Main.INTERACTION_FMT.font, Main.INTERACTION_FMT.size);
 		btnNo.label.setFormat( Main.INTERACTION_FMT.font, Main.INTERACTION_FMT.size);
-		//btnNo.label.color = Main.INTERACTION_FMT.color;
-		//btnYes.label.color = Main.INTERACTION_FMT.color;
-		//btnNo.label.size = Main.INTERACTION_FMT.size;
-		//btnYes.label.size = Main.INTERACTION_FMT.size;
 
-		//add(seperator);
 		add(btnYes);
 		add(btnNo);
 
@@ -93,7 +91,6 @@ class Descision extends Process
 
 	public function onNoClick():Void
 	{
-		
 		pushToHistory(_buttonNoTxt, Interactions.No);
 		
 		if (this._nextNoProcesses.length > 0) 

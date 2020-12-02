@@ -19,7 +19,6 @@ class ActionDropDown extends Action
 		super();
 		choiceList = choices;
 		choice = "";
-		
 	}
 	override public function create()
 	{

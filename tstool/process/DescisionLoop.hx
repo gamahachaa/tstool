@@ -29,7 +29,6 @@ class DescisionLoop extends Descision
 	override public function onYesClick():Void
 	{
 		this._nexts = [_nextYesProcess == null ? Main.HISTORY.getPreviousClass() : _nextYesProcess];
-		//this._nextYesProcesses = [];
 		super.onYesClick();
 	}
 	override public function onNoClick():Void

@@ -77,10 +77,11 @@ class Process extends FlxState
 	public function new()
 	{
 		super();
-		//isFocused = false;
-		/*
 		_class = Type.getClass(this);
 		_name = Type.getClassName(_class);
+		//isFocused = false;
+		/*
+		
 		_nexts = [];
 		
 		_titleTxt = translate( _titleTxt, "TITLE");
@@ -93,8 +94,8 @@ class Process extends FlxState
 
 	override public function create()
 	{
-		_class = Type.getClass(this);
-		_name = Type.getClassName(_class);
+		//_class = Type.getClass(this);
+		//_name = Type.getClassName(_class);
 		_nexts = [];
 		
 		_titleTxt = translate( _titleTxt, "TITLE");
@@ -292,7 +293,7 @@ class Process extends FlxState
 	function onExit()
 	{
 		//pushToHistory({step: AllGood}, Interactions.Exit);
-		Main.HISTORY.add({step:AllGood}, Exit,"AllGood","Exit");
+		Main.HISTORY.add({step: AllGood }, Exit,"AllGood","Exit");
 		FlxG.switchState(Type.createInstance(Main.LAST_STEP, []));
 	}
 	function onQook():Void
@@ -362,6 +363,7 @@ class Process extends FlxState
 	
 	function translate(txt:String, suffix:String, ?context="data"):String
 	{
+		
 		var defaultString = "$" + txt + "_" + suffix;
 		var customString = "$" + this._name + "_" + suffix;
 		
@@ -372,17 +374,20 @@ class Process extends FlxState
 		var t = Main.tongue.get(context == "data" ? customString : defaultString, context);
 		
 		#if debug
+			//trace("tstool.process.Process::translate::txt", txt );
+			//trace("tstool.process.Process::translate::suffix", suffix );
+			//trace("tstool.process.Process::translate::context", context );
 			//trace(defaultString);
 			//trace(customString);
 			//trace(t);
-		return t;
-		//return StringTools.trim(t) == "" ? txt : t;
+			//return t;
+			//return StringTools.trim(t) == "" ? txt : t;
 		if(Main.DEBUG)
 			return t.indexOf("$") == 0 || StringTools.trim(t) == "" ? txt : t;
 		else	
 			return StringTools.trim(t) == "" ? txt : t;
 		#else
-		return t.indexOf("$") == 0 || StringTools.trim(t) == "" ? txt : t;
+			return t.indexOf("$") == 0 || StringTools.trim(t) == "" ? txt : t;
 		#end
 		
 	}
@@ -395,7 +400,6 @@ class Process extends FlxState
 	 */
 	function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
-		
 		Main.HISTORY.add({step:_class, params:[]}, interactionType, _titleTxt, buttonTxt, values);
 	}
 
@@ -418,14 +422,23 @@ class Process extends FlxState
 	 */
 	function move_to_next(nexts:Array<Process>, interaction:Interactions)
 	{
+		//trace("tstool.process.Process::move_to_next");
 		var iteration = Main.HISTORY.getIterations(_name, interaction) - 1;
 		var index = iteration >= nexts.length ? nexts.length - 1 : iteration;
 		FlxG.switchState(nexts[index]);
 	}
+	/**
+	 * @FIXME broken on BACK
+	 * @param	interaction
+	 */
 	function moveToNextClassProcess(interaction:Interactions)
 	{
-		var iteration = Main.HISTORY.getIterations(_name, interaction) - 1;
+		//trace("tstool.process.Process::moveToNextClassProcess");
+		var iteration = Main.HISTORY.getClassIterations(_class, interaction);
+		//trace("tstool.process.Process::moveToNextClassProcess::iteration ", iteration  );
 		var index = iteration >= _nexts.length ? _nexts.length - 1 : iteration;
+		//trace("tstool.process.Process::moveToNextClassProcess::index", index );
+		//trace("tstool.process.Process::moveToNextClassProcess::_nexts[index]", _nexts[index] );
 		FlxG.switchState(Type.createInstance(_nexts[index].step ,_nexts[index].params));
 	}
 	override public function destroy():Void

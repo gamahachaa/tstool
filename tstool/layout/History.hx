@@ -85,16 +85,16 @@ class History
 	public function onStepBack()
 	{
 		var last = history.pop();
-		
+		/**
+		* @testme String to Class<Process> CHECK IF LOOPING WORKS WITH CLASSES CREATED FROM TYPE REMOVE this steps back
+		*
 		if (Type.getSuperClass(last.step.step) == DescisionLoop || Type.getSuperClass(last.step.step) == ActionLoop)
 		{
-			/**
-			* @testme String to Class<Process> CHECK IF LOOPING WORKS WITH CLASSES CREATED FROM TYPE REMOVE this steps back
-			*/
+			
 			last = history.pop();
 			//lastObject = Type.resolveClass( last._class );
 			
-		} 
+		}*/ 
 		return Type.createInstance( last.step.step, last.step.params );
 	}
 	public function getClassIterations(process:Class<Process>, ?interaction:Interactions):Int
