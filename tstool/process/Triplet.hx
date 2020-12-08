@@ -1,5 +1,6 @@
 package tstool.process;
 import tstool.layout.History;
+import tstool.layout.UI;
 
 import flixel.FlxG;
 import flixel.math.FlxPoint;
@@ -56,13 +57,13 @@ class Triplet extends Process
 		btnYes.labelAlphas = [1,1,1];
 		btnNo.labelAlphas = [1,1,1];
 		btnMid.labelAlphas = [1,1,1];
-		btnYes.label.setFormat(Main.INTERACTION_FMT.font, Main.INTERACTION_FMT.size);
-		btnNo.label.setFormat( Main.INTERACTION_FMT.font, Main.INTERACTION_FMT.size);
-		btnMid.label.setFormat( Main.INTERACTION_FMT.font, Main.INTERACTION_FMT.size);
-		//btnNo.label.color = Main.INTERACTION_FMT.color;
-		//btnYes.label.color = Main.INTERACTION_FMT.color;
-		//btnNo.label.size = Main.INTERACTION_FMT.size;
-		//btnYes.label.size = Main.INTERACTION_FMT.size;
+		btnYes.label.setFormat(UI.INTERACTION_FMT.font, UI.INTERACTION_FMT.size);
+		btnNo.label.setFormat( UI.INTERACTION_FMT.font, UI.INTERACTION_FMT.size);
+		btnMid.label.setFormat( UI.INTERACTION_FMT.font, UI.INTERACTION_FMT.size);
+		//btnNo.label.color = UI.INTERACTION_FMT.color;
+		//btnYes.label.color = UI.INTERACTION_FMT.color;
+		//btnNo.label.size = UI.INTERACTION_FMT.size;
+		//btnYes.label.size = UI.INTERACTION_FMT.size;
 
 		//add(seperator);
 		add(btnYes);
@@ -79,6 +80,8 @@ class Triplet extends Process
 		btnNo.updateHitbox();
 		btnMid.updateHitbox();
 		positionThis();
+		setStyle();
+		setStyle();
 	}
 	function positionThis()
 	{
@@ -93,9 +96,9 @@ class Triplet extends Process
 	override public function setStyle()
 	{
 		super.setStyle();
-		btnNo.label.color = Main.THEME.interaction;
-		btnYes.label.color = Main.THEME.interaction;
-		btnMid.label.color = Main.THEME.interaction;
+		btnNo.label.color = UI.THEME.interaction;
+		btnYes.label.color = UI.THEME.interaction;
+		btnMid.label.color = UI.THEME.interaction;
 	}
 	public function onMidClick():Void
 	{
@@ -106,11 +109,11 @@ class Triplet extends Process
 			/**
 			 * @todo  REMOVE ONCE CLAss refactor is cleared
 			 */
-			move_to_next(_nextMidProcesses, Interactions.Next);
+			move_to_next(_nextMidProcesses, Interactions.Mid);
 		}
 		else if (this._nexts.length > 0)
 		{
-			moveToNextClassProcess(Interactions.Next);
+			moveToNextClassProcess(Interactions.Mid);
 		}
 	}
 	public function onYesClick():Void
@@ -122,11 +125,11 @@ class Triplet extends Process
 			/**
 			 * @todo  REMOVE ONCE CLAss refactor is cleared
 			 */
-			move_to_next(_nextYesProcesses, Interactions.Next);
+			move_to_next(_nextYesProcesses, Interactions.Yes);
 		}
 		else if (this._nexts.length > 0)
 		{
-			moveToNextClassProcess(Interactions.Next);
+			moveToNextClassProcess(Interactions.Yes);
 		}
 	}
 
@@ -140,11 +143,11 @@ class Triplet extends Process
 			/**
 			 * @todo  REMOVE ONCE CLAss refactor is cleared
 			 */
-			move_to_next(_nextNoProcesses, Interactions.Next);
+			move_to_next(_nextNoProcesses, Interactions.No);
 		}
 		else if (this._nexts.length > 0)
 		{
-			moveToNextClassProcess(Interactions.Next);
+			moveToNextClassProcess(Interactions.No);
 		}
 	}
 	override public function update(elapsed:Float):Void

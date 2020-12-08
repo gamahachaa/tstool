@@ -177,10 +177,14 @@ class VTIdataParser
 			trace( profile );
 			trace( topics.get(LANG));
 		#end
-		if(LANG !="")
-			healthCheckCustomerProfile(topics, LANG, content);
+		/**
+		 * @todo manage vti oparsing error send email to agent
+		 */
+		//if(LANG !="")
+			//healthCheckCustomerProfile(topics, LANG, content);
 		return profile;
 	}
+	/*
 	function healthCheckCustomerProfile(topics, lng, content)
 	{
 		
@@ -195,6 +199,7 @@ class VTIdataParser
 				}
 			}
 		}
+	
 		if (noMatch.length > 0)
 		{
 			var b = "language " + lng + "<br/><ul>";
@@ -222,7 +227,7 @@ class VTIdataParser
 			
 		}
 		
-	}
+	}*/
 	function parseHealthCheckDashboard(s:String):Map<String,Map<String,String>>
 	{		
 		var mainTopics:Array<String> = ["META", "CRM", "TV", "VOD", "Selfcare", "Voice", "Fiber FLL", "IPs", "DHCP", "ONT Config TFTP", "OLT (nokia/huawei)", "Router"];

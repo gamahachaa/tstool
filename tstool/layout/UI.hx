@@ -7,6 +7,7 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
+import flixel.util.FlxColor;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import lime.math.Rectangle;
 import openfl.ui.Mouse;
@@ -16,6 +17,21 @@ import openfl.ui.MouseCursor;
  * ...
  * @author bb
  */
+typedef BasicFormat =
+{
+	var font:String;
+	var size:Int;
+}
+typedef ThemeColor =
+{
+	var title:FlxColor;
+	var basic:FlxColor;
+	var basicStrong:FlxTextFormatMarkerPair;
+	var basicEmphasis:FlxTextFormatMarkerPair;
+	var meta:FlxColor;
+	var interaction:FlxColor;
+	var bg:FlxColor;
+}
 class UI extends FlxTypedSpriteGroup<FlxSprite> 
 {
 	var menu:Menu;
@@ -31,6 +47,41 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 	public var question(get, null):Question;
 	public var details(get, null):FlxText;
 	public static inline var PADDING:Int = 30;
+	/***************************************************************************************
+	/***************************** TYPOGRAPHIE *********************************************
+	/***************************************************************************************
+	/***************************************************************************************/
+	static inline var TITLE_FONT:String = "assets/fonts/Lato-Black.ttf";
+	static inline var BASIC_FONT:String = "assets/fonts/Lato-Regular.ttf";
+	public static var TITLE_FMT:BasicFormat = {font:TITLE_FONT, size:20};
+	public static var BASIC_FMT:BasicFormat = {font:BASIC_FONT, size:14};
+	public static var META_FMT:BasicFormat = {font:TITLE_FONT, size:16};
+	public static var INTERACTION_FMT:BasicFormat = {font:TITLE_FONT, size:18};
+	public static var DARK_THEME :ThemeColor =
+	{
+		bg: SaltColor.BLACK,
+		title:SaltColor.WHITE,
+		basic:SaltColor.WHITE,
+	basicStrong:new FlxTextFormatMarkerPair(new FlxTextFormat(SaltColor.LIGHT_BLUE,false),"<b>"),
+		basicEmphasis:new FlxTextFormatMarkerPair(new FlxTextFormat(SaltColor.ORANGE,false),"<em>"),
+		meta:SaltColor.MUSTARD,
+		interaction: SaltColor.WHITE
+
+	};
+	public static var WHITE_THEME :ThemeColor =
+	{
+		bg: SaltColor.WHITE,
+		title:SaltColor.BLACK_PURE,
+		basic:SaltColor.BLACK,
+		basicStrong:new FlxTextFormatMarkerPair(new FlxTextFormat(SaltColor.TUQUOISE,true),"<b>"),
+		basicEmphasis:new FlxTextFormatMarkerPair(new FlxTextFormat(SaltColor.RED,false,true),"<em>"),
+		meta:SaltColor.TUQUOISE,
+		interaction: SaltColor.DARK_GRAY
+
+	};
+	public static var THEME:ThemeColor = DARK_THEME;
+	
+	
 	public function new(X:Float=0, Y:Float=0, MaxSize:Int=0) 
 	{
 		super(X, Y, MaxSize);
@@ -42,12 +93,12 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 			registerButton(i);
 		}
 		menu.stringSignal.add( listener );
-		separatorH = new FlxShapeBox(0, 0, FlxG.width, PADDING / 4, {thickness:0, color:0x00000000}, SaltColor.BLACK);
-		separatorV = new FlxShapeBox(0, 0,  PADDING / 6, FlxG.height, {thickness:0, color:0x00000000}, SaltColor.BLACK);
+		separatorH = new FlxShapeBox(0, 0, FlxG.width, PADDING / 4, {thickness:0, color:0x00000000}, SaltColor.BLACK_PURE);
+		separatorV = new FlxShapeBox(0, 0,  PADDING / 6, FlxG.height, {thickness:0, color:0x00000000}, SaltColor.BLACK_PURE);
 		separatorV.visible = false;
 		
 		question = new Question(0, 0, 1000, "", 24, true);
-		question.setFormat(Main.TITLE_FMT.font, Main.TITLE_FMT.size);
+		question.setFormat( UI.TITLE_FMT.font, UI.TITLE_FMT.size);
 		details = new FlxText(0, 0,  FlxG.width / 3, "", 16 , true);
 		details.autoSize = question.autoSize = false;
 		/**
@@ -55,7 +106,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 		 */
 		//details = new FlxText(0, 0, hasIllustration ? FlxG.width / 3 : FlxG.width-PADDING, "", hasIllustration? 16:24 , true);
 		//details.setFormat(Main.BASIC_FMT.font, hasIllustration ? Main.BASIC_FMT.size: Main.BASIC_FMT.size+4);
-		details.setFormat(Main.BASIC_FMT.font, Main.BASIC_FMT.size );
+		details.setFormat( UI.BASIC_FMT.font, UI.BASIC_FMT.size );
 		
 		illustration = new FlxSprite(0, 0);
 		illustration.visible = false;
@@ -73,7 +124,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 		qook.loadGraphic("assets/images/ui/help.png", true, 50, 50);
 		var ptNo:FlxPoint = new FlxPoint( -4, -20);
 		qook.labelOffsets = [ptNo, ptNo, ptNo];
-		qook.label.setFormat(Main.META_FMT.font, Main.META_FMT.size);
+		qook.label.setFormat(UI.META_FMT.font, UI.META_FMT.size);
 		qook.label.wordWrap = false;
 		qook.label.autoSize = true;
 		qook.updateHitbox();
@@ -132,7 +183,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 		{
 			details.width = FlxG.width - PADDING;
 			details.textField.width = FlxG.width - PADDING;
-			details.setFormat(Main.BASIC_FMT.font, Main.BASIC_FMT.size+4);
+			details.setFormat( UI.BASIC_FMT.font, UI.BASIC_FMT.size+4);
 			details.updateFramePixels();
 		}
 		else{
@@ -153,7 +204,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 	public function positionButtons(?X:Float=0,?Y:Float=0)
 	{
 		var l:Int = btns.length;
-		var btnsMargin = FlxG.width / 3 + PADDING;
+		//var btnsMargin = FlxG.width / 3 + PADDING;
 		
 		var btnSpace = FlxG.width - X;
 		var unit = btnSpace / (l + 1);
@@ -166,22 +217,13 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 	}
 	function toggleStyle()
 	{
-		Main.TOGGLE_MAIN_STYLE();
+		//Main.TOGGLE_MAIN_STYLE();
+		UI.THEME = UI.THEME == UI.WHITE_THEME ? UI.DARK_THEME: UI.WHITE_THEME;
 		setStyle();
 	}
 	function setStyle()
 	{
-		//this.bgColor = Main.THEME.bg;
-		this.details.color = Main.THEME.basic;
-		this.details.applyMarkup(this.details.text, [Main.THEME.basicStrong, Main.THEME.basicEmphasis]);
-		
-		this.question.color = Main.THEME.title;
-		this.question.applyMarkup(this.question.text, [Main.THEME.basicStrong, Main.THEME.basicEmphasis]);
-		//if (hasQook)
-		this.qook.label.color = Main.THEME.meta;
-		//menu.exitBtn.label.color = Main.THEME.meta;
-		question.drawFrame();
-		details.drawFrame();
+		this.qook.label.color = UI.THEME.meta;
 		this.qook.label.drawFrame();
 		stringSignal.dispatch("setStyle");
 	}
@@ -221,7 +263,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 	
 	override public function update(elapsed:Float):Void
 	{
-		if (Main.DEBUG && FlxG.keys.pressed.ALT && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT &&  FlxG.keys.pressed.S  && !isFocused)
+		if (FlxG.keys.pressed.ALT && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT &&  FlxG.keys.pressed.S  && !isFocused)
 		{
 			/***************************************
 			 * Debug only 
@@ -231,8 +273,9 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 			//openSubState(dataView);
 			stringSignal.dispatch("openSubState");
 		}
-		else if (Main.HISTORY.history.length > 0 && FlxG.keys.justReleased.UP)
+		else if (!Main.HISTORY.isEmpty() && FlxG.keys.justReleased.UP)
 		{
+			
 			/***************************************
 			 * Goi back one step
 			/***************************************/
@@ -245,6 +288,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 			 * Generate comment mail
 			/***************************************/
 			//onComment();
+			//trace("combo");
 			stringSignal.dispatch("onComment");
 		}
 		else if (qook.visible == true && FlxG.keys.pressed.Q && FlxG.keys.pressed.ALT && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && !isFocused)
@@ -260,7 +304,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 			//onExit();
 			stringSignal.dispatch("onExit");
 		}
-		setStyle();
+		
 		super.update(elapsed);
 	}
 	function get_details():FlxText 

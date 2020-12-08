@@ -1,5 +1,6 @@
 package tstool.process;
 import flixel.math.FlxPoint;
+import tstool.layout.History.Interactions;
 import tstool.layout.IPositionable;
 import tstool.layout.RadioTitle;
 
@@ -21,20 +22,20 @@ class ActionRadios extends Action
 	var rds:Array<RadioTitle>;
 	var radios:Array<RadioDef>;
 	var radiosMap:Map<String, RadioTitle>;
+	static inline var RADIO_PADDING:Int = 4;
 	
 	public function new( radios:Array<RadioDef> ) 
 	{
 		super();
 		this.radios = radios;
+		status = [];
+		this.rds = [];
+		this.radiosMap = [];
+		positions = [];
 	}
 	override public function create()
 	{
-		this.rds = [];
-		this.radiosMap = [];
-		status = [];
-		positions = [];
-		
-		var p:FlxPoint = new FlxPoint(0, 0);
+		//var p:FlxPoint = new FlxPoint(0, 0);
 		var r:RadioTitle;
 		//var most:Rectangle = new Rectangle(0, 0,0,0);
 		for (i in radios)
@@ -58,22 +59,14 @@ class ActionRadios extends Action
 			buddy = positions.get(rds[i]).buddy;
 			if (i == 0 )
 			{
-				
-				rds[i].positionMe( buddy == null ? this.question.boundingRect : buddy.boundingRect, 4 , dir);
+				//rds[i].positionMe( buddy == null ? this.question.boundingRect : buddy.boundingRect, 4 , dir);
+				rds[i].positionMe( this.question.boundingRect, RADIO_PADDING , [bottom,left]);
 			}else{
-				rds[i].positionMe(buddy == null ? rds[i-1].boundingRect:buddy.boundingRect , 4,dir == null ?[top,right]:dir);
+				rds[i].positionMe(buddy == null ? rds[i-1].boundingRect:buddy.boundingRect , RADIO_PADDING ,dir == null ?[top,right]:dir);
 			}
-			/*if (rds[i].boundingRect.x + rds[i].boundingRect.width > p.x) {
-				p.x = rds[i].boundingRect.x + rds[i].boundingRect.width;
-			}
-			if (rds[i].boundingRect.y + rds[i].boundingRect.height > p.y) {
-				p.y = rds[i].boundingRect.y + rds[i].boundingRect.height;
-			}*/
 		}
 		position();
-		//p = new FlxPoint(most.x + most.width, most.y + most.height);
-		//positionButtons(p);
-		//positionBottom(p);
+
 	}
 	public function position()
 	{
@@ -90,7 +83,7 @@ class ActionRadios extends Action
 			}
 		}
 		//trace(p);
-		p.y = p.y + 24;
+		p.y = p.y + (RADIO_PADDING*3);
 		positionButtons(p);
 		positionBottom(p);
 	}
@@ -120,7 +113,7 @@ class ActionRadios extends Action
 			i.setStyle();
 		}
 	}
-	override function pushToHistory( buttonTxt:String, interactionType:tstool.layout.History.Interactions,?values:Map<String,Dynamic>=null)
+	override function pushToHistory( buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null)
 	{
 		super.pushToHistory( buttonTxt, interactionType, status);
 	}

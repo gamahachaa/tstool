@@ -15,7 +15,8 @@ class Instructions extends ClosableSubState
 
 	public function new() 
 	{
-		var bg = Main.THEME.bg;
+		//var bg = UI.THEME.bg;
+		var bg:FlxColor = SaltColor.BLACK_PURE;
 		bg.alphaFloat = .8;
 		super(bg);
 		

@@ -1,7 +1,8 @@
 package tstool.process;
 
 import flixel.FlxG;
-import flixel.FlxSubState;
+import tstool.layout.UI;
+//import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.mouse.FlxMouseEventManager;
 import flixel.math.FlxPoint;
@@ -9,7 +10,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import tstool.layout.ClosableSubState;
 import tstool.layout.HitoryItem;
-import tstool.layout.SaltColor;
+//import tstool.layout.SaltColor;
 
 /**
  * ...
@@ -53,9 +54,25 @@ class DataView extends ClosableSubState
 	}
 	public function buidStack()
 	{
+		//trace("tstool.process.DataView::buidStack");
 		var now:HitoryItem;
-		var pt: FlxPoint = new FlxPoint(0, 0);
-		if (Main.HISTORY.history.length > 0)
+		var pt: FlxPoint = new FlxPoint(0, 40);
+		var h = Main.HISTORY.getLocalizedStepsStringsArray();
+		
+		for (i in 0...h.length)
+			{
+				//var h = Main.HISTORY.history[i];
+				//var s = '$i. ${h.processTitle} :: ${h.iteractionTitle}';
+				var t:HitoryItem = new HitoryItem(i, padding, pt.y + padding , FlxG.width-padding, h[i], 6);
+				
+				t.setFormat(UI.BASIC_FMT.font, UI.TITLE_FMT.size, UI.THEME.meta);
+				//t.color = FlxColor.GRAY;
+				FlxMouseEventManager.add(t, onStepClicked, null, onStepOver, onStepOut);
+				stack.add(t);
+				pt.y = t.y;
+				pt.x = i;
+			}
+		/*if (!Main.HISTORY.isEmpty())
 		{
 			for (i in 0...Main.HISTORY.history.length)
 			{
@@ -63,29 +80,29 @@ class DataView extends ClosableSubState
 				var s = '$i. ${h.processTitle} :: ${h.iteractionTitle}';
 				var t:HitoryItem = new HitoryItem(i, padding, pt.y + padding , FlxG.width-padding, simplifyString(s), 10);
 				
-				t.setFormat(Main.BASIC_FMT.font, Main.TITLE_FMT.size, Main.THEME.meta);
+				t.setFormat(UI.BASIC_FMT.font, UI.TITLE_FMT.size, UI.THEME.meta);
 				//t.color = FlxColor.GRAY;
 				FlxMouseEventManager.add(t, onStepClicked, null, onStepOver, onStepOut);
 				stack.add(t);
 				pt.y = stack.members[stack.members.length - 1].y;
 				pt.x = i;
 			}
-		}
+		}*/
 		additionalMassage += "\n\n(Press ESC to close)";
 		additionalMassage = pt.x +1 + ". " + parentName + additionalMassage;
 		now = new HitoryItem(Main.HISTORY.history.length, padding , pt.y + padding * 2, FlxG.width - padding, additionalMassage, 12 );
-		now.setFormat(Main.TITLE_FMT.font,  Main.TITLE_FMT.size, Main.THEME.title);
+		now.setFormat(UI.TITLE_FMT.font,  UI.TITLE_FMT.size, UI.THEME.title);
 		stack.add(now);
 		return stack;
 	}
 	function onStepOver(h:HitoryItem):Void
 	{
-		h.color = Main.THEME.interaction;
+		h.color = UI.THEME.interaction;
 	}
 
 	function onStepOut(h:HitoryItem):Void
 	{
-		h.color = Main.THEME.meta;
+		h.color = UI.THEME.meta;
 	}
 
 	function onStepClicked(h:HitoryItem):Void

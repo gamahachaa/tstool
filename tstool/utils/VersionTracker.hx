@@ -12,13 +12,13 @@ class VersionTracker extends Http
 {
 	var reg:EReg;
 	var scriptFileVersion:String;
-	static inline var SCRIPT_NAME:String = "nointernet";
+	//static inline var SCRIPT_NAME:String = "nointernet";
 	var scriptStart:String;
 	public var scriptChangedSignal(get, null):FlxTypedSignal<Bool->Void>;
-	public function new(url:String, ?scriptStart:String="")
+	public function new(url:String, ?script:String="")
 	{
 		super(url);
-		scriptStart = scriptStart == ""?SCRIPT_NAME: scriptStart;
+		scriptStart = script;
 		scriptChangedSignal = new FlxTypedSignal<Bool->Void>();
 		this.async = true;
 		this.onData = ondata;

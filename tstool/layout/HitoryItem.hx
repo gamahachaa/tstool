@@ -1,8 +1,8 @@
 package tstool.layout;
 
-import flixel.FlxSprite;
+//import flixel.FlxSprite;
 import flixel.text.FlxText;
-import flixel.ui.FlxSpriteButton;
+//import flixel.ui.FlxSpriteButton;
 
 /**
  * ...
@@ -21,6 +21,8 @@ class HitoryItem extends FlxText
 	{
 		super(X, Y, FieldWidth, Text, Size, EmbeddedFont);
 		this.index = index;
+		this.textField.multiline = false;
+		this.textField.wordWrap = false;
 		
 	}
 

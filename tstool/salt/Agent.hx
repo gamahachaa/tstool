@@ -11,6 +11,7 @@ import tstool.utils.Csv;
  */
 class Agent extends Actor
 {
+	var adminFile:Csv;
 
 	public var sAMAccountName(get, null):String;
 	public var firstName(get, null):String;
@@ -32,6 +33,7 @@ class Agent extends Actor
 
 	public function new(?jsonUser:Dynamic=null)
 	{
+		adminFile = new Csv(Assets.getText("assets/data/admins.txt"),",",false);
 		canDispach = true;
 		isAdmin = false;
 		if (jsonUser != null )
@@ -53,7 +55,7 @@ class Agent extends Actor
 			memberOf = jsonUser.attributes.memberof == null ? new StringMap<StringMap<Array<String>>>(): jsonUser.attributes.memberof ;
 			
 			//trace(Main.adminFile.grid);
-			if (Main.adminFile.dict.exists(sAMAccountName)) isAdmin = true;
+			if (adminFile.dict.exists(sAMAccountName)) isAdmin = true;
 		}
 		else{
 			#if debug

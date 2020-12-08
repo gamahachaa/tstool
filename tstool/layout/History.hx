@@ -1,8 +1,8 @@
 package tstool.layout;
 
 import flixel.FlxSprite;
-import tstool.process.ActionLoop;
-import tstool.process.DescisionLoop;
+//import tstool.process.ActionLoop;
+//import tstool.process.DescisionLoop;
 import tstool.process.Process;
 
 /**
@@ -30,8 +30,9 @@ enum Interactions
 class History
 {
 	public var history(get, null):Array<Snapshot>;
-	var stack:FlxSprite;
-
+	//var stack:FlxSprite;
+	//public static var STACK:Array<Snapshot>=[];
+	public static var STACK:History = new History();
 	public function new()
 	{
 		//super();
@@ -39,7 +40,7 @@ class History
 		//stack = new FlxSprite();
 	}
 	/**
-	 * @testme pass proceses as Class and build only when needed (not here)
+	 *
 	 * @param	process
 	 * @param	interaction
 	 * @param	title
@@ -63,10 +64,15 @@ class History
 		}
 		);
 	}
-
+	
 	public function init():Void
 	{
 		history = [];
+	}
+	public function isEmpty()
+	{
+		//trace(history.length > 0);
+		return history.length == 0;
 	}
 	public function clearHistoryFrom(index:Int)
 	{
@@ -85,26 +91,19 @@ class History
 	public function onStepBack()
 	{
 		var last = history.pop();
-		/**
-		* @testme String to Class<Process> CHECK IF LOOPING WORKS WITH CLASSES CREATED FROM TYPE REMOVE this steps back
-		*
-		if (Type.getSuperClass(last.step.step) == DescisionLoop || Type.getSuperClass(last.step.step) == ActionLoop)
-		{
-			
-			last = history.pop();
-			//lastObject = Type.resolveClass( last._class );
-			
-		}*/ 
 		return Type.createInstance( last.step.step, last.step.params );
 	}
 	public function getClassIterations(process:Class<Process>, ?interaction:Interactions):Int
 	{
+		//trace("------------");
 		/**
 		 * @testme getClassIterations Class<Process> 
 		 */
 		var count = 0;
 		for ( i in history )
 		{
+			//trace(interaction, i.interaction, interaction == i.interaction);
+			//trace(process, i.step.step, i.step.step == process);
 			if ((interaction == null && i.step.step == process) || (interaction == i.interaction && i.step.step == process) )
 			{
 				count++;
@@ -131,14 +130,6 @@ class History
 	{
 		return history[history.length - 1];
 	}
-	/**
-	 * @todo  Remove
-	 *
-	inline public function getPreviousInstance()
-	{
-		
-		return Type.createInstance( Type.resolveClass( getPreviousProcess().processName), [] );
-	}*/
 	inline public function getPreviousClass():ProcessContructor
 	{
 		return getPreviousProcess().step;
@@ -251,7 +242,7 @@ class History
 	}
 	public function findStepsClassInHistory(step:Class<Process>, ?times:Int=1, ?fromBegining:Bool=true):Array<Snapshot>
 	{
-		var tab = [];
+		var tab:Array<Snapshot> = [];
 		var count = 0;
 		if (fromBegining)
 		{
@@ -281,6 +272,10 @@ class History
 		}
 		return tab;
 	}
+	public function findFirstStepsClassInHistory(step:Class<Process>, ?fromBegining:Bool=true):Snapshot
+	{
+		return findStepsClassInHistory(step, 1, fromBegining)[0];
+	}
 	public function getStoredStepsArray( )
 	{
 		var t = [];
@@ -295,14 +290,35 @@ class History
 	{
 		var t = "";
 		var h = getStoredStepsTranslatedArray(toLangPair);
-		var v = "";
+		//var v = "";
 		for (i in h)
 		{
 			t += '${i.nb}|${i.step}|${i.interaction}|${i.values}_';
 		}
 		return t;
 	}
-	
+	public function getLocalizedStepsStringsList()
+	{
+		var t = "";
+		var nb = 1;
+		//var v = "";
+		for (i in history)
+		{
+			t += '${nb++}. ${i.processTitle} ${i.iteractionTitle} ${i.values!=null?i.values:[""=>""]}\n';
+		}
+		return t;
+	}
+	public function getLocalizedStepsStringsArray()
+	{
+		var t = [];
+		var nb = 1;
+		//var v = "";
+		for (i in history)
+		{
+			t.push('${nb++}. ${i.processTitle} ${i.iteractionTitle} ${i.values!=null?i.values:[""=>""]}');
+		}
+		return t;
+	}
 	public function getRawStepsArray()
 	{
 		var t = [];

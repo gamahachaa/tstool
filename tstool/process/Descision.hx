@@ -1,5 +1,6 @@
 package tstool.process;
 import tstool.layout.History;
+import tstool.layout.UI;
 
 import flixel.FlxG;
 import flixel.math.FlxPoint;
@@ -48,8 +49,8 @@ class Descision extends Process
 		btnNo.labelOffsets = [ptNo, ptNo, ptNo];
 		btnYes.labelAlphas = [1,1,1];
 		btnNo.labelAlphas = [1,1,1];
-		btnYes.label.setFormat(Main.INTERACTION_FMT.font, Main.INTERACTION_FMT.size);
-		btnNo.label.setFormat( Main.INTERACTION_FMT.font, Main.INTERACTION_FMT.size);
+		btnYes.label.setFormat(UI.INTERACTION_FMT.font, UI.INTERACTION_FMT.size);
+		btnNo.label.setFormat( UI.INTERACTION_FMT.font, UI.INTERACTION_FMT.size);
 
 		add(btnYes);
 		add(btnNo);
@@ -61,6 +62,8 @@ class Descision extends Process
 		btnYes.updateHitbox();
 		btnNo.updateHitbox();
 		positionThis();
+		setStyle();
+		setStyle();
 	}
 	function positionThis(?offSet:FlxPoint)
 	{
@@ -69,8 +72,8 @@ class Descision extends Process
 	override public function setStyle()
 	{
 		super.setStyle();
-		btnNo.label.color = Main.THEME.interaction;
-		btnYes.label.color = Main.THEME.interaction;
+		btnNo.label.color = UI.THEME.interaction;
+		btnYes.label.color = UI.THEME.interaction;
 	}
 	public function onYesClick():Void
 	{
@@ -81,11 +84,11 @@ class Descision extends Process
 			/**
 			 * @todo  REMOVE ONCE CLAss refactor is cleared
 			 */
-			move_to_next(_nextYesProcesses, Interactions.Next);
+			move_to_next(_nextYesProcesses, Interactions.Yes);
 		}
 		else if (this._nexts.length > 0)
 		{
-			moveToNextClassProcess(Interactions.Next);
+			moveToNextClassProcess(Interactions.Yes);
 		}
 	}
 
@@ -98,11 +101,11 @@ class Descision extends Process
 			/**
 			 * @todo  REMOVE ONCE CLAss refactor is cleared
 			 */
-			move_to_next(_nextNoProcesses, Interactions.Next);
+			move_to_next(_nextNoProcesses, Interactions.No);
 		}
 		else if (this._nexts.length > 0)
 		{
-			moveToNextClassProcess(Interactions.Next);
+			moveToNextClassProcess(Interactions.No);
 		}
 	}
 	override public function update(elapsed:Float):Void

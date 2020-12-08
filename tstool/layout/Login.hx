@@ -41,7 +41,7 @@ class Login extends FlxState
 	//var pwd:flixel.addons.ui.FlxUIInputText;
 	var pwd: openfl.text.TextField;
 	var _padding:Int = 20;
-	static inline var lang:String = "en-EN";
+	static inline var lang:String = "en-GB";
 	var logo:FlxSprite;
 	var loginTxt:flixel.text.FlxText;
 	var pwdTxt:flixel.text.FlxText;
@@ -67,10 +67,11 @@ class Login extends FlxState
 			#if debug
 			trace(Main.user.mainLanguage);
 			#end
-			if (Main.user.mainLanguage == null || Main.user.mainLanguage == "")
-			{
-				Main.user.mainLanguage = lang;
-			}
+			//if (Main.user.mainLanguage == null || Main.user.mainLanguage == "")
+			//{
+				//Main.user.mainLanguage = lang;
+			//}
+			flushCookie();
 			Main.MOVE_ON(true); // launch APPbbaudry
 		}
 		else
@@ -182,7 +183,6 @@ class Login extends FlxState
 		}
 
 	}
-	
 	function cretaDummyAgent() 
 	{
 		var a = {
@@ -230,7 +230,7 @@ class Login extends FlxState
 	}
 	function ondata(data:String)
 	{
-		trace("tstool.layout.Login::ondata");
+		//trace("tstool.layout.Login::ondata");
 		var d:Dynamic = {};
 		#if debug
 			

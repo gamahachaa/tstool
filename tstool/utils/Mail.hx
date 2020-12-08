@@ -3,7 +3,7 @@ import Main;
 import tstool.utils.SwiftMailWrapper.Result;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
-import haxe.Json;
+//import haxe.Json;
 import js.Browser;
 import tstool.layout.History.Snapshot;
 import tstool.process.Process;
@@ -48,7 +48,8 @@ class Mail
 	@:isVar public var successSignal(get, set):FlxTypedSignal<Result->Void>;
 	@:isVar public var statusSignal(get, set):FlxTypedSignal<Int->Void>;
 	@:isVar public var errorSignal(get, set):FlxTypedSignal<Dynamic->Void>;
-	static inline var PHP_MAIL_PATH:String = Main.LIB_FOLDER + "php/mail/index.php";
+	//static var PHP_MAIL_PATH:String = Main.LIB_FOLDER + "php/mail/index.php";
+	static var PHP_MAIL_PATH:String = "../trouble/php/mail/index.php";
 	var resolved:Bool;
 
 	//@:isVar public var params(get, set):haxe.ds.Map<Parameters,Dynamic>;
@@ -202,19 +203,14 @@ class Mail
 	}
 	function buildAgentBody()
 	{
-		//var  b = params.exists(body)?params.get(body):"";
 		var  b = _mailBody;
 		var bodyList = "";
 		mailWrapper.setFrom(Main.user.iri, Main.user.sAMAccountName);
-		//params.set(from_email, );
-		//params.set(from_full_name, );
-		//Main.user.firstName;
+
 		#if debug
 		trace(Main.user);
 		#end
 		bodyList += '<li>Agent: ${Main.user.firstName} ${Main.user.sirName} (${Main.user.sAMAccountName}) ${Main.user.title}</li>';
-		//bodyList += '<li>NT: </li>';
-		//bodyList += '<li>: ${Main.user.mobile} </li>';
 		bodyList += '<li>${Main.user.company} | ${Main.user.department} | ${Main.user.division} | ${Main.user.workLocation} </li>';
 		bodyList += '<li>Script version : ${Main.VERSION} </li>';
 		if (Main.customer.contract.owner == null){
@@ -232,7 +228,6 @@ class Mail
 	{
 		//var  b = params.exists(body)?params.get(body):"";
 		var  b = _mailBody;
-		var bodyList = "";
 		var start:Date = Main.HISTORY.getFirst().start;
 		var end:Date = Main.HISTORY.getLast().start;
 		var isEnglish = Main.user.mainLanguage == "en-GB";

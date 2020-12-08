@@ -44,10 +44,10 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		buttons = [];
 		stringSignal = new FlxTypedSignal<String->Void>();
 		
-		menuBG = new FlxShapeBox(0, 0, FlxG.width, 50, {thickness:0, color:0x00000000}, SaltColor.BLACK);
+		menuBG = new FlxShapeBox(0, 0, FlxG.width, 50, {thickness:0, color:SaltColor.BLACK_PURE}, SaltColor.BLACK_PURE);
 		
 		reminderMsgBox = new FlxText(0, 0, 460, "", 10, true);
-		reminderMsgBox.setFormat(Main.INTERACTION_FMT.font, Main.META_FMT.size, SaltColor.MUSTARD);
+		reminderMsgBox.setFormat(UI.INTERACTION_FMT.font, UI.META_FMT.size, SaltColor.MUSTARD);
 		reminderMsgBox.visible = false;
 		
 		exitBtn = new FlxButton(0, 0, "", onExit );

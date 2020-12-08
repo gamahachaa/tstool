@@ -104,10 +104,10 @@ class RadioTitle extends FlxGroup implements IPositionable
 	}
 	public function setStyle()
 	{
-		this.titleUI.color = Main.THEME.interaction;
+		this.titleUI.color = UI.THEME.interaction;
 		for (i in rd.getRadios())
 		{
-			i.button.label.color = Main.THEME.interaction;
+			i.button.label.color = UI.THEME.interaction;
 		}
 	}
 	function setWidth( s:String, a:Array<String>)

@@ -56,7 +56,7 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 		_labelValidator = "";
 
 		imputLabel = new FlxText(0, 0, textFieldWidth, _label + " :", 20);
-		imputLabel.setFormat(Main.INTERACTION_FMT.font, Main.INTERACTION_FMT.size-2);
+		imputLabel.setFormat(UI.INTERACTION_FMT.font, UI.INTERACTION_FMT.size-2);
 
 		//inputtextfield = new FlxInputText(0, 0, textFieldWidth, 14);
 		inputtextfield = new TextField();
@@ -190,7 +190,7 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 	//}
 	public function setStyle()
 	{
-		imputLabel.color = Main.THEME.meta;
+		imputLabel.color = UI.THEME.meta;
 
 		inputtextfield.setTextFormat(textFieldFormat);
 		inputtextfield.multiline = false;

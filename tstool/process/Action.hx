@@ -3,8 +3,10 @@ package tstool.process;
 import flixel.FlxG;
 import flixel.math.FlxPoint;
 import flixel.ui.FlxButton;
-import flixel.util.FlxColor;
+import tstool.layout.UI;
+//import flixel.util.FlxColor;
 import tstool.layout.History;
+//import tstool.layout.UI;
 import tstool.process.Process.ProcessContructor;
 
 /**
@@ -35,12 +37,14 @@ class Action extends Process
 		var ptNo:FlxPoint = new FlxPoint( 0, -_padding);
 		btn.labelOffsets = [ptNo, ptNo, ptNo];
 		btn.labelAlphas = [1, 1, 1];
-		btn.label.setFormat(Main.INTERACTION_FMT.font, Main.INTERACTION_FMT.size);
+		btn.label.setFormat(UI.INTERACTION_FMT.font, UI.INTERACTION_FMT.size);
 		btn.label.wordWrap = false;
 		btn.label.autoSize = true;
 		btn.updateHitbox();
 		add(btn);
 		positionThis();
+		setStyle();
+		setStyle();
 	}
 	function positionThis(?offSet:FlxPoint)
 	{
@@ -56,7 +60,7 @@ class Action extends Process
 	override public function setStyle()
 	{
 		super.setStyle();
-		btn.label.color = Main.THEME.interaction;
+		btn.label.color = UI.THEME.interaction;
 	}
 	public function onClick():Void
 	{

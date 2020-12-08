@@ -1,31 +1,22 @@
 package tstool.process;
-
-
-
 import tstool.process.DataView;
 import tstool.layout.Menu;
 import tstool.layout.UI;
 import tstool.layout.Question;
 import tstool.layout.History.Interactions;
 import tstool.layout.Instructions;
-//import tstool.layout.SaltColor;
 
 import flixel.FlxG;
-//import flixel.FlxSprite;
-//import flixel.addons.display.shapes.FlxShapeBox;
-//import flixel.addons.ui.FlxUIButton;
 import flixel.FlxState;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 
-import haxe.ds.StringMap;
 import js.Browser;
 import openfl.system.Capabilities;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
-//import lime.math.Rectangle;
 
 typedef ProcessContructor = {
 	var step:Class<Process>;
@@ -63,10 +54,10 @@ class Process extends FlxState
 	 * UI
 	/************************/
 	var _menu:Menu;
-
+	var ui:UI;
 	var howToSubState:Instructions;	
 	var dataView:tstool.process.DataView;
-	var ui:UI;
+	
 	public var _padding(get, null):Int = 30;
 	public var details(get, null):FlxText;
 	public var question(get, null):Question;
@@ -79,29 +70,17 @@ class Process extends FlxState
 		super();
 		_class = Type.getClass(this);
 		_name = Type.getClassName(_class);
-		//isFocused = false;
-		/*
-		
-		_nexts = [];
-		
 		_titleTxt = translate( _titleTxt, "TITLE");
 		_detailTxt = translate( _detailTxt, "DETAILS");
 		_illustration = translate( _illustration, "ILLUSTRATION");
 		_qookLink = translate(_qook, "QOOK").split("|");
-		isAnimated = false;
-		parseAllLinksForNames();*/
 	}
 
 	override public function create()
 	{
-		//_class = Type.getClass(this);
-		//_name = Type.getClassName(_class);
 		_nexts = [];
 		
-		_titleTxt = translate( _titleTxt, "TITLE");
-		_detailTxt = translate( _detailTxt, "DETAILS");
-		_illustration = translate( _illustration, "ILLUSTRATION");
-		_qookLink = translate(_qook, "QOOK").split("|");
+
 		isAnimated = false;
 		parseAllLinksForNames();
 		super.create();
@@ -121,7 +100,7 @@ class Process extends FlxState
 		/**
 		 * @todo change to Class<T>
 		 */
-		dataView = new DataView(Main.THEME.bg, this._name);
+		dataView = new DataView(UI.THEME.bg, this._name);
 		
 		// PROCESS UI		
 		question = ui.question;
@@ -187,7 +166,16 @@ class Process extends FlxState
 	//UI
 	function setStyle()
 	{
-		this.bgColor = Main.THEME.bg;
+		//trace("tstool.process.Process::setStyle");
+		this.bgColor = UI.THEME.bg;
+		//this.bgColor = UI.THEME.bg;
+		this.details.color = UI.THEME.basic;
+		this.details.applyMarkup(this._detailTxt, [UI.THEME.basicStrong, UI.THEME.basicEmphasis]);
+		
+		this.question.color = UI.THEME.title;
+		this.question.applyMarkup(this._titleTxt, [UI.THEME.basicStrong, UI.THEME.basicEmphasis]);
+		question.drawFrame();
+		details.drawFrame();
 	}
 	
 	//ui
@@ -242,11 +230,13 @@ class Process extends FlxState
 	*/
 	function listener(s:String):Void 
 	{
+		trace("tstool.process.Process::listener");
 		switch (s){
 			case "en-GB" : switchLang("en-GB");
 			case "it-IT" : switchLang("it-IT");
 			case "de-DE" : switchLang("de-DE");
 			case "fr-FR" : switchLang("fr-FR");
+			case "onQook" : onQook();
 			case "onExit" : onExit();
 			case "onBack" : onBack();
 			case "onHowTo" : onHowTo();
@@ -329,8 +319,17 @@ class Process extends FlxState
 		var content = "TITLE:\n" + stripTags(_titleTxt) + doubleBreak;
 
 		content += "DETAILS:\n" + stripTags(_detailTxt) + doubleBreak ;
-		var history = "";
-		var line = "";
+		//var history = "";
+		//var line = "";
+		//var t = Main.HISTORY.getLocalizedStepsStrings();
+		//for ( i in t)
+		//{
+			//history += i;
+		//}
+		content += "HISTORY:\n" + Main.HISTORY.getLocalizedStepsStringsList() + doubleBreak;
+			
+		Browser.window.location.href = to + subject + "?&body=" + StringTools.urlEncode(content);
+		/*
 		try{
 			for (i in 0...Main.HISTORY.history.length)
 			{
@@ -348,14 +347,16 @@ class Process extends FlxState
 		catch (e:Dynamic)
 		{
 			trace(e);
-		}
+		}*/
 	}
 	function stripTags(s:String):String
 	{
 		s = StringTools.replace(s, "<B>", " ");
+		s = StringTools.replace(s, "<b>", " ");
 		s = StringTools.replace(s, "<N>", " ");
 		s = StringTools.replace(s, "<T>", " ");
 		s = StringTools.replace(s, "<EM>", " ");
+		s = StringTools.replace(s, "<em>", " ");
 		s = StringTools.replace(s, "\t", " ");
 		s = StringTools.replace(s, "\n", " ");
 		return s;
@@ -400,7 +401,7 @@ class Process extends FlxState
 	 */
 	function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
-		Main.HISTORY.add({step:_class, params:[]}, interactionType, _titleTxt, buttonTxt, values);
+		Main.HISTORY.add({step:_class, params:[]}, interactionType, this.stripTags(_titleTxt), buttonTxt, values);
 	}
 
 	function set__titleTxt(value:String):String
@@ -433,13 +434,19 @@ class Process extends FlxState
 	 */
 	function moveToNextClassProcess(interaction:Interactions)
 	{
-		//trace("tstool.process.Process::moveToNextClassProcess");
+		//trace("tstool.process.Process::moveToNextClassProcess", _nexts);
+		//trace("tstool.process.Process::moveToNextClassProcess::_class", _class );
 		var iteration = Main.HISTORY.getClassIterations(_class, interaction);
 		//trace("tstool.process.Process::moveToNextClassProcess::iteration ", iteration  );
-		var index = iteration >= _nexts.length ? _nexts.length - 1 : iteration;
+		var index = iteration >= _nexts.length ? _nexts.length - 1 : iteration >0?iteration-1:0;
 		//trace("tstool.process.Process::moveToNextClassProcess::index", index );
 		//trace("tstool.process.Process::moveToNextClassProcess::_nexts[index]", _nexts[index] );
 		FlxG.switchState(Type.createInstance(_nexts[index].step ,_nexts[index].params));
+	}
+	override public function update(elapsed):Void
+	{
+		super.update(elapsed);
+		//trace(this._titleTxt);
 	}
 	override public function destroy():Void
 	{
