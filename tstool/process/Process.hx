@@ -83,6 +83,9 @@ class Process extends FlxState
 
 		isAnimated = false;
 		parseAllLinksForNames();
+		
+		//FlxG.camera.fade(UI.THEME.bg, 0.33, true);
+		
 		super.create();
 		#if debug
 		//trace(Main.VERSION);
@@ -230,7 +233,7 @@ class Process extends FlxState
 	*/
 	function listener(s:String):Void 
 	{
-		trace("tstool.process.Process::listener");
+		//trace("tstool.process.Process::listener");
 		switch (s){
 			case "en-GB" : switchLang("en-GB");
 			case "it-IT" : switchLang("it-IT");
@@ -254,10 +257,12 @@ class Process extends FlxState
 		Main.COOKIE.flush();
 		
 		Main.tongue.initialize(lang , ()->(
+			//FlxG.camera.fade(UI.THEME.bg, 0.33, false, ()->
 										FlxG.switchState( 
 											Type.createInstance( _class, [])
 											)
 										)
+									//)
 						);
 	}
 	function onClipBoardClick() 

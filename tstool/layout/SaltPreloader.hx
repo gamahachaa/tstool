@@ -34,7 +34,7 @@ class SaltPreloader extends FlxBasePreloader
         //addChild(logo); //Adds the graphic to the NMEPreloader's buffer.
 		
 		text = new TextField();
-		text.defaultTextFormat = new TextFormat("Verdana",36, 0xFF4fd1d9);
+		text.defaultTextFormat = new TextFormat("Verdana",36, SaltColor.LIGHT_BLUE);
 		text.width = 300;
 		//text.textColor = 0xffffff;
 		text.selectable = false;

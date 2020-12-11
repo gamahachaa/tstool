@@ -79,7 +79,7 @@ class Login extends FlxState
 			var textFieldFormat = new openfl.text.TextFormat( lime.utils.Assets.getFont("assets/fonts/Lato-Regular.ttf").name, 12, 0);
 			var testFormat:FlxTextFormat = new FlxTextFormat(SaltColor.ORANGE, true);
 			markerFormat = new FlxTextFormatMarkerPair( testFormat, "<b>");
-			var logo = new FlxSprite(0, 0, "assets/images/intro/" + "baby_shocked" + ".png");
+			var logo = new FlxSprite(0, 0, "assets/images/" + Main.INTRO_PIC);
 			var showPwd:FlxUIButton = new FlxUIButton(0, 0, "", onShowPwd);
 			showPwd.loadGraphic("assets/images/ui/showPwd.png", true, 40, 40);
 			showPwd.has_toggle = true;
@@ -330,7 +330,7 @@ class Login extends FlxState
 	
 	function flushCookie():Void 
 	{
-		if (Main.user.mainLanguage == null || Main.user.mainLanguage == "")
+		if (Main.user.mainLanguage == null ||Main.user.mainLanguage == "" || Main.LANGS.indexOf(Main.user.mainLanguage) == -1)
 		{
 			Main.user.mainLanguage = lang;
 		}

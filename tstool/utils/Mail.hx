@@ -174,9 +174,9 @@ class Mail
 			if(Main.customer.iri !="" && Main.customer.iri != "not found")
 				b += 'ID: ${Main.customer.iri} ';
 			if(Main.customer.voIP !="")
-				b += 'MSISDN: ${Main.customer.voIP}';
+				b += 'MSISDN-VoIP: ${Main.customer.voIP} ';
 			if(Main.customer.contract.mobile !="")
-				b += 'CONTACT: ${Main.customer.contract.mobile}';
+				b += 'CONTACT: ${Main.customer.contract.mobile} ';
 			b += '</h2>';
 			if(Main.customer.contract.owner != null && Main.customer.contract.owner.name !="")
 				b += '<h3>${Main.customer.contract.owner.name}</h3>';
@@ -213,11 +213,11 @@ class Mail
 		bodyList += '<li>Agent: ${Main.user.firstName} ${Main.user.sirName} (${Main.user.sAMAccountName}) ${Main.user.title}</li>';
 		bodyList += '<li>${Main.user.company} | ${Main.user.department} | ${Main.user.division} | ${Main.user.workLocation} </li>';
 		bodyList += '<li>Script version : ${Main.VERSION} </li>';
-		if (Main.customer.contract.owner == null){
-			var userAgent = Browser.navigator.userAgent;
-			bodyList += '<li>a1a3e0cc-c512-4935-9ca1-0ca2746a0fa2</li>';
-			bodyList += '<li>$userAgent</li>';
-		}
+		//if (Main.customer.contract.owner == null){
+			//var userAgent = Browser.navigator.userAgent;
+			//bodyList += '<li>a1a3e0cc-c512-4935-9ca1-0ca2746a0fa2</li>';
+			//bodyList += '<li>$userAgent</li>';
+		//}
 
 		b += '<h5>Troubleshot in ${Main.user.mainLanguage} by:</h5><ul>$bodyList</ul>';
 		//params.set(body, b);
@@ -236,7 +236,7 @@ class Mail
 		var englishLst = "";
 		for (h in histroryArray)
 		{
-			historyList += '<li>${h.step} _ <strong>${h.interaction}</strong> ${h.values}</li>';
+			historyList += '<li>${h.step} ... <strong>${h.interaction}</strong> ${h.values}</li>';
 			
 		}
 		historyList += "<li><strong>"+_currentProcess.question.text +"</strong></li>";
@@ -249,7 +249,7 @@ class Mail
 			{
 				
 				//englishLst += '<li>${i.step} &rarr; <strong>${i.interaction}</strong> ${i.values}</li>';
-				englishLst += '<li>${i.step} _ <strong>${i.interaction}</strong> ${i.values}</li>';
+				englishLst += '<li>${i.step} ... <strong>${i.interaction}</strong> ${i.values}</li>';
 			}
 		}
 
