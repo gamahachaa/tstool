@@ -30,8 +30,8 @@ class ActionLoop extends Action
 	override function switchLang(lang:String)
 	{
 	
-		Main.user.mainLanguage = lang;
-		Main.COOKIE.flush();
+		MainApp.agent.mainLanguage = lang;
+		MainApp.flush();
 		
 		Main.tongue.initialize(lang , ()->(
 										FlxG.switchState( 

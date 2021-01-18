@@ -130,12 +130,13 @@ class DescisionMultipleInput extends Descision
 		for ( i in this.inputs)
 		{
 			#if debug
-			//trace(i);
+			trace(i);
 			#end
 			if (i.ereg == null) continue;
 			if (i.input.mustValidate != null && i.input.mustValidate.indexOf(interaction) == -1) continue;
 			inp = this.multipleInputs.inputs.get(i.input.prefix);
-			if (!i.ereg.match(inp.getInputedText()))
+			//trace("tstool.process.DescisionMultipleInput::validate::inp", inp );
+			if (!i.ereg.match(StringTools.trim(inp.getInputedText())))
 			{
 				inp.blink(true);
 				return false;

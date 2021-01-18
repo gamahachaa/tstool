@@ -5,6 +5,7 @@ import tstool.layout.UI;
 import tstool.layout.Question;
 import tstool.layout.History.Interactions;
 import tstool.layout.Instructions;
+import tstool.utils.Mail;
 
 import flixel.FlxG;
 import flixel.FlxState;
@@ -253,8 +254,8 @@ class Process extends FlxState
 	function switchLang(lang:String)
 	{
 	
-		Main.user.mainLanguage = lang;
-		Main.COOKIE.flush();
+		MainApp.agent.mainLanguage = lang;
+		MainApp.flush();
 		
 		Main.tongue.initialize(lang , ()->(
 			//FlxG.camera.fade(UI.THEME.bg, 0.33, false, ()->
@@ -278,7 +279,7 @@ class Process extends FlxState
 	
 	function toogleTrainingMode() 
 	{
-		Main.user.canDispach = !Main.user.canDispach;
+		MainApp.agent.canDispach = !MainApp.agent.canDispach;
 	}
 	
 	function set__qook(value:String):String
@@ -321,9 +322,9 @@ class Process extends FlxState
 		var to = "mailto:qook@salt.ch?";
 		var subject = "subject=[TROUBLE share] " + this._name;
 		var doubleBreak = "\n\n";
-		var content = "TITLE:\n" + stripTags(_titleTxt) + doubleBreak;
+		var content = "TITLE:\n" + Mail.stripTags(_titleTxt) + doubleBreak;
 
-		content += "DETAILS:\n" + stripTags(_detailTxt) + doubleBreak ;
+		content += "DETAILS:\n" + Mail.stripTags(_detailTxt) + doubleBreak ;
 		//var history = "";
 		//var line = "";
 		//var t = Main.HISTORY.getLocalizedStepsStrings();
@@ -354,18 +355,7 @@ class Process extends FlxState
 			trace(e);
 		}*/
 	}
-	function stripTags(s:String):String
-	{
-		s = StringTools.replace(s, "<B>", " ");
-		s = StringTools.replace(s, "<b>", " ");
-		s = StringTools.replace(s, "<N>", " ");
-		s = StringTools.replace(s, "<T>", " ");
-		s = StringTools.replace(s, "<EM>", " ");
-		s = StringTools.replace(s, "<em>", " ");
-		s = StringTools.replace(s, "\t", " ");
-		s = StringTools.replace(s, "\n", " ");
-		return s;
-	}
+	
 	
 	function translate(txt:String, suffix:String, ?context="data"):String
 	{
@@ -406,7 +396,7 @@ class Process extends FlxState
 	 */
 	function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
-		Main.HISTORY.add({step:_class, params:[]}, interactionType, this.stripTags(_titleTxt), buttonTxt, values);
+		Main.HISTORY.add({step:_class, params:[]}, interactionType, Mail.stripTags(_titleTxt), buttonTxt, values);
 	}
 
 	function set__titleTxt(value:String):String

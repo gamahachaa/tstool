@@ -41,7 +41,7 @@ class Login extends FlxState
 	//var pwd:flixel.addons.ui.FlxUIInputText;
 	var pwd: openfl.text.TextField;
 	var _padding:Int = 20;
-	static inline var lang:String = "en-GB";
+
 	var logo:FlxSprite;
 	var loginTxt:flixel.text.FlxText;
 	var pwdTxt:flixel.text.FlxText;
@@ -59,19 +59,16 @@ class Login extends FlxState
 		loginUrl = new Http(Main.LOCATION.origin + Main.LOCATION.pathname + Main.LIB_FOLDER + "php/login/index.php" );
 		Main.setUpSystemDefault(false);
 		//lang =  // default
-		//trace(Main.COOKIE);
-		if (Main.COOKIE.data.user != null)
+		//trace(MainApp.save.data.user);
+		if (MainApp.agent != null)
 		{
 
-			Main.user = Main.COOKIE.data.user;
+			//MainApp.agent = MainApp.save.data.user;
 			#if debug
-			trace(Main.user.mainLanguage);
+			trace(MainApp.agent.mainLanguage);
 			#end
-			//if (Main.user.mainLanguage == null || Main.user.mainLanguage == "")
-			//{
-				//Main.user.mainLanguage = lang;
-			//}
-			flushCookie();
+
+			MainApp.flush();
 			Main.MOVE_ON(true); // launch APPbbaudry
 		}
 		else
@@ -235,14 +232,14 @@ class Login extends FlxState
 		#if debug
 			
 			d.authorized = true;
-			Main.user = dummyAgent;	
+			MainApp.agent = dummyAgent;	
 		#else
 		d = Json.parse(data);
 		#end
 		if (d.authorized)
 		{
 			try{
-				Main.user = new Agent(d);
+				MainApp.agent = new Agent(d);
 			}
 			catch (e: Exception)
 			{
@@ -252,10 +249,11 @@ class Login extends FlxState
 				
 				Main.track.setActor();
 			#else 
-				trace("tstool.layout.Login::ondata::Main.user", Main.user );
+				trace("tstool.layout.Login::ondata::MainApp.agent", MainApp.agent );
 			#end
 			
-			flushCookie();
+			//flushCookie();
+			MainApp.flush();
 			Main.MOVE_ON(); // launch APP
 		}
 		else
@@ -328,13 +326,15 @@ class Login extends FlxState
 		//pwdTxtInfo.text += "\n\n"+ e;
 	}
 	
-	function flushCookie():Void 
-	{
-		if (Main.user.mainLanguage == null ||Main.user.mainLanguage == "" || Main.LANGS.indexOf(Main.user.mainLanguage) == -1)
-		{
-			Main.user.mainLanguage = lang;
-		}
-		Main.COOKIE.data.user = Main.user;
-		Main.COOKIE.flush();
-	}
+	//function flushCookie():Void 
+	//{
+		//
+		//if (Main.user.mainLanguage == null ||Main.user.mainLanguage == "" || Main.LANGS.indexOf(Main.user.mainLanguage) == -1)
+		//{
+			//Main.user.mainLanguage = lang;
+		//}
+		//MainApp.save.data.user = Main.user;
+		//MainApp.save.flush(0, (success)->(trace(success)) );
+		//trace("tstool.layout.Login::flushCookie");
+	//}
 }

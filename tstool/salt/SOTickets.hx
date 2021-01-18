@@ -138,7 +138,60 @@ public static var FIX_313:SOTickets = new SOTickets('FIX','3.1.3','FIBER_REMINDE
 public static var FIX_424:SOTickets = new SOTickets('FIX','4.2.4','FIBER_ACCESSORIES_SO','4.Order 2.Logistics 4.Fiber Accessory Delivery Issue','fiber.tech.qtool@salt.ch');
 
 //
+public static var MOBILE_111:SOTickets = new SOTickets('MOBILE','1.1.1','B2C_SA_MAS_SO','1.Admin 1.Account Management 1.Abusiv Anrufe','mobile.qtool@salt.ch');
+public static var MOBILE_1112:SOTickets = new SOTickets('MOBILE','1.1.12','B2C_SA_EXPERT_SO','1.Admin 1.Account Management 12.Wangiri Calls','mobile.qtool@salt.ch');
+public static var MOBILE_112:SOTickets = new SOTickets('MOBILE','1.1.2','B2C_SA_MAS_SO','1.Admin 1.Account Management 2.SMS Spam','mobile.qtool@salt.ch');
+public static var MOBILE_114:SOTickets = new SOTickets('MOBILE','1.1.4','B2C_SA_EXPERT_SO','1.Admin 1.Account Management 4.Recall collection Agency','mobile.qtool@salt.ch');
+public static var MOBILE_115:SOTickets = new SOTickets('MOBILE','1.1.5','B2C_CHANGE_OWNER_SO','1.Admin 1.Account Management 5.Change Owner (only reassignment)','mobile.qtool@salt.ch');
+public static var MOBILE_116:SOTickets = new SOTickets('MOBILE','1.1.6','B2C_SA_MAS_SO','1.Admin 1.Account Management 6.Guardianship','mobile.qtool@salt.ch');
+public static var MOBILE_117:SOTickets = new SOTickets('MOBILE','1.1.7','B2C_SA_MAS_SO','1.Admin 1.Account Management 7.Death','mobile.qtool@salt.ch');
+public static var MOBILE_119:SOTickets = new SOTickets('MOBILE','1.1.9','B2C_SA_EXPERT_SO','1.Admin 1.Account Management 9.Wangiri Calls','mobile.qtool@salt.ch');
+public static var MOBILE_131:SOTickets = new SOTickets('MOBILE','1.3.1','B2C_SA_EXPERT_SO','1.Admin 3.Subscription Management 1.Gold and Platinum Number Request','mobile.qtool@salt.ch');
+public static var MOBILE_132:SOTickets = new SOTickets('MOBILE','1.3.2','B2C_SA_TICKET_SO','1.Admin 3.Logistics 2.Issue with Repair','mobile.qtool@salt.ch');
+public static var MOBILE_211:SOTickets = new SOTickets('MOBILE','2.1.1','B2C_SA_MAS_SO','2.Billing 1.Bill & charging content 1.Contestation of premium SMS/MMS','mobile.qtool@salt.ch');
+public static var MOBILE_212:SOTickets = new SOTickets('MOBILE','2.1.2','B2C_SA_TICKET_SO','2.Billing 1.Bill & charging content 2.Data','mobile.qtool@salt.ch');
+public static var MOBILE_213:SOTickets = new SOTickets('MOBILE','2.1.3','B2C_SA_TICKET_SO','2.Billing 1.Bill & charging content 3.Messages (SMS/MMS)','mobile.qtool@salt.ch');
+public static var MOBILE_214:SOTickets = new SOTickets('MOBILE','2.1.4','B2C_SA_TICKET_SO','2.Billing 1.Bill & charging content 4.Roaming','mobile.qtool@salt.ch');
+public static var MOBILE_216:SOTickets = new SOTickets('MOBILE','2.1.6','B2C_SA_TICKET_SO','2.Billing 1.Bill & charging content 6.Discount / Special Offer','mobile.qtool@salt.ch');
+public static var MOBILE_221:SOTickets = new SOTickets('MOBILE','2.2.1','B2C_SA_TICKET_SO','2.Billing 2.Bill method & delivery 1.Bill not received Paynet','mobile.qtool@salt.ch');
+public static var MOBILE_222:SOTickets = new SOTickets('MOBILE','2.2.2','B2C_SA_MAS_SO','2.Billing 2.Bill method & delivery 2.Bill Copy by Post','mobile.qtool@salt.ch');
+public static var MOBILE_223:SOTickets = new SOTickets('MOBILE','2.2.3','B2C_SA_EXPERT_SO','2.Billing 2.Bill method & delivery 3.Extrait de compte','mobile.qtool@salt.ch');
+public static var MOBILE_231:SOTickets = new SOTickets('MOBILE','2.3.1','B2C_SA_TICKET_SO','2.Billing 3.Recharge (for PrePay) 1.Amount recharged not credited','mobile.qtool@salt.ch');
+public static var MOBILE_232:SOTickets = new SOTickets('MOBILE','2.3.2','B2C_SA_TICKET_SO','2.Billing 3.Recharge (for PrePay) 2.Cannot recharge','mobile.qtool@salt.ch');
+public static var MOBILE_233:SOTickets = new SOTickets('MOBILE','2.3.3','B2C_SA_TICKET_SO','2.Billing 3.Recharge (for PrePay) 3.Recharge bonus','mobile.qtool@salt.ch');
+public static var MOBILE_234:SOTickets = new SOTickets('MOBILE','2.3.4','B2C_SA_TICKET_SO','2.Billing 3.Recharge (for PrePay) 4.Recurring recharge','mobile.qtool@salt.ch');
+public static var MOBILE_251:SOTickets = new SOTickets('MOBILE','2.5.1','B2C_SA_NOT_PROMISE_SO','2.Billing 5.Payment Arrangement 1.Payment arrangement','mobile.qtool@salt.ch');
+public static var MOBILE_3101:SOTickets = new SOTickets('MOBILE','3.10.1','B2C_SA_TECH_SO','3.Technical 10.Modem 1.Troubleshooting','mobile.qtool@salt.ch');
+public static var MOBILE_311:SOTickets = new SOTickets('MOBILE','3.1.1','B2C_SA_TECH_SO','3.Technical 1.Network Coverage 1.No coverage','mobile.qtool@salt.ch');
+public static var MOBILE_3111:SOTickets = new SOTickets('MOBILE','3.11.1','B2C_SA_EXPERT_SO','3.Technical 11.Femto 1.Troubleshooting','mobile.qtool@salt.ch');
+public static var MOBILE_312:SOTickets = new SOTickets('MOBILE','3.1.2','B2C_SA_TICKET_SO','3.Technical 1.Network Coverage 2.No coverage','mobile.qtool@salt.ch');
+public static var MOBILE_3121:SOTickets = new SOTickets('MOBILE','3.12.1','B2C_SA_TECH_SO','3.Technical 12.Self Care 1.My Account','mobile.qtool@salt.ch');
+public static var MOBILE_3123:SOTickets = new SOTickets('MOBILE','3.12.3','B2C_SA_TICKET_SO','3.Technical 12.Self Care 3.Salt Mobile App (for iPhone and Android)','mobile.qtool@salt.ch');
+public static var MOBILE_3124:SOTickets = new SOTickets('MOBILE','3.12.4','B2C_SA_TICKET_SO','3.Technical 12.Self Care 4.Mobile Self Service (#121, #123)','mobile.qtool@salt.ch');
+public static var MOBILE_321:SOTickets = new SOTickets('MOBILE','3.2.1','B2C_SA_TECH_SO','3.Technical 2.Calls 1.Quality','mobile.qtool@salt.ch');
+public static var MOBILE_322:SOTickets = new SOTickets('MOBILE','3.2.2','B2C_SA_TECH_SO','3.Technical 2.Calls 2.Cannot make / receive call','mobile.qtool@salt.ch');
+public static var MOBILE_323:SOTickets = new SOTickets('MOBILE','3.2.3','B2C_SA_TECH_SO','3.Technical 2.Calls 3.Missed / white calls','mobile.qtool@salt.ch');
+public static var MOBILE_324:SOTickets = new SOTickets('MOBILE','3.2.4','B2C_SA_TECH_SO','3.Technical 2.Calls 4.Dropped calls','mobile.qtool@salt.ch');
+public static var MOBILE_325:SOTickets = new SOTickets('MOBILE','3.2.5','B2C_SA_TECH_SO','3.Technical 2.Calls 5.Value added Calls','mobile.qtool@salt.ch');
+public static var MOBILE_331:SOTickets = new SOTickets('MOBILE','3.3.1','B2C_SA_TECH_SO','3.Technical 3.SMS/MMS 1.Cannot send & receive','mobile.qtool@salt.ch');
+public static var MOBILE_332:SOTickets = new SOTickets('MOBILE','3.3.2','B2C_SA_TECH_SO','3.Technical 3.SMS/MMS 2.Send & Receive multiple time','mobile.qtool@salt.ch');
+public static var MOBILE_333:SOTickets = new SOTickets('MOBILE','3.3.3','B2C_SA_TECH_SO','3.Technical 3.SMS/MMS 3.Value added services','mobile.qtool@salt.ch');
+public static var MOBILE_341:SOTickets = new SOTickets('MOBILE','3.4.1','B2C_SA_TECH_SO','3.Technical 4.Data 1.No / intermittent connection','mobile.qtool@salt.ch');
+public static var MOBILE_342:SOTickets = new SOTickets('MOBILE','3.4.2','B2C_SA_TECH_SO','3.Technical 4.Data 2.Speed','mobile.qtool@salt.ch');
+public static var MOBILE_351:SOTickets = new SOTickets('MOBILE','3.5.1','B2C_SA_TECH_SO','3.Technical 5.Device 1.Broken or defective','mobile.qtool@salt.ch');
+public static var MOBILE_352:SOTickets = new SOTickets('MOBILE','3.5.2','B2C_SA_TECH_SO','3.Technical 5.Device 2.Configuration','mobile.qtool@salt.ch');
+public static var MOBILE_361:SOTickets = new SOTickets('MOBILE','3.6.1','B2C_SA_TICKET_SO','3.Technical 6.Multimedia services 1.Ringback tones','mobile.qtool@salt.ch');
+public static var MOBILE_362:SOTickets = new SOTickets('MOBILE','3.6.2','B2C_SA_TICKET_SO','3.Technical 6.Multimedia services 2.Salt Cinema','mobile.qtool@salt.ch');
+public static var MOBILE_364:SOTickets = new SOTickets('MOBILE','3.6.4','B2C_SA_TECH_SO','3.Technical 6.Multimedia services 4.Zattoo TV','mobile.qtool@salt.ch');
+public static var MOBILE_381:SOTickets = new SOTickets('MOBILE','3.8.1','B2C_MNP_SO','3.Technical 8.Mobile Number Portability (MNP) 1.Troubleshooting','mobile.qtool@salt.ch');
+public static var MOBILE_391:SOTickets = new SOTickets('MOBILE','3.9.1','B2C_SA_TECH_SO','3.Technical 9.Wifi Calling 1.Troubleshooting','mobile.qtool@salt.ch');
+public static var MOBILE_412:SOTickets = new SOTickets('MOBILE','4.1.2','B2C_SA_COMPLAINT_SO','4.Poor Service Provided 1.Salt 2.Direct Channels (OC)','mobile.qtool@salt.ch');
+public static var MOBILE_422:SOTickets = new SOTickets('MOBILE','4.2.2','B2C_SA_COMPLAINT_SO','4.Poor Service Provided 2.Indirect  & Partners 2.Partners','mobile.qtool@salt.ch');
+public static var MOBILE_441:SOTickets = new SOTickets('MOBILE','4.4.1','B2C_SA_COMPLAINT_SO','4.Poor Service Provided 4.Email 1.Complaint','mobile.qtool@salt.ch');
 public static var MOBILE_511:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_FINANCIAL_COMPLAINT_SO','5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch');
+public static var MOBILE_942:SOTickets = new SOTickets('MOBILE','9.4.2','B2C_XSALES_FEEDBACK_SO','9.Sales 4.Customer Care 2.Fiber Xsales','mobile.qtool@salt.ch');
+
+
 
 
 	public function new(domain:String,number:String,queue:String,desc:String,email:String) 

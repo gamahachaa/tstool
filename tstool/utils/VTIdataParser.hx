@@ -44,7 +44,7 @@ class VTIdataParser
 		regDict.set("dateEreg", new EReg("^(2[0-9]{3}\\-[0-9]{2}\\-[0-9]{2})|(\\-?)$", ""));
 		regDict.set("contractorEreg", new EReg("^3\\d{7}$", ""));
 		regDict.set("personEreg", new EReg("^(Mr\\.|Ms\\.|Herr)\\s[\\S\\s]+$", ""));
-		regDict.set("phoneEreg", new EReg("^41[0-9]{9}$", ""));
+		regDict.set("phoneEreg", new EReg("^[- ]{0,2}(41[0-9]{9})$", ""));
 		regDict.set("optionalPhoneEreg", new EReg("(41[0-9]{9})|(\\A\\z)", ""));
 		regDict.set("emailEreg", ~/[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/i);
 		signal = new FlxTypedSignal<Map<String,Map<String,String>>->Void>();

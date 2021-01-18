@@ -26,8 +26,16 @@ class VersionTracker extends Http
 		this.onStatus = onstatus;
 		#if debug
 		//reg = ~/^\.\/scriptStart(\d{8}_\d{6}).js$/;
-		reg = new EReg('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).js$', "g");
-		trace('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).js$');
+		if (Browser.location.origin.indexOf("qook.test.salt.ch") > -1)
+		{
+			//trace('^./${scriptStart}_(\\d{8}_\\d{6}).min.js$');
+			reg = new EReg('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).min.js$', "g");
+		}
+		else{
+			//trace('^./${scriptStart}_(\\d{8}_\\d{6}).js$');
+			reg = new EReg('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).js$', "g");
+		}
+		
 		#else
 		//reg = ~/^\.\/scriptStart(\d{8}_\d{6}).min.js$/;
 		reg = new EReg('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).min.js$', "g");
@@ -42,6 +50,7 @@ class VersionTracker extends Http
 			{
 				//trace(scripts[i].attributes.getNamedItem('src').nodeValue);
 				scriptFileVersion = scripts[i].attributes.getNamedItem('src').nodeValue;
+				break;
 			}
 			
 		}
@@ -74,6 +83,7 @@ class VersionTracker extends Http
 		{
 			#if debug
 			trace('current version ${Main.VERSION} is aligned with $data');
+			
 			#end
 			scriptChangedSignal.dispatch(false);
 		}

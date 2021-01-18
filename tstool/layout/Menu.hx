@@ -47,7 +47,7 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		menuBG = new FlxShapeBox(0, 0, FlxG.width, 50, {thickness:0, color:SaltColor.BLACK_PURE}, SaltColor.BLACK_PURE);
 		
 		reminderMsgBox = new FlxText(0, 0, 460, "", 10, true);
-		reminderMsgBox.setFormat(UI.INTERACTION_FMT.font, UI.META_FMT.size, SaltColor.MUSTARD);
+		reminderMsgBox.setFormat(UI.INTERACTION_FMT.font, UI.META_FMT.size -2, SaltColor.MUSTARD);
 		reminderMsgBox.visible = false;
 		
 		exitBtn = new FlxButton(0, 0, "", onExit );
@@ -68,7 +68,7 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		trainingMode = new FlxUIButton(0, 0, "", toogleTrainingMode);
 		trainingMode.loadGraphic("assets/images/ui/trainingMode.png", true, 40, 40);
 		trainingMode.has_toggle = true;
-		trainingMode.toggled = !Main.user.canDispach;
+		trainingMode.toggled = !MainApp.agent.canDispach;
 
 		buttons.push(trainingMode);
 		

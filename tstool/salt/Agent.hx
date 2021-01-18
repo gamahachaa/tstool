@@ -11,7 +11,7 @@ import tstool.utils.Csv;
  */
 class Agent extends Actor
 {
-	var adminFile:Csv;
+	//var adminFile:Csv;
 
 	public var sAMAccountName(get, null):String;
 	public var firstName(get, null):String;
@@ -27,15 +27,15 @@ class Agent extends Actor
 	public var title(get, null):String;
 	public var initials(get, null):String;
 	public var memberOf(get, null):StringMap<StringMap<Array<String>>>;
-	public var isAdmin(get, null):Bool;
+	//public var isAdmin(get, null):Bool;
 	@:isVar public var canDispach(get, set):Bool;
 	@:isVar public var mainLanguage(get, set):String;
 
 	public function new(?jsonUser:Dynamic=null)
 	{
-		adminFile = new Csv(Assets.getText("assets/data/admins.txt"),",",false);
+		//adminFile = new Csv(Assets.getText("assets/data/admins.txt"),",",false);
 		canDispach = true;
-		isAdmin = false;
+		//isAdmin = false;
 		if (jsonUser != null )
 		{
 			super(jsonUser.attributes.mail, jsonUser.authorized);
@@ -55,7 +55,7 @@ class Agent extends Actor
 			memberOf = jsonUser.attributes.memberof == null ? new StringMap<StringMap<Array<String>>>(): jsonUser.attributes.memberof ;
 			
 			//trace(Main.adminFile.grid);
-			if (adminFile.dict.exists(sAMAccountName)) isAdmin = true;
+			//if (adminFile.dict.exists(sAMAccountName)) isAdmin = true;
 		}
 		else{
 			#if debug
@@ -144,14 +144,35 @@ class Agent extends Actor
 		return canDispach;
 	}
 	
-	function get_isAdmin():Bool 
-	{
-		return isAdmin;
-	}
+	//function get_isAdmin():Bool 
+	//{
+		//return isAdmin;
+	//}
 	
 	function set_canDispach(value:Bool):Bool 
 	{
 		return canDispach = value;
 	}
-
+	@:keep
+	public static function cretaDummyAgent():Agent
+	{
+		var a = {
+			authorized : true,
+			attributes:{
+				company : "Qook",
+				department : "Service Design",
+				division : "Customer Operations",
+				givenname : "Bruno",
+				initials : "bb",
+				mail : "bruno.baudry@salt.ch",
+				isAdmin : true,
+				msexchuserculture : "en",
+				samaccountname : "bbaudry",
+				sn : "Baudry",
+				title : "Factotum",
+				l : "Biel"
+			}
+		}
+		return new Agent(a);
+	}
 }

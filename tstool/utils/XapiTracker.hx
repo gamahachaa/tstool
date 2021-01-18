@@ -47,8 +47,8 @@ class XapiTracker
 	}
 	public function setActor()
 	{
-		u.setParameter("mbox", Main.user.iri);
-		u.setParameter("name", Main.user.sAMAccountName);
+		u.setParameter("mbox", MainApp.agent.iri);
+		u.setParameter("name", MainApp.agent.sAMAccountName);
 	}
 	public function setCustomer()
 	{

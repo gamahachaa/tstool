@@ -34,6 +34,7 @@ class ActionMail extends Action
 		super();
 		this.ticket = ticket;
 		this.resolved = resolved;
+		mail = new Mail(ticket, this, resolved);
 		//mail = new Mail(ticket, this);
 		#if debug
 		//trace(ticket);
@@ -59,12 +60,14 @@ class ActionMail extends Action
 		_detailTxt = verfifyContctNumber + _detailTxt + prepareHistory();
 		//details.textField.html = true;
 		//_detailTxt += "FAUCK";
-		mail = new Mail(ticket, this, resolved);
+		
 		
 		super.create();
 		//this.details.text = verfifyContctNumber + "\n" + this._detailTxt;
 		this.question.text += "\n" + ticket.desc;
+		details.autoSize = true;
 		this.details.textField.htmlText = _detailTxt;
+		details.autoSize = true;
 		
 		memoTxtArea.addToParent(this);
 	}
@@ -115,13 +118,13 @@ class ActionMail extends Action
 	}
 	override public function onClick()
 	{
-		var txt = memoTxtArea.getInputedText();
-		var content = memoTxtArea.getInputedText().split(" ");
-		if (content.length < 3)
+		
+		if (!validate())
 		{
 			memoTxtArea.blink(true);
 		}
 		else{
+			var txt = memoTxtArea.getInputedText();
 			memoTxtArea.inputtextfield.visible = false;
 			#if debug
 			//trace(txt);
@@ -138,18 +141,32 @@ class ActionMail extends Action
 			#end
 		}
 	}
+	function validate()
+	{
+		return memoTxtArea.getInputedText().split(" ").length >= 3 ;
+	}
 	function prepareHistory()
 	{
 		var hist = Main.HISTORY.history;
-		var t = "\n\nSummrary :\n";
+		var t = "<b>SUMMARY<b>\n";
 		for ( i in hist )
 		{
-			t += stripTags(i.processTitle) + " :: " + i.iteractionTitle + (i.values==null? "": i.values.toString()) + "\n" ;
+			t += Mail.stripTags(i.processTitle) + " :: " + i.iteractionTitle + (i.values==null? "\n": formatValuesToBasicText( i.values )) ;
 		}
 		#if debug
 		//trace(t);
 		#end
 		return t;
+	}
+	static inline public function formatValuesToBasicText( map :Map<String, Dynamic>):String
+	{
+		var out = "\n";
+		for ( title => value in map)
+		{
+			out += '\t\t - $title : $value\n';
+		}
+		//out += "";
+		return out;
 	}
 	/*
 	function prepareCycleTime()

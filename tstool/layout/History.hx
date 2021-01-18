@@ -1,6 +1,7 @@
 package tstool.layout;
 
-import flixel.FlxSprite;
+//import flixel.FlxSprite;
+import tstool.utils.Mail;
 //import tstool.process.ActionLoop;
 //import tstool.process.DescisionLoop;
 import tstool.process.Process;
@@ -48,7 +49,12 @@ class History
 	 * @param	values
 	 * @param	Dynamic>=nul
 	 */
-	public function add( process:ProcessContructor, interaction:Interactions, title:String, iteractionTitle:String, ?values:Map<String,Dynamic>=null)
+	public function add( 
+		process:ProcessContructor, 
+		interaction:Interactions, 
+		title:String, 
+		iteractionTitle:String, 
+		?values:Map<String,Dynamic>=null)
 	{
 		history.push(
 		{
@@ -82,9 +88,7 @@ class History
 		//trace(history.length - index -1);
 		#end
 		var old = history.splice(index, history.length - index);
-		/**
-		 * @testme String to Class<Process>
-		 */
+		
 		//return Type.createInstance( Type.resolveClass( old[0].processName), [] );
 		return Type.createInstance( old[0].step.step, old[0].step.params);
 	}
@@ -96,9 +100,7 @@ class History
 	public function getClassIterations(process:Class<Process>, ?interaction:Interactions):Int
 	{
 		//trace("------------");
-		/**
-		 * @testme getClassIterations Class<Process> 
-		 */
+		
 		var count = 0;
 		for ( i in history )
 		{
@@ -276,27 +278,27 @@ class History
 	{
 		return findStepsClassInHistory(step, 1, fromBegining)[0];
 	}
-	public function getStoredStepsArray( )
+	public function getStoredStepsArray( ):Array<Snapshot>
 	{
 		var t = [];
-		var s = 0;
+		//var s = 0;
 		for (i in history)
 		{
-			t.push({nb:s++, step:i.processTitle, interaction: i.iteractionTitle, values: i.values==null?"":i.values.toString()});
+			t.push(i);
 		}
 		return t;
 	}
-	public function getStepsAsString( toLangPair:String="en-GB" )
-	{
-		var t = "";
-		var h = getStoredStepsTranslatedArray(toLangPair);
-		//var v = "";
-		for (i in h)
-		{
-			t += '${i.nb}|${i.step}|${i.interaction}|${i.values}_';
-		}
-		return t;
-	}
+	//public function getStepsAsString( toLangPair:String="en-GB" )
+	//{
+		//var t = "";
+		//var h = getStoredStepsTranslatedArray(toLangPair);
+		////var v = "";
+		//for (i in h)
+		//{
+			//t += '${i.nb}|${i.step}|${i.interaction}|${i.values}_';
+		//}
+		//return t;
+	//}
 	public function getLocalizedStepsStringsList()
 	{
 		var t = "";
@@ -304,7 +306,7 @@ class History
 		//var v = "";
 		for (i in history)
 		{
-			t += '${nb++}. ${i.processTitle} ${i.iteractionTitle} ${i.values!=null?i.values:[""=>""]}\n';
+			t += '${nb++}. ${i.processTitle} ${i.iteractionTitle} ${i.values==null?"":i.values.toString()}\n';
 		}
 		return t;
 	}
@@ -336,7 +338,7 @@ class History
 	public function getStoredStepsTranslatedArray( toLangPair:String="en-GB" )
 	{
 		var t = [];
-		var s = 0;
+		//var s = 0;
 		
 		var question = "";
 		var choice = "";
@@ -344,44 +346,16 @@ class History
 		for (i in history)
 		{
 			question = Main.tongue.get("$" + i.processName + "_TITLE", "data");
-			choice = getDefaultOrCutomChoice( i.processName, i.interaction);
-			t.push({nb:s++, step: question, interaction: choice, values: i.values==null?"":i.values.toString()});
+			choice = Mail.getDefaultOrCutomChoice( i.processName, i.interaction);
+			t.push({step: question, interaction: choice, values: i.values==null?"":i.values.toString()});
 		}
 		#if debug
 		Main.tongue.initialize("fr-FR");
 		#else
-		Main.tongue.initialize(Main.user.mainLanguage);
+		Main.tongue.initialize(MainApp.agent.mainLanguage);
 		#end
 		return t;
 	}
-	function getDefaultOrCutomChoice( process:String, interaction:Interactions): String
-	{
-		var choice = Main.tongue.get("$" + process + "_" + getCustomInteractionTranslationHeader(interaction), "data");
-		if (choice == "" || choice == null || choice.indexOf("$") == 0)
-		{
-			choice = Main.tongue.get("$defaultBtn_" + getDefaultInteractionTranslationHeader(interaction), "meta");
-		}
-		
-		return choice;
-	}
-	function getDefaultInteractionTranslationHeader( interaction:Interactions)
-	{
-		return switch(interaction)
-		{
-			case Yes: "UI3";
-			case No: "UI1";
-			case Mid: "UI2";
-			default: "UI2";
-		}
-	}
-	function getCustomInteractionTranslationHeader( interaction:Interactions)
-	{
-		return switch(interaction)
-		{
-			case Yes: "RIGHT-BTN";
-			case No: "LEFT-BTN";
-			case Mid: "MID-BTN";
-			default: "MID-BTN";
-		}
-	}
+	
+	
 }

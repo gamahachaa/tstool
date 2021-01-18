@@ -33,7 +33,7 @@ class SwiftMailWrapper extends Http
 	public var successSignal(get, null):FlxTypedSignal<Result->Void>;
 	public var statusSignal(get, null):FlxTypedSignal<Int->Void>;
 	public var errorSignal(get, null):FlxTypedSignal<Dynamic->Void>;
-	var values:haxe.ds.Map<Parameters,Dynamic>;
+	public var values:haxe.ds.Map<Parameters,Dynamic>;
 
 	public function new(url:String) 
 	{
@@ -100,9 +100,9 @@ class SwiftMailWrapper extends Http
 	{
 		values.set(bcc_email, recipient[0]);
 	}
-	public function setBody(content:String)
+	public function setBody(content:String, ?addCommonStyle:Bool=true)
 	{
-		values.set(body, content);
+		values.set(body, "<body>" + (addCommonStyle?setCommonStyle():"") + content + "</body>");
 	}
 	public function setSubject(content:String)
 	{
@@ -130,7 +130,9 @@ class SwiftMailWrapper extends Http
 		for (key => value in values)
 		{
 			this.setParameter(Std.string(key), value);
-			//if (Main.DEBUG) trace(key, value);
+			#if debug
+			trace(key, value);
+			#end
 		}
 		if (dispatch){
 			
