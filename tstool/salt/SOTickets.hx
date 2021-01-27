@@ -8,7 +8,7 @@ class SOTickets
 {
 	public var domain(get, null):String;
 	public var number(get, null):String;
-	public var queue(get, null):String;
+	@:isVar public var queue(get, set):String;
 	public var desc(get, null):String;
 	public var email(get, null):String;
 	/*
@@ -135,7 +135,9 @@ public static var FIX_631:SOTickets = new SOTickets('FIX','6.3.1','FIBER_TECH_ES
 public static var FIX_324:SOTickets = new SOTickets('FIX','3.2.4','FIBER_NON_TECH_SO','3.Billing 2.Bill method & delivery 4.Changement mode paiment ou reception','fiber.tech.qtool@salt.ch');
 public static var FIX_411:SOTickets = new SOTickets('FIX','4.1.1','FIBER_ACTIVATION_CHECK_SO','4.Order 1.Order Process 1.Wrong Address','fiber.tech.qtool@salt.ch');
 public static var FIX_313:SOTickets = new SOTickets('FIX','3.1.3','FIBER_REMINDER_FEE_SO','3.Billing 1.Compensation 3.Entschädigung für Mahnkosten','fiber.tech.qtool@salt.ch');
-public static var FIX_424:SOTickets = new SOTickets('FIX','4.2.4','FIBER_ACCESSORIES_SO','4.Order 2.Logistics 4.Fiber Accessory Delivery Issue','fiber.tech.qtool@salt.ch');
+public static var FIX_424:SOTickets = new SOTickets('FIX', '4.2.4', 'FIBER_ACCESSORIES_SO', '4.Order 2.Logistics 4.Fiber Accessory Delivery Issue', 'fiber.tech.qtool@salt.ch');
+// SAGEM
+public static var FIX_999:SOTickets = new SOTickets('FIX','9.9.9','FIBER_TECH_SGBX_SO','Special queue','fiber.tech.qtool@salt.ch');
 
 //
 public static var MOBILE_111:SOTickets = new SOTickets('MOBILE','1.1.1','B2C_SA_MAS_SO','1.Admin 1.Account Management 1.Abusiv Anrufe','mobile.qtool@salt.ch');
@@ -216,6 +218,11 @@ public static var MOBILE_942:SOTickets = new SOTickets('MOBILE','9.4.2','B2C_XSA
 	function get_queue():String 
 	{
 		return queue;
+	}
+	
+	function set_queue(value:String):String 
+	{
+		return queue = value;
 	}
 	
 	function get_desc():String 

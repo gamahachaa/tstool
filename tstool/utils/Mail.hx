@@ -1,6 +1,7 @@
 package tstool.utils;
 import Main;
 import tstool.layout.History.Interactions;
+import tstool.salt.Customer;
 import tstool.utils.SwiftMailWrapper.Result;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
@@ -61,7 +62,12 @@ class Mail
 		
 		#if debug
 			trace(mailWrapper.values);
-			if (Main.DEBUG) mailWrapper.send(MainApp.agent.canDispach);
+			if (Main.DEBUG) {
+				mailWrapper.send(MainApp.agent.canDispach);
+			}
+			else{
+				successSignal.dispatch({status:"success",error:"",additional:""});
+			}
 		#else
 			mailWrapper.send(MainApp.agent.canDispach);
 		#end
@@ -94,7 +100,8 @@ class Mail
 		var _queue =_ticket.queue + "_"; // Nico change 25.03.2020
 		var _mailSubject = _ticket.domain + "-" + _ticket.number + " " + _ticket.desc;
 		
-		mailWrapper.setSubject('[${Main.customer.voIP}][$_queue][${MainApp.agent.sAMAccountName}]$isResolved $_mailSubject' );
+		//mailWrapper.setSubject('[${Main.customer.voIP}][$_queue][${MainApp.agent.sAMAccountName}]$isResolved $_mailSubject' );
+		mailWrapper.setSubject('[${Main.customer.iri}][$_queue][${MainApp.agent.sAMAccountName}]$isResolved $_mailSubject' );
 	}
 	function setFrom()
 	{
@@ -126,8 +133,11 @@ class Mail
 			//b += '<h1>$_mailSubject</h1>';
 			b += "<p>"+ (memo == ""? "No memo written by agent" : memo) + "</p>";
 			b += '<h2>';
-			if(Main.customer.iri !="" && Main.customer.iri != "not found")
+			if(Main.customer.contract.contractorID != null && Main.customer.contract.contractorID != "" && Main.customer.contract.contractorID != Customer.TEST_IRI)
+				b += 'ID: ${Main.customer.contract.contractorID}<br/>';
+			else{
 				b += 'ID: ${Main.customer.iri}<br/>';
+			}
 			if(Main.customer.voIP !="")
 				b += 'MSISDN-VoIP: ${Main.customer.voIP}<br/>';
 			b += '</h2>';

@@ -62,7 +62,7 @@ class DescisionMultipleInput extends Descision
 	{
 		#if debug
 		////super.onYesClick(); // test only
-		trace("DescisionMultipleInput.onYesClick");
+		//trace("DescisionMultipleInput.onYesClick");
 		#end
 		if (validateYes())
 		{
@@ -130,7 +130,7 @@ class DescisionMultipleInput extends Descision
 		for ( i in this.inputs)
 		{
 			#if debug
-			trace(i);
+			//trace(i);
 			#end
 			if (i.ereg == null) continue;
 			if (i.input.mustValidate != null && i.input.mustValidate.indexOf(interaction) == -1) continue;

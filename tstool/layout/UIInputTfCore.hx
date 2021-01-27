@@ -82,8 +82,13 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 
 		parent.add(imputLabel);
 
-		FlxG.addChildBelowMouse( inputtextfield);
+		FlxG.addChildBelowMouse( inputtextfield );
 
+	}
+	public function show(?yes:Bool=true)
+	{
+		imputLabel.visible = yes;
+		inputtextfield.visible = yes;
 	}
 	//public function positionMe(parent:Rectangle, ?padding:Int=20, ?direction:Direction=null)
 	//public function positionMe(parent:Rectangle, ?padding:Int=20, ?directions:Array<Direction>=null)

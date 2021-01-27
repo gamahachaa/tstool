@@ -42,6 +42,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 	public var separatorV: FlxShapeBox;
 	public var illustration:FlxSprite;
 	public var qook:flixel.ui.FlxButton;
+	public var script:flixel.ui.FlxButton;
 	public var backBtn:flixel.ui.FlxButton;
 	public var stringSignal(get, null):FlxTypedSignal<String->Void>;
 	public var question(get, null):Question;
@@ -53,6 +54,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 	/***************************************************************************************/
 	static inline var TITLE_FONT:String = "assets/fonts/Lato-Black.ttf";
 	static inline var BASIC_FONT:String = "assets/fonts/Lato-Regular.ttf";
+	
 	public static var TITLE_FMT:BasicFormat = {font:TITLE_FONT, size:20};
 	public static var BASIC_FMT:BasicFormat = {font:BASIC_FONT, size:14};
 	public static var META_FMT:BasicFormat = {font:TITLE_FONT, size:16};
@@ -119,20 +121,30 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 		
 		
 		qook = new FlxButton(0, 0, "",()->(stringSignal.dispatch("onQook"))  );
+		script = new FlxButton(0, 0, "Summary",()->(stringSignal.dispatch("onScript"))  );
 		qook.visible = false;
+		script.visible = false;
 		registerButton(qook);
+		registerButton(script);
 		qook.loadGraphic("assets/images/ui/help.png", true, 50, 50);
+		script.loadGraphic("assets/images/ui/script.png", true, 50, 50);
 		var ptNo:FlxPoint = new FlxPoint( -4, -20);
 		qook.labelOffsets = [ptNo, ptNo, ptNo];
 		qook.label.setFormat(UI.META_FMT.font, UI.META_FMT.size);
 		qook.label.wordWrap = false;
 		qook.label.autoSize = true;
 		qook.updateHitbox();
+		script.labelOffsets = [ptNo, ptNo, ptNo];
+		script.label.setFormat(UI.META_FMT.font, UI.META_FMT.size);
+		script.label.wordWrap = false;
+		script.label.autoSize = true;
+		script.updateHitbox();
 		
 		add(menu);
 		add(question);
 		add(details);
 		add(qook);
+		add(script);
 		add(backBtn);
 		add(separatorH);
 		add(separatorV);
@@ -199,7 +211,9 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 		separatorV.y = separatorH.y;
 		
 		qook.y = this.details.y + this.details.height + (PADDING * 2);
-		qook.x = PADDING/2;
+		qook.x = PADDING / 2;
+		script.y = qook.y;
+		script.x = FlxG.width/2;
 	}
 	public function positionButtons(?X:Float=0,?Y:Float=0)
 	{

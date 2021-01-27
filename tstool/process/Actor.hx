@@ -8,6 +8,7 @@ class Actor
 {
 	@:isVar public var authorized(get, set):Bool;
 	@:isVar public var iri(get, set):String;
+	//@:isVar public var indexer(get, set):String;
 	public function new(?id:String="", ?authorised:Bool=true) 
 	{
 		this.iri = StringTools.trim(id);

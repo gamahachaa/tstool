@@ -1,4 +1,5 @@
 package tstool.process;
+import tstool.layout.ScriptView;
 import tstool.process.DataView;
 import tstool.layout.Menu;
 import tstool.layout.UI;
@@ -106,6 +107,7 @@ class Process extends FlxState
 		 */
 		dataView = new DataView(UI.THEME.bg, this._name);
 		
+		
 		// PROCESS UI		
 		question = ui.question;
 		question.text = _titleTxt;
@@ -121,7 +123,7 @@ class Process extends FlxState
 		hasIllustration = _illustration != "";
 		
 		//FIXME texet input displays over
-		ui.showHowto(!Std.is(this, DescisionMultipleInput) && !Std.is(this, ActionMultipleInput) && !Std.is(this, ActionMail) );
+		ui.showHowto(false);
 		
 		if (hasQook)
 		{
@@ -241,6 +243,7 @@ class Process extends FlxState
 			case "de-DE" : switchLang("de-DE");
 			case "fr-FR" : switchLang("fr-FR");
 			case "onQook" : onQook();
+			//case "onScript" : openSubState(ScriptView);
 			case "onExit" : onExit();
 			case "onBack" : onBack();
 			case "onHowTo" : onHowTo();
@@ -250,6 +253,7 @@ class Process extends FlxState
 			case "openSubState" : openSubState(dataView);
 		}
 	}
+	
 	
 	function switchLang(lang:String)
 	{
@@ -275,7 +279,7 @@ class Process extends FlxState
 	{
 		openSubState(howToSubState);
 	}
-
+	
 	
 	function toogleTrainingMode() 
 	{

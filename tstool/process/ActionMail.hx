@@ -2,6 +2,8 @@ package tstool.process;
 import Main;
 import flixel.FlxG;
 import flixel.math.FlxPoint;
+//import flow.nointernet.vti.CheckContractorVTI;
+import tstool.layout.ScriptView;
 import tstool.layout.UI;
 //import openfl.events.FocusEvent;
 import tstool.layout.BIGUIInputTfCore;
@@ -28,14 +30,15 @@ class ActionMail extends Action
 	var memoTxtArea:tstool.layout.BIGUIInputTfCore;
 	var resolved:Bool;
 	var verfifyContctNumber:String;
+	var scriptView:tstool.layout.ScriptView;
 	
 	public function new(ticket: SOTickets, ?resolved:Bool=false)
 	{
 		super();
 		this.ticket = ticket;
 		this.resolved = resolved;
-		mail = new Mail(ticket, this, resolved);
-		//mail = new Mail(ticket, this);
+		mail = new Mail(this.ticket, this, resolved);
+		
 		#if debug
 		//trace(ticket);
 		#end
@@ -57,19 +60,25 @@ class ActionMail extends Action
 		memoTxtArea.inputtextfield.text = "CONTACT: " + Main.customer.contract.mobile + " ";
 		
 		//_detailTxt += verfifyContctNumber + prepareHistory();
-		_detailTxt = verfifyContctNumber + _detailTxt + prepareHistory();
-		//details.textField.html = true;
-		//_detailTxt += "FAUCK";
-		
+		_detailTxt = verfifyContctNumber + _detailTxt;
 		
 		super.create();
+		scriptView = new ScriptView(prepareHistory());
+		scriptView.signal.add(sbStateListener);
 		//this.details.text = verfifyContctNumber + "\n" + this._detailTxt;
 		this.question.text += "\n" + ticket.desc;
 		details.autoSize = true;
 		this.details.textField.htmlText = _detailTxt;
-		details.autoSize = true;
+		//details.autoSize = true;
 		
 		memoTxtArea.addToParent(this);
+		ui.script.visible = true;
+	}
+	
+	function sbStateListener():Void 
+	{
+		//trace("closing");
+		memoTxtArea.show();
 	}
 	override function positionThis(?offSet:FlxPoint)
 	{
@@ -125,15 +134,18 @@ class ActionMail extends Action
 		}
 		else{
 			var txt = memoTxtArea.getInputedText();
-			memoTxtArea.inputtextfield.visible = false;
+			//memoTxtArea.inputtextfield.visible = false;
+			memoTxtArea.show(false);
 			#if debug
 			//trace(txt);
 			trace("tstool.process.ActionMail::onClick");
-			if(Main.DEBUG){
-				openSubState(new TicketSendSub(UI.THEME.bg));
-				mail.successSignal.addOnce(onMailSuccess);
-			}
+			openSubState(new TicketSendSub(UI.THEME.bg));
+			mail.successSignal.addOnce(onMailSuccess);
 			mail.send( txt );
+			//if(Main.DEBUG){
+				//
+			//}
+			
 			#else
 			openSubState(new TicketSendSub(UI.THEME.bg));
 			mail.successSignal.addOnce(onMailSuccess);
@@ -149,14 +161,41 @@ class ActionMail extends Action
 	{
 		var hist = Main.HISTORY.history;
 		var t = "<b>SUMMARY<b>\n";
+		var index = 1;
 		for ( i in hist )
 		{
-			t += Mail.stripTags(i.processTitle) + " :: " + i.iteractionTitle + (i.values==null? "\n": formatValuesToBasicText( i.values )) ;
+			t += index++ + ". " + Mail.stripTags(i.processTitle) + " :: " + i.iteractionTitle + (i.values == null? "\n": formatValuesToBasicText( i.values )) ;
 		}
 		#if debug
 		//trace(t);
 		#end
 		return t;
+	}
+	override function listener(s:String):Void 
+	{
+		//trace("tstool.process.Process::listener");
+		switch (s){
+			case "en-GB" : switchLang("en-GB");
+			case "it-IT" : switchLang("it-IT");
+			case "de-DE" : switchLang("de-DE");
+			case "fr-FR" : switchLang("fr-FR");
+			case "onQook" : onQook();
+			case "onScript" : onScript();
+			case "onExit" : onExit();
+			case "onBack" : onBack();
+			case "onHowTo" : onHowTo();
+			case "toogleTrainingMode" : toogleTrainingMode();
+			case "onComment" : onComment();
+			case "setStyle" : setStyle();
+			case "openSubState" : openSubState(dataView);
+		}
+	}
+	
+	function onScript() 
+	{
+		memoTxtArea.show( false );
+		memoTxtArea.inputtextfield.visible = false;
+		openSubState( scriptView );
 	}
 	static inline public function formatValuesToBasicText( map :Map<String, Dynamic>):String
 	{

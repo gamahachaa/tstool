@@ -15,8 +15,9 @@ class Customer extends Actor
 {
 	@:isVar public var dataSet(get, set):Map<String,Map<String,String>>;
 	@:isVar public var contract(get, set):Contractor;
-	public var shipingAdress(get, set):Adress;
+	@:isVar public var shipingAdress(get, set):Adress;
 	public var voIP(get, set):String;
+	@:isVar public var indexer(get, set):String;
 	public static inline var TEST_IRI:String = "not found";
 	public function new() 
 	{
@@ -36,7 +37,10 @@ class Customer extends Actor
 	{
 		return TEST_IRI == this.iri;
 	}
-	
+	public function isSagem()
+	{
+		
+	}
 	function get_shipingAdress():Adress 
 	{
 		return this.contract.address;
@@ -70,6 +74,16 @@ class Customer extends Actor
 	function set_dataSet(value:Map<String, Map<String, String>>):Map<String, Map<String, String>> 
 	{
 		return dataSet = value;
+	}
+	
+	function get_indexer():String 
+	{
+		return indexer;
+	}
+	
+	function set_indexer(value:String):String 
+	{
+		return indexer = value;
 	}
 	
 	function set_contract(value:Contractor):Contractor 

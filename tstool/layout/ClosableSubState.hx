@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSubState;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
+import flixel.util.FlxSignal;
 
 /**
  * ...
@@ -12,14 +13,18 @@ import flixel.util.FlxColor;
 class ClosableSubState extends FlxSubState 
 {
 	var closeBtn:FlxButton;
+	public var signal:FlxSignal;
 	public function new(BGColor:FlxColor=FlxColor.TRANSPARENT) 
 	{
 		super(BGColor);
+		signal = new FlxSignal();
 	}
 	override public function update(elapser:Float)
 	{
 		if ( FlxG.keys.justReleased.ESCAPE )
 		{
+			signal.dispatch
+();
 			close();
 		}
 		if ( FlxG.mouse.justReleased )
@@ -29,6 +34,8 @@ class ClosableSubState extends FlxSubState
 				(FlxG.mouse.x  - h.x > 0 &&  FlxG.mouse.x - h.x < h.width) 
 				&& ( FlxG.mouse.y - h.y> 0 && FlxG.mouse.y - h.y < h.height))
 			{
+				signal.dispatch
+();
 				close();
 			}
 			
