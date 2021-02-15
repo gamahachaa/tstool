@@ -17,23 +17,37 @@ class ActionMultipleInput extends Action
 {
 	var inputs:Array<ValidatedInputs>;
 	var multipleInputs:MultipleInput;
-	public var nextValidatedSignal(get, null):FlxTypedSignal<Bool->Void>;
+	
+	public var nextValidatedSignal(get, null):FlxTypedSignal<Bool->Void>;//keep
 	
 	public function new(inputs:Array<ValidatedInputs>) 
 	{
 		super();
 		this.inputs = inputs;
-		nextValidatedSignal = new FlxTypedSignal<Bool->Void>();
-		
-		//_focus == null;
+		nextValidatedSignal = new FlxTypedSignal<Bool->Void>();//keep
 	}
+	//keep
+	override public function onClick():Void
+	{
+		if (validate())
+		{
+			nextValidatedSignal.dispatch(true);
+			super.onClick();
+		}
+		else
+			nextValidatedSignal.dispatch(false);
+
+	}
+	function get_nextValidatedSignal():FlxTypedSignal<Bool->Void> 
+	{
+		return nextValidatedSignal;
+	}
+	////////////////////////////////////////////////////////////////////
 	override public function create( ):Void
 	{
 		
 		multipleInputs = new MultipleInput(this, [for (i in inputs) i.input]);
 		super.create();
-		
-		//multipleInputs.getNextFocus();
 	}
 	override public function update(elapsed)
 	{
@@ -50,17 +64,7 @@ class ActionMultipleInput extends Action
 			multipleInputs.getNextFocus();
 		}
 	}
-	override public function onClick():Void
-	{
-		if (validate())
-		{
-			nextValidatedSignal.dispatch(true);
-			super.onClick();
-		}
-		else
-			nextValidatedSignal.dispatch(false);
-
-	}
+	
 	override function positionThis(?offSet:FlxPoint)
 	{
 		super.positionThis();
@@ -79,10 +83,7 @@ class ActionMultipleInput extends Action
 		super.pushToHistory(buttonTxt, interactionType, [for (k=>v in multipleInputs.inputs) k => v.getInputedText()]);
 	}
 	
-	function get_nextValidatedSignal():FlxTypedSignal<Bool->Void> 
-	{
-		return nextValidatedSignal;
-	}
+	
 	
 	function validate()
 	{
@@ -92,7 +93,6 @@ class ActionMultipleInput extends Action
 			//trace(i);
 			
 			if (i.ereg == null) continue;
-			//if (i.input.mustValidate != null && i.input.mustValidate.indexOf(interaction) == -1) continue;
 			inp = this.multipleInputs.inputs.get(i.input.prefix);
 			inp.blink(false);
 			if (!i.ereg.match(inp.getInputedText()))

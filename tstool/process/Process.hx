@@ -1,4 +1,6 @@
 package tstool.process;
+import tstool.layout.History;
+import tstool.layout.PageLoader;
 import tstool.layout.ScriptView;
 import tstool.process.DataView;
 import tstool.layout.Menu;
@@ -6,7 +8,7 @@ import tstool.layout.UI;
 import tstool.layout.Question;
 import tstool.layout.History.Interactions;
 import tstool.layout.Instructions;
-import tstool.utils.Mail;
+//import tstool.utils.Mail;
 
 import flixel.FlxG;
 import flixel.FlxState;
@@ -248,10 +250,16 @@ class Process extends FlxState
 			case "onBack" : onBack();
 			case "onHowTo" : onHowTo();
 			case "toogleTrainingMode" : toogleTrainingMode();
+			case "logout" : onlogout();
 			case "onComment" : onComment();
 			case "setStyle" : setStyle();
 			case "openSubState" : openSubState(dataView);
 		}
+	}
+	
+	function onlogout() 
+	{
+		MainApp.clearCookie();
 	}
 	
 	
@@ -326,9 +334,9 @@ class Process extends FlxState
 		var to = "mailto:qook@salt.ch?";
 		var subject = "subject=[TROUBLE share] " + this._name;
 		var doubleBreak = "\n\n";
-		var content = "TITLE:\n" + Mail.stripTags(_titleTxt) + doubleBreak;
+		var content = "TITLE:\n" + History.stripTags(_titleTxt) + doubleBreak;
 
-		content += "DETAILS:\n" + Mail.stripTags(_detailTxt) + doubleBreak ;
+		content += "DETAILS:\n" + History.stripTags(_detailTxt) + doubleBreak ;
 		//var history = "";
 		//var line = "";
 		//var t = Main.HISTORY.getLocalizedStepsStrings();
@@ -400,7 +408,11 @@ class Process extends FlxState
 	 */
 	function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
-		Main.HISTORY.add({step:_class, params:[]}, interactionType, Mail.stripTags(_titleTxt), buttonTxt, values);
+		//Main.HISTORY.add({step:_class, params:[]}, interactionType, _titleTxt, buttonTxt, values);
+		#if debug
+		trace("tstool.process.Process::pushToHistory::question.text", question.text );
+		#end
+		Main.HISTORY.add({step:_class, params:[]}, interactionType, question.text, buttonTxt, values);
 	}
 
 	function set__titleTxt(value:String):String
@@ -418,28 +430,35 @@ class Process extends FlxState
 		return _illustration = value;
 	}
 	/**
-	 * @param	buttonTxt
-	 */
+	 * 
+	 *
 	function move_to_next(nexts:Array<Process>, interaction:Interactions)
 	{
 		//trace("tstool.process.Process::move_to_next");
+		
 		var iteration = Main.HISTORY.getIterations(_name, interaction) - 1;
 		var index = iteration >= nexts.length ? nexts.length - 1 : iteration;
 		FlxG.switchState(nexts[index]);
-	}
+	}*/
 	/**
-	 * @FIXME broken on BACK
 	 * @param	interaction
 	 */
 	function moveToNextClassProcess(interaction:Interactions)
 	{
-		//trace("tstool.process.Process::moveToNextClassProcess", _nexts);
-		//trace("tstool.process.Process::moveToNextClassProcess::_class", _class );
+		var slowClasses:Array<Dynamic> = [ActionDropDown, ActionMultipleInput, ActionRadios, ActionTicket, DescisionDropDown, DescisionLoop, DescisionMultipleInput, TripletMultipleInput];
 		var iteration = Main.HISTORY.getClassIterations(_class, interaction);
-		//trace("tstool.process.Process::moveToNextClassProcess::iteration ", iteration  );
-		var index = iteration >= _nexts.length ? _nexts.length - 1 : iteration >0?iteration-1:0;
-		//trace("tstool.process.Process::moveToNextClassProcess::index", index );
-		//trace("tstool.process.Process::moveToNextClassProcess::_nexts[index]", _nexts[index] );
+		var index = iteration >= _nexts.length ? _nexts.length - 1 : iteration > 0?iteration - 1:0;
+		#if debug
+		//trace("tstool.process.Process::moveToNextClassProcess::Type.getSuperClass(_nexts[index].step)", Type.getSuperClass(_nexts[index].step) );
+		#end
+		if (slowClasses.indexOf(Type.getSuperClass(_nexts[index].step)) >-1) {
+			openSubState(new PageLoader());
+		}
+		else{
+			#if debug
+			//trace("tstool.process.Process::moveToNextClassProcess::not sper slow");
+			#end
+		}
 		FlxG.switchState(Type.createInstance(_nexts[index].step ,_nexts[index].params));
 	}
 	override public function update(elapsed):Void

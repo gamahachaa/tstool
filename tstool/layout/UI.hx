@@ -153,6 +153,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 	
 	function listener(s:String):Void 
 	{
+		
 		switch (s){
 			case "en-GB" : stringSignal.dispatch("en-GB");
 			case "it-IT" : stringSignal.dispatch("it-IT");
@@ -163,6 +164,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 			case "onHowTo" : stringSignal.dispatch("onHowTo");
 			case "toggleStyle" : toggleStyle();
 			case "toogleTrainingMode" : stringSignal.dispatch("toogleTrainingMode");
+			case "logout" : stringSignal.dispatch("logout");
 			case "onComment" : stringSignal.dispatch("onComment");
 		}
 	}

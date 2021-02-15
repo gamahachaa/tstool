@@ -3,6 +3,7 @@ package tstool.process;
 import flixel.FlxG;
 import flixel.math.FlxPoint;
 import flixel.ui.FlxButton;
+import tstool.layout.PageLoader;
 import tstool.layout.UI;
 //import flixel.util.FlxColor;
 import tstool.layout.History;
@@ -20,11 +21,7 @@ class Action extends Process
 	var _nextProcesses:Array<Process> = [];
 	var _nextClassProcesses:Array<ProcessContructor> = [];
 	var btn:FlxButton;
-	//public function new()
-	//{
-		//super();
-		//
-	//}
+
 	override public function create():Void
 	{
 		_buttonTxt = translate( _buttonTxt, "MID-BTN" );
@@ -48,14 +45,7 @@ class Action extends Process
 	}
 	function positionThis(?offSet:FlxPoint)
 	{
-		
 		positionMain( [btn], offSet );
-		//btn.x =  2*FlxG.width / 3 + _padding;
-		//btn.y = this.question.y + this.question.height + _padding ;
-
-		//btn.y = (this.illustration == null ? this.details.y + this.details.height :  Math.max( this.details.y + this.details.height, this.illustration.y + this.illustration.height)) + _padding;
-		//btn.x = FlxG.width /2;
-
 	}
 	override public function setStyle()
 	{
@@ -65,18 +55,17 @@ class Action extends Process
 	public function onClick():Void
 	{
 		pushToHistory(_buttonTxt, Interactions.Next);
+		moveToNextClassProcess(Interactions.Next);
 		
+		/*
 		if (this._nextProcesses.length > 0) // @todo 
 		{
-			/**
-			 * @todo  REMOVE ONCE CLAss refactor is cleared
-			 */
 			move_to_next(_nextProcesses, Interactions.Next);
 		}
 		else if (this._nexts.length > 0)
 		{
 			moveToNextClassProcess(Interactions.Next);
-		}
+		}*/
 	}
 
 	override public function update(elapsed:Float):Void

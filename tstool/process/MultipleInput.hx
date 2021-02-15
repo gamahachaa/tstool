@@ -109,7 +109,14 @@ class MultipleInput implements IFlxDestroyable
 		//trace(e.currentTarget);
 		//#end
 	//}
-	
+	public function getText(id:String):String
+	{
+		return inputs.get(id).getInputedText();
+	}
+	public function setInputDefault(id:String, text:String):Void
+	{
+		inputs.get(id).inputtextfield.text = text;
+	}
 	function get_inputs():Map<String, UIInputTfCore>
 	{
 		return inputs;
@@ -142,27 +149,6 @@ class MultipleInput implements IFlxDestroyable
 		}
 		//trace(pt);
 		return pt;
-		/*
-		var current:UIInputTfCore = inputs.get(tabOrder[0]);
-		var tmp:UIInputTfCore = current;
-		current.positionMe( new Rectangle(this.parent.question.x, this.parent.question.y, this.parent.question.width, this.parent.question.height), this.parent._padding);
-		//trace(tmp.boundingRect);
-		//trace(tmp._label);
-		for ( i in 1...tabOrder.length)
-		{
-			
-			current = inputs.get(tabOrder[i]);
-			#if debug
-			trace(current.imputLabel.text);
-			trace(current.positionsToParent);
-			trace("parent : "+ tmp.imputLabel.text);
-			trace(tmp.boundingRect);
-			
-			#end
-			current.positionMe( tmp.boundingRect, this.parent._padding);
-			tmp = current;
-		}
-		*/
 	}
 	
 	//function get_first():UIInputTfCore 

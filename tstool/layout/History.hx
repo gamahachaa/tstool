@@ -1,7 +1,8 @@
 package tstool.layout;
 
 //import flixel.FlxSprite;
-import tstool.utils.Mail;
+//import tstool.salt.TicketMail;
+//import tstool.utils.Mail;
 //import tstool.process.ActionLoop;
 //import tstool.process.DescisionLoop;
 import tstool.process.Process;
@@ -27,6 +28,10 @@ enum Interactions
 	Mid;
 	Next;
 	Exit;
+}
+typedef ValueReturn = {
+	var exists:Bool;
+	var value:Dynamic;	
 }
 class History
 {
@@ -60,7 +65,7 @@ class History
 		{
 			processName : Type.getClassName(process.step),
 			interaction: interaction,
-			processTitle:title,
+			processTitle: stripTags(title),
 			iteractionTitle:iteractionTitle,
 			values:values,
 			start: Date.now(),
@@ -278,6 +283,56 @@ class History
 	{
 		return findStepsClassInHistory(step, 1, fromBegining)[0];
 	}
+	public function findAllValuesOffOfFirstClassInHistory(step:Class<Process>, ?fromBegining:Bool = true):Map<String,Dynamic>
+	{
+		return findFirstStepsClassInHistory(step).values;
+	}
+	public function findValueOfFirstClassInHistory(step:Class<Process>, valueIndex:String, ?fromBegining:Bool = true):ValueReturn{
+		var v:Snapshot = findStepsClassInHistory(step, 1, fromBegining)[0];
+		if (v.values.exists(valueIndex)){
+			return {exists:true, value: v.values.get(valueIndex)};
+		}
+		else
+		{
+			return {exists:false, value: null};
+		}
+	}
+	public function buildHistoryEmailBody( currentLang:String, _currentProcess:Process, ?translate:Bool= true)
+	{
+		var lang = currentLang;
+		var  b = "";
+		#if debug
+			trace("tstool.utils.Mail::buildHistoryBody::MainApp.agent.mainLanguage", lang );
+		#end
+		var needsEnTranslation = lang != "en-GB";
+		var steps = this.getStoredStepsArray();
+		steps.push(
+			{
+				processName: _currentProcess._name,
+				interaction: Next,
+				processTitle: "",
+				iteractionTitle: "",
+				values: null,
+				start:Date.now()
+			}
+		);
+		
+		b += '<h4>Steps:</h4>';
+		b += '<ol>${listSteps(steps)}</ol>';
+		if (translate && needsEnTranslation)
+		{
+			b += "<h4>English:</h4>";
+			Main.tongue.initialize( "en-GB" );
+			b += '<ol>${listSteps(steps)}</ol>';
+			#if debug
+				Main.tongue.initialize(Main.LANGS[0]);
+			#else
+			Main.tongue.initialize(lang);
+			#end
+		}
+		return b;
+	}
+	
 	public function getStoredStepsArray( ):Array<Snapshot>
 	{
 		var t = [];
@@ -288,17 +343,7 @@ class History
 		}
 		return t;
 	}
-	//public function getStepsAsString( toLangPair:String="en-GB" )
-	//{
-		//var t = "";
-		//var h = getStoredStepsTranslatedArray(toLangPair);
-		////var v = "";
-		//for (i in h)
-		//{
-			//t += '${i.nb}|${i.step}|${i.interaction}|${i.values}_';
-		//}
-		//return t;
-	//}
+
 	public function getLocalizedStepsStringsList()
 	{
 		var t = "";
@@ -346,7 +391,7 @@ class History
 		for (i in history)
 		{
 			question = Main.tongue.get("$" + i.processName + "_TITLE", "data");
-			choice = Mail.getDefaultOrCutomChoice( i.processName, i.interaction);
+			choice = getDefaultOrCutomChoice( i.processName, i.interaction);
 			t.push({step: question, interaction: choice, values: i.values==null?"":i.values.toString()});
 		}
 		#if debug
@@ -356,6 +401,113 @@ class History
 		#end
 		return t;
 	}
-	
-	
+	public function prepareListHistory(forClipBoard:Bool=false)
+	{
+		//var hist = Main.HISTORY.history;
+		var t = forClipBoard?"":"<b>SUMMARY<b>\n";
+		var index = 1;
+		for ( i in this.history )
+		{
+			t += index++ + ". " + stripTags(i.processTitle) + " :: " + i.iteractionTitle + (i.values == null? "\n": formatValuesToBasicText( i.values )) ;
+		}
+		#if debug
+		//trace(t);
+		#end
+		return t;
+	}
+	///////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
+	public static function stripTags(s:String):String
+	{
+		s = StringTools.replace(s, "<B>", " ");
+		s = StringTools.replace(s, "<b>", " ");
+		s = StringTools.replace(s, "<N>", " ");
+		s = StringTools.replace(s, "<T>", " ");
+		s = StringTools.replace(s, "<EM>", " ");
+		s = StringTools.replace(s, "<em>", " ");
+		s = StringTools.replace(s, "\t", " ");
+		s = StringTools.replace(s, "\n", " ");
+		return s;
+	}
+	//////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////
+	inline function listSteps(stepsArray:Array<Snapshot>):String
+	{
+		var s = "";
+		
+		var title ="";
+		var values = "";
+		var interaction = "";
+		if (stepsArray == null) return "";
+
+		for (h in stepsArray)
+		{
+			title = stripTags(Main.tongue.get("$" + h.processName + "_TITLE", "data"));
+			interaction = h.interaction == Next ? "" : '... <strong>${getDefaultOrCutomChoice( h.processName, h.interaction)}</strong>';
+			values = h.values == null ? "" : formatMapToHtml(h.values);
+			if (interaction == "") s += '<li>$title $values</li>';
+			else if (values == "" ) s += '<li>$title $interaction</li>';
+			else s +='<li>$title $values $interaction</li>';
+			
+		}
+		return s;
+	}
+	inline function formatMapToHtml( map :Map<String, Dynamic>):String
+	{
+		var out = "";
+		for ( title => value in map)
+		{
+			if (StringTools.trim(value) != "" ) out += '<li>$title ... <strong>$value</strong></li>';
+		}
+		return out ==""?"":'<ul>$out</ul>';
+	}
+	inline function getDefaultOrCutomChoice( process:String, interaction:Interactions): String
+	{
+		var choice = Main.tongue.get("$" + process + "_" + getCustomInteractionTranslationHeader(interaction), "data");
+		if (choice == "" || choice == null || choice.indexOf("$") == 0)
+		{
+			choice = Main.tongue.get("$defaultBtn_" + getDefaultInteractionTranslationHeader(interaction), "meta");
+		}
+		return choice;
+	}
+	/**
+	 * 
+	 * @param	s
+	 */
+	inline function getDefaultInteractionTranslationHeader( interaction:Interactions)
+	{
+		return switch(interaction)
+		{
+			case Yes: "UI3";
+			case No: "UI1";
+			case Mid: "UI2";
+			default: "UI2";
+		}
+	}
+	/**
+	 * 
+	 * @param	s
+	 */
+	inline function getCustomInteractionTranslationHeader( interaction:Interactions)
+	{
+		return switch(interaction)
+		{
+			case Yes: "RIGHT-BTN";
+			case No: "LEFT-BTN";
+			case Mid: "MID-BTN";
+			default: "MID-BTN";
+		}
+	}
+	inline function formatValuesToBasicText( map :Map<String, Dynamic>):String
+	{
+		var out = "\n";
+		for ( title => value in map)
+		{
+			out += '\t\t - $title : $value\n';
+		}
+		//out += "";
+		return out;
+	}
 }

@@ -43,16 +43,12 @@ class RadioTitle extends FlxGroup implements IPositionable
 		this.add(titleUI);
 		this.add(rd);
 	}
-	public function updateRadioText()
+	public inline function updateRadioText()
 	{
 		
 		for (i in rd.getRadios())
 		{
-			//var pt = FlxPoint.get(0, -RADIO_SIZE/2);
 			i.button.label.size = RADIO_SIZE;
-			//i.button.label.y = i.button.label.y -(RADIO_SIZE*3);
-			//i.button.labelOffsets = [pt,pt,pt];
-			//pt.put();
 		}
 		
 	}
@@ -113,7 +109,7 @@ class RadioTitle extends FlxGroup implements IPositionable
 			i.button.over_color = UI.THEME.meta;
 		}
 	}
-	function setWidth( s:String, a:Array<String>)
+	inline function setWidth( s:String, a:Array<String>)
 	{
 		//trace(s.length);
 		var w = s.length > TITLE_SIZE ? s.length * TITLE_SIZE: 110;
@@ -124,7 +120,7 @@ class RadioTitle extends FlxGroup implements IPositionable
 		//trace(w);
 		return w;
 	}
-	function get_boundingRect():Rectangle 
+	inline function get_boundingRect():Rectangle 
 	{
 		return boundingRect;
 	}

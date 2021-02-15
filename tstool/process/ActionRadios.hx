@@ -68,7 +68,7 @@ class ActionRadios extends Action
 		position();
 
 	}
-	public function position()
+	inline function position()
 	{
 		var p:FlxPoint = new FlxPoint(0, 0);
 		var rd:RadioTitle;

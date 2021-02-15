@@ -31,6 +31,7 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 	var trainingMode:FlxUIButton;
 	
 	var menuBG:flixel.addons.display.shapes.FlxShapeBox;
+	var logout:flixel.addons.ui.FlxUIButton;
 	//var langs:Map< String, FlxUIButton>;
 	//var backBtn:flixel.ui.FlxButton;
 	public var buttons:Array<Dynamic>;
@@ -54,6 +55,10 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		exitBtn.loadGraphic("assets/images/ui/exit.png", true, 40, 40);
 		buttons.push(exitBtn);
 		
+		logout = new FlxUIButton(0, 0, "", onLogout);
+		logout.loadGraphic("assets/images/ui/logout.png", true, 40, 40);
+		logout.has_toggle = false;
+		buttons.push(logout);
 		
 		howTo = new FlxButton(0, 0, "", onHowTo );
 		howTo.loadGraphic("assets/images/ui/howto.png", true, 40, 40);
@@ -69,8 +74,9 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		trainingMode.loadGraphic("assets/images/ui/trainingMode.png", true, 40, 40);
 		trainingMode.has_toggle = true;
 		trainingMode.toggled = !MainApp.agent.canDispach;
-
 		buttons.push(trainingMode);
+		
+
 		
 		
 		fr = new FlxUIButton(0, 0, "", function() { switchLang("fr-FR"); } );
@@ -126,11 +132,14 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		}
 		add(exitBtn);
 		add(trainingMode);
+		add(logout);
 		add(reminderMsgBox);
 		add(howTo);
 		
 		
 	}
+	
+	
 	
 	
 	public function position()
@@ -146,11 +155,11 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		en.x = it.x + UI.PADDING*2;
 		
 		
-		exitBtn.y = 4;
-		exitBtn.x = FlxG.width -(UI.PADDING * 2);
+		logout.y = 4;
+		logout.x = FlxG.width -(UI.PADDING * 2);
 		
-		//backBtn.x = exitBtn.x - UI.PADDING - trainingMode.width;
-		
+		exitBtn.y = logout.y;
+		exitBtn.x = logout.x - (UI.PADDING *3) - logout.width;
 		
 		trainingMode.y = exitBtn.y;
 		trainingMode.x = exitBtn.x - UI.PADDING - trainingMode.width;
@@ -166,6 +175,10 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 	//{
 		//stringSignal.dispatch("onBack");
 	//}
+	function onLogout() 
+	{
+		stringSignal.dispatch("logout");
+	}
 	function toggleStyle() 
 	{
 		stringSignal.dispatch("toggleStyle");

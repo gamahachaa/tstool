@@ -1,5 +1,6 @@
 package tstool.process;
 import tstool.layout.History;
+import tstool.layout.PageLoader;
 import tstool.layout.UI;
 
 import flixel.FlxG;
@@ -102,53 +103,48 @@ class Triplet extends Process
 	}
 	public function onMidClick():Void
 	{
-		pushToHistory(_buttonMidTxt, Interactions.Mid);
 		
-		if (this._nextMidProcesses.length > 0) // @todo 
+		pushToHistory(_buttonMidTxt, Interactions.Mid);
+		moveToNextClassProcess(Interactions.Mid);
+		
+		/*f (this._nextMidProcesses.length > 0) // @todo 
 		{
-			/**
-			 * @todo  REMOVE ONCE CLAss refactor is cleared
-			 */
 			move_to_next(_nextMidProcesses, Interactions.Mid);
 		}
 		else if (this._nexts.length > 0)
 		{
 			moveToNextClassProcess(Interactions.Mid);
-		}
+		}*/
 	}
 	public function onYesClick():Void
 	{
-		pushToHistory(_buttonYesTxt, Interactions.Yes);
 		
-		if (this._nextYesProcesses.length > 0) // @todo 
-		{
-			/**
-			 * @todo  REMOVE ONCE CLAss refactor is cleared
-			 */
-			move_to_next(_nextYesProcesses, Interactions.Yes);
-		}
-		else if (this._nexts.length > 0)
-		{
-			moveToNextClassProcess(Interactions.Yes);
-		}
+		pushToHistory(_buttonYesTxt, Interactions.Yes);
+		moveToNextClassProcess(Interactions.Yes);
+		//if (this._nextYesProcesses.length > 0) // @todo 
+		//{
+			//move_to_next(_nextYesProcesses, Interactions.Yes);
+		//}
+		//else if (this._nexts.length > 0)
+		//{
+			//moveToNextClassProcess(Interactions.Yes);
+		//}
 	}
 
 	public function onNoClick():Void
 	{
 		
 		pushToHistory(_buttonNoTxt, Interactions.No);
-		
-		if (this._nextNoProcesses.length > 0) 
+		moveToNextClassProcess(Interactions.No);
+		/*if (this._nextNoProcesses.length > 0) 
 		{
-			/**
-			 * @todo  REMOVE ONCE CLAss refactor is cleared
-			 */
+			
 			move_to_next(_nextNoProcesses, Interactions.No);
 		}
 		else if (this._nexts.length > 0)
 		{
 			moveToNextClassProcess(Interactions.No);
-		}
+		}*/
 	}
 	override public function update(elapsed:Float):Void
 	{

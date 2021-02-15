@@ -20,10 +20,10 @@ class TicketSendSub extends FlxSubState
 		super.create();
 		spritesheet = new FlxSprite();
 		spritesheet.loadGraphic("assets/images/ui/mail.png", true, 200, 200);
-		spritesheet.animation.add("send", [0, 1, 2, 3, 4, 5], 15, true);
-		add(spritesheet);
 		spritesheet.screenCenter();
+		spritesheet.animation.add("send", [0, 1, 2, 3, 4, 5], 60, true);
 		spritesheet.animation.play("send");
+		add(spritesheet);
 	}
 	
 }

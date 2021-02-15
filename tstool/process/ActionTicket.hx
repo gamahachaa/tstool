@@ -2,28 +2,21 @@ package tstool.process;
 import Main;
 import flixel.FlxG;
 import flixel.math.FlxPoint;
-//import flow.nointernet.vti.CheckContractorVTI;
+import tstool.salt.TicketMail;
 import tstool.layout.ScriptView;
 import tstool.layout.UI;
-//import openfl.events.FocusEvent;
 import tstool.layout.BIGUIInputTfCore;
-//import tstool.layout.SaltColor;
-//import lime.utils.Assets;
-//import openfl.text.TextField;
-//import openfl.text.TextFieldType;
-//import openfl.text.TextFormat;
 import tstool.salt.SOTickets;
-//import tstool.utils.Csv;
-import tstool.utils.Mail;
+//import tstool.utils.Mail;
 import tstool.utils.SwiftMailWrapper;
 /**
  * ...
  * @author bb
  */
-class ActionMail extends Action
+class ActionTicket extends Action
 {
 	var memoDefault:String;
-	var mail:Mail;
+	var mail:TicketMail;
 	var ticket:SOTickets;
 	//var tf:TextField;
 	var hasFocus:Bool;
@@ -31,13 +24,14 @@ class ActionMail extends Action
 	var resolved:Bool;
 	var verfifyContctNumber:String;
 	var scriptView:tstool.layout.ScriptView;
+	var defaultMemo:String;
 	
 	public function new(ticket: SOTickets, ?resolved:Bool=false)
 	{
 		super();
 		this.ticket = ticket;
 		this.resolved = resolved;
-		mail = new Mail(this.ticket, this, resolved);
+		mail = new TicketMail(this.ticket, this, resolved);
 		
 		#if debug
 		//trace(ticket);
@@ -54,38 +48,33 @@ class ActionMail extends Action
 
 		hasFocus = false;
 		verfifyContctNumber = translate("verifiyContactDetails", "UI1", "meta");
-		//trace(verfifyContctNumber);
+		
 		memoDefault = translate("describeIssue", "UI1", "meta");
 		memoTxtArea = new BIGUIInputTfCore(750, 50, memoDefault, [bottom, left]);
-		memoTxtArea.inputtextfield.text = "CONTACT: " + Main.customer.contract.mobile + " ";
+		defaultMemo = "CONTACT: " + Main.customer.contract.mobile + " ";
+		memoTxtArea.inputtextfield.text = defaultMemo;
 		
-		//_detailTxt += verfifyContctNumber + prepareHistory();
+		
 		_detailTxt = verfifyContctNumber + _detailTxt;
 		
 		super.create();
-		scriptView = new ScriptView(prepareHistory());
+		scriptView = new ScriptView(Main.HISTORY.prepareListHistory());
 		scriptView.signal.add(sbStateListener);
-		//this.details.text = verfifyContctNumber + "\n" + this._detailTxt;
 		this.question.text += "\n" + ticket.desc;
 		details.autoSize = true;
 		this.details.textField.htmlText = _detailTxt;
-		//details.autoSize = true;
-		
 		memoTxtArea.addToParent(this);
 		ui.script.visible = true;
 	}
 	
 	function sbStateListener():Void 
 	{
-		//trace("closing");
 		memoTxtArea.show();
 	}
 	override function positionThis(?offSet:FlxPoint)
 	{
 		super.positionThis();
-		var r = this.question.boundingRect;
-		//r.height = r.height  + _padding;
-		var p = this.memoTxtArea.positionMe(r, _padding);
+		var p = this.memoTxtArea.positionMe(this.question.boundingRect, _padding);
 		positionBottom(p);
 		positionButtons(p);
 		
@@ -134,46 +123,33 @@ class ActionMail extends Action
 		}
 		else{
 			var txt = memoTxtArea.getInputedText();
-			//memoTxtArea.inputtextfield.visible = false;
 			memoTxtArea.show(false);
 			#if debug
-			//trace(txt);
 			trace("tstool.process.ActionMail::onClick");
 			openSubState(new TicketSendSub(UI.THEME.bg));
 			mail.successSignal.addOnce(onMailSuccess);
-			mail.send( txt );
-			//if(Main.DEBUG){
-				//
-			//}
+			mail.build( buildMemo(txt, defaultMemo) );
+			mail.send();
 			
 			#else
 			openSubState(new TicketSendSub(UI.THEME.bg));
 			mail.successSignal.addOnce(onMailSuccess);
-			mail.send( txt );
+			mail.build( buildMemo(txt, defaultMemo) );
+			mail.send();
 			#end
 		}
+	}
+	inline function buildMemo(memo:String, defautlTxt:String)
+	{
+		return "<p><strong>MEMO:</strong><br/>"+ (StringTools.trim(memo) == ""? "No memo written by agent" : memo) + "</p>";
 	}
 	function validate()
 	{
 		return memoTxtArea.getInputedText().split(" ").length >= 3 ;
 	}
-	function prepareHistory()
-	{
-		var hist = Main.HISTORY.history;
-		var t = "<b>SUMMARY<b>\n";
-		var index = 1;
-		for ( i in hist )
-		{
-			t += index++ + ". " + Mail.stripTags(i.processTitle) + " :: " + i.iteractionTitle + (i.values == null? "\n": formatValuesToBasicText( i.values )) ;
-		}
-		#if debug
-		//trace(t);
-		#end
-		return t;
-	}
+	
 	override function listener(s:String):Void 
 	{
-		//trace("tstool.process.Process::listener");
 		switch (s){
 			case "en-GB" : switchLang("en-GB");
 			case "it-IT" : switchLang("it-IT");
@@ -197,25 +173,7 @@ class ActionMail extends Action
 		memoTxtArea.inputtextfield.visible = false;
 		openSubState( scriptView );
 	}
-	static inline public function formatValuesToBasicText( map :Map<String, Dynamic>):String
-	{
-		var out = "\n";
-		for ( title => value in map)
-		{
-			out += '\t\t - $title : $value\n';
-		}
-		//out += "";
-		return out;
-	}
-	/*
-	function prepareCycleTime()
-	{
-		var lang = Main.user.mainLanguage == null ? "EN" : Main.user.mainLanguage.split("-")[1];
-		//var data = Assets.getText("assets/data/20200402_CycleTimeExpectedNextWeek_BB.csv");
-		var csv:Csv = new Csv(Assets.getText("assets/data/20200402_CycleTimeExpectedNextWeek_BB.csv"), ";", false);
-		var cycleTime = csv.dict.exists(this.ticket.queue) ? csv.dict.get(this.ticket.queue).get(lang) : "";
-		return cycleTime ;
-	}*/
+	
 	override public function destroy()
     {
 		super.destroy();
@@ -228,7 +186,5 @@ class ActionMail extends Action
 		{
 			memoTxtArea.clearText();
 		}
-	
 	}
-	
 }

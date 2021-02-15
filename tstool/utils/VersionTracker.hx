@@ -77,6 +77,7 @@ class VersionTracker extends Http
 			#if debug
 			trace('update ${Main.VERSION} to $data');
 			#end
+			trace('update ${Main.VERSION} to $data');
 			scriptChangedSignal.dispatch(true);
 		}
 		else

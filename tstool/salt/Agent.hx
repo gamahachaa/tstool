@@ -26,7 +26,7 @@ class Agent extends Actor
 
 	public var title(get, null):String;
 	public var initials(get, null):String;
-	public var memberOf(get, null):StringMap<StringMap<Array<String>>>;
+	public var memberOf(get, null):Array<String>;
 	//public var isAdmin(get, null):Bool;
 	@:isVar public var canDispach(get, set):Bool;
 	@:isVar public var mainLanguage(get, set):String;
@@ -52,7 +52,7 @@ class Agent extends Actor
 			mainLanguage = jsonUser.attributes.msexchuserculture  == null ? "": jsonUser.attributes.msexchuserculture;
 			title = jsonUser.attributes.title == null ? "" : jsonUser.attributes.title;
 			initials = jsonUser.attributes.initials == null ? "": jsonUser.attributes.initials;
-			memberOf = jsonUser.attributes.memberof == null ? new StringMap<StringMap<Array<String>>>(): jsonUser.attributes.memberof ;
+			memberOf = jsonUser.attributes.memberof == null ? []: jsonUser.attributes.memberof ;
 			
 			//trace(Main.adminFile.grid);
 			//if (adminFile.dict.exists(sAMAccountName)) isAdmin = true;
@@ -63,7 +63,28 @@ class Agent extends Actor
 			#end
 		}
 	}
-
+	public function isMember(groupName:String):Bool
+	{
+		if (memberOf == []) return false;
+		return memberOf.indexOf(groupName)>-1;
+	}
+	public function twoCharsLang(caps:Bool = true)
+	{
+		return caps ? mainLanguage.substring(3).toUpperCase() : mainLanguage.substring(3).toLowerCase();
+	}
+	public function buildEmailBody(start:Date,end:Date)
+	{
+		//var start:Date = Main.HISTORY.getFirst().start;
+		//var end:Date = Main.HISTORY.getLast().start;
+		var seconds = Math.floor( (end.getTime() - start.getTime()) / 1000 );
+		var durationMinutes = Math.floor (seconds / 60);
+		var durationSeconds = seconds % 60;
+		var bodyList = '<li>Agent: $firstName $sirName ($sAMAccountName) $title</li>';
+		bodyList += '<li>$company | $department | $division | $workLocation </li>';
+		bodyList += '<li>Script version : ${Main.VERSION} </li>';
+		bodyList += '<li>Started: ${start.toString()}, ended: ${end.toString()} ( ~ ${durationMinutes}&prime; ${durationSeconds}&Prime;)</li>';
+		return '<h5>Done in $mainLanguage by:</h5><ul>$bodyList</ul>';
+	}
 	function get_sAMAccountName():String
 	{
 		return sAMAccountName;
@@ -129,7 +150,7 @@ class Agent extends Actor
 		return initials;
 	}
 
-	function get_memberOf():StringMap<StringMap<Array<String>>>
+	function get_memberOf():Array<String>
 	{
 		return memberOf;
 	}
@@ -144,35 +165,8 @@ class Agent extends Actor
 		return canDispach;
 	}
 	
-	//function get_isAdmin():Bool 
-	//{
-		//return isAdmin;
-	//}
-	
 	function set_canDispach(value:Bool):Bool 
 	{
 		return canDispach = value;
-	}
-	@:keep
-	public static function cretaDummyAgent():Agent
-	{
-		var a = {
-			authorized : true,
-			attributes:{
-				company : "Qook",
-				department : "Service Design",
-				division : "Customer Operations",
-				givenname : "Bruno",
-				initials : "bb",
-				mail : "bruno.baudry@salt.ch",
-				isAdmin : true,
-				msexchuserculture : "en",
-				samaccountname : "bbaudry",
-				sn : "Baudry",
-				title : "Factotum",
-				l : "Biel"
-			}
-		}
-		return new Agent(a);
 	}
 }

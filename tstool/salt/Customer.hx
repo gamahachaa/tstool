@@ -37,9 +37,43 @@ class Customer extends Actor
 	{
 		return TEST_IRI == this.iri;
 	}
-	public function isSagem()
+	
+	public function buildCustomerBody(addMobileContact:Bool)
 	{
-		
+		var  b = '<h2>';
+		try
+		{
+			
+			if(contract.contractorID != null && contract.contractorID != "" && contract.contractorID != Customer.TEST_IRI)
+				b += 'ID: ${contract.contractorID}<br/>';
+			else{
+				b += 'ID: ${iri}<br/>';
+			}
+			if(voIP !="")
+				b += 'MSISDN-VoIP: ${voIP}<br/>';
+			b += '</h2>';
+			// 
+			if(contract.mobile !="" && addMobileContact )
+				b += '<h3>CONTACT: ${contract.mobile}</h3>';
+			b += "<p>";
+			if(contract.owner != null && contract.owner.name !="")
+				b += '${contract.owner.name}<br/>';
+			if (shipingAdress != null && shipingAdress._zip != "")
+			{
+				if (shipingAdress._co != "")
+				{
+					b += 'c/o: ${shipingAdress._co}<br/>';
+				}
+				b += '${shipingAdress._street}, ${shipingAdress._number}<br/>';
+				b += '<strong>${shipingAdress._zip}</strong> ${shipingAdress._city}';	
+			}
+			b += "</p>";
+		}
+		catch (e:Dynamic)
+		{
+			trace(e);
+		}
+		return b;
 	}
 	function get_shipingAdress():Adress 
 	{

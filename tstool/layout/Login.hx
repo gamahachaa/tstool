@@ -50,12 +50,9 @@ class Login extends FlxState
 	var loginUrl:haxe.Http;
 	var markerFormat:FlxTextFormatMarkerPair;
 	var dummyAgent:tstool.salt.Agent;
+	var submitButton:flixel.ui.FlxButton;
 	override public function create()
 	{
-		super.create();
-		dummyAgent = cretaDummyAgent();
-		//new Agent();
-		
 		loginUrl = new Http(Main.LOCATION.origin + Main.LOCATION.pathname + Main.LIB_FOLDER + "php/login/index.php" );
 		Main.setUpSystemDefault(false);
 		//lang =  // default
@@ -158,7 +155,7 @@ class Login extends FlxState
 			
 			add( showPwd );
 
-			var submitButton = new FlxButton(0, 0, "LET'S GO", onSubmit);
+			submitButton = new FlxButton(0, 0, "LET'S GO", onSubmit);
 
 			submitButton.screenCenter();
 
@@ -178,28 +175,31 @@ class Login extends FlxState
 
 			add(submitButton);
 		}
-
+		super.create();
 	}
-	function cretaDummyAgent() 
+	inline function cretaDummyAgent() 
 	{
-		var a = {
-			authorized : true,
-			attributes:{
-				company : "Qook",
-				department : "Service Design",
-				division : "Customer Operations",
-				givenname : "Bruno",
-				initials : "bb",
-				mail : "bruno.baudry@salt.ch",
-				isAdmin : true,
-				msexchuserculture : "en",
-				samaccountname : "bbaudry",
-				sn : "Baudry",
-				title : "Factotum",
-				l : "Biel"
-			}
-		}
-		return new Agent(a);
+		return {
+		status : "ldap could bind", 
+		authorized : true, 
+		username : "bbaudry", 
+		attributes : {
+			mail : "Bruno.Baudry@salt.ch", 
+			samaccountname : "bbaudry", 
+			givenname : "Bruno", 
+			sn : "Baudry", 
+			mobile : "+41 78 787 8673", 
+			company : "Salt Mobile SA", 
+			l : "Biel", 
+			division : "Customer Operations", 
+			department : "Process & Quality", 
+			directreports : "CN=qook,OU=Domain-Generic-Accounts,DC=ad,DC=salt,DC=ch", 
+			accountexpires : "0", 
+			msexchuserculture : "fr-FR", 
+			title : "Manager Knowledge & Learning", 
+			initials : "BB", 
+			memberof : ["Microsoft - Teams Members - Standard","Customer Operations - Training","RA-PulseSecure-Laptops-Salt","SG-PasswordSync","RA-EasyConnect-Web-Mobile-Qook","Customer Operations - Knowledge - Management","Customer Operations - Direct Reports","Customer Operations - Fiber Back Office","DOLPHIN_REC","Application-GIT_SALT-Operator","Application-GIT_SALT-Visitor","SG-OCH-WLAN_Users","SG-OCH-EnterpriseVault_DefaultProvisioningGroup","Entrust_SMS","MIS Mobile Users","GI-EBU-OR-CH-MobileUsers","Floor Marshalls Biel","CO_Knowledge And Translation Mgmt","co training admin_ud","Exchange_Customer Operations Management_ud","Exchange_CustomerCareServiceDesign_ud"]
+		}};
 	}
 
 	function onShowPwd()
@@ -227,32 +227,40 @@ class Login extends FlxState
 	}
 	function ondata(data:String)
 	{
-		//trace("tstool.layout.Login::ondata");
-		var d:Dynamic = {};
-		#if debug
-			
-			d.authorized = true;
-			MainApp.agent = dummyAgent;	
-		#else
-		d = Json.parse(data);
-		#end
+		trace("tstool.layout.Login::ondata");
+		
+		var d:Dynamic = parseJsonAgent(data);
+		//#if debug
+			////trace(data);
+			//if (Main.DEBUG)
+			//{
+				//d = Json.parse(data);
+			//}
+			//else{
+				//d = cretaDummyAgent();	
+			//}
+//
+		//#else
+		//d = Json.parse(data);
+		//#end
+
 		if (d.authorized)
 		{
-			try{
+			createAgent(d);
+			/*try{
 				MainApp.agent = new Agent(d);
 			}
 			catch (e: Exception)
 			{
 				trace(e.details,e.message,e.previous,e.native, e.stack);
-			}
+			}*/
+			
 			#if !debug
-				
 				Main.track.setActor();
 			#else 
 				trace("tstool.layout.Login::ondata::MainApp.agent", MainApp.agent );
 			#end
 			
-			//flushCookie();
 			MainApp.flush();
 			Main.MOVE_ON(); // launch APP
 		}
@@ -261,12 +269,66 @@ class Login extends FlxState
 			pwdTxtInfo.applyMarkup ("\n\nNT login + password <b>did not match<b>.",[markerFormat]);
 		}
 	}
+	function createAgent(jsonAgent:Dynamic)
+	{
+		try{
+				MainApp.agent = new Agent(jsonAgent);
+			}
+			catch (e: Exception)
+			{
+				trace(e.details,e.message,e.previous,e.native, e.stack);
+			}
+	}
+	function parseJsonAgent(data:String)
+	{
+		#if debug
+			//trace(data);
+			if (Main.DEBUG)
+			{
+				return Json.parse(data);
+			}
+			else{
+				return cretaDummyAgent();	
+			}
+
+		#else
+		return Json.parse(data);
+		#end
+	}
 	function onSubmit()
 	{
-		
+		/**
+		 * COMENT THIS WHOLE BLOCK WHEN NOT DEBUGGING LOGIN LDAP
+		 */
 		#if debug
-		trace("tstool.layout.Login::onSubmit");
-		ondata("");
+		if (Main.DEBUG)
+		{
+			trace("tstool.layout.Login::onSubmit");
+			pwdTxtInfo.text = "";
+			if (StringTools.trim(username.text) == "")
+			{
+				pwdTxtInfo.applyMarkup("Need <b>username<b> (NT login)", [markerFormat]);
+				return;
+			}
+			if (StringTools.trim(pwd.text) == "")
+			{
+				pwdTxtInfo.applyMarkup("Need <b>password<b> (Same as your NT one)", [markerFormat]);
+				return;
+			}
+			//trace(location);
+			loginUrl.setParameter("username", username.text);
+			loginUrl.setParameter("pwd",  Base64.encode(Bytes.ofString(pwd.text)));
+			loginUrl.async = true;
+			loginUrl.onData = ondata;
+			loginUrl.onError = onError;
+			loginUrl.onStatus = onStatus;
+
+			loginUrl.request(true);
+		}else{
+			trace("tstool.layout.Login::onSubmit WARNING LOGIN NOT FECTHING DATA");
+			ondata("");
+		}
+		
 		#else
 		pwdTxtInfo.text = "";
 		if (StringTools.trim(username.text) == "")
@@ -326,15 +388,4 @@ class Login extends FlxState
 		//pwdTxtInfo.text += "\n\n"+ e;
 	}
 	
-	//function flushCookie():Void 
-	//{
-		//
-		//if (Main.user.mainLanguage == null ||Main.user.mainLanguage == "" || Main.LANGS.indexOf(Main.user.mainLanguage) == -1)
-		//{
-			//Main.user.mainLanguage = lang;
-		//}
-		//MainApp.save.data.user = Main.user;
-		//MainApp.save.flush(0, (success)->(trace(success)) );
-		//trace("tstool.layout.Login::flushCookie");
-	//}
 }

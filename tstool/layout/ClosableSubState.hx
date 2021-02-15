@@ -19,7 +19,7 @@ class ClosableSubState extends FlxSubState
 		super(BGColor);
 		signal = new FlxSignal();
 	}
-	override public function update(elapser:Float)
+	override public function update(elapsed:Float)
 	{
 		if ( FlxG.keys.justReleased.ESCAPE )
 		{
@@ -40,6 +40,7 @@ class ClosableSubState extends FlxSubState
 			}
 			
 		}
+		super.update( elapsed );
 	}
 	override public function create():Void
 	{

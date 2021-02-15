@@ -31,7 +31,7 @@ typedef Config = {
 
 class MainApp extends Sprite 
 {
-	static inline var lang:String = "en-GB";
+	//static inline var lang:String = "en-GB";
 	static inline var LIB_FOLDER = "../trouble/";
 	static inline var DEFAULT_COOKIE = "tstool";
 	static inline var SCRIPT_NAME:String = "nointernet"; //historical
@@ -54,6 +54,9 @@ class MainApp extends Sprite
 	public function new(?cfg:Config) 
 	{
 		super();
+		
+		location = Browser.location;
+		debug = location.origin.indexOf("qook.test.salt.ch") > -1;
 		FlxAssets.FONT_DEFAULT =  "Consolas";
 		config = 
 		{
@@ -64,34 +67,33 @@ class MainApp extends Sprite
 		//stack = new History();
 		//trace("tstool.MainApp::MainApp::config.cookie (name)", config.cookie );
 		stack = History.STACK;
-		//save = new FlxSave();
-		//var couldBind = save.bind(config.cookie);
-		//var agent = Agent.cretaDummyAgent();
+
 		if (Cookie.exists(config.cookie))
 		{
 			//trace("COOKIE EXISTS");
+			#if debug
+			trace("tstool.MainApp::MainApp::", "COOKIE EXISTS" );
+			#end
 			//trace(Cookie.get(config.cookie));
 			var d = new Unserializer(Cookie.get(config.cookie));
 			agent = d.unserialize();
+			#if debug
+			trace("tstool.MainApp::MainApp::agent.isMember(Customer Operations - Training)", agent.isMember("Customer Operations - Training") );
+			#end
 			//trace(a);
 		}
 		else{
 			#if debug
-			agent = Agent.cretaDummyAgent();
+			trace("tstool.MainApp::MainApp::", "COOKIE NOT EXISTS" );
+			#end
+			#if debug
+			//agent = Agent.cretaDummyAgent();
 			#else
 			agent = null;
 			#end
-			//trace("COOKIE NOT EXISTS");
-			//s = new Serializer();
-			//s.serialize(agent);
-			//Cookie.set(config.cookie, s.toString(), 86400 * 15, config.scriptName);
 		}
-		//trace("tstool.MainApp::MainApp::couldBind ", couldBind  );
-		//trace("tstool.MainApp::MainApp::save", save.data.user );
+
 		translator = new Translator();
-		location = Browser.location;
-		debug = location.origin.indexOf("qook.test.salt.ch") > -1;
-		//trace("tstool.MainApp::MainApp::location.origin", location.origin, debug );
 		versionTracker = new VersionTracker( location.origin + location.pathname +  "php/version/index.php", config.scriptName);
 		xapiTracker =  new XapiTracker(location.origin + location.pathname + config.libFolder);
 		cust = new Customer();
@@ -105,14 +107,19 @@ class MainApp extends Sprite
 	}
 	public static function flush()
 	{
-		//trace("tstool.MainApp::flush");
 		s = new Serializer();
-		if (agent.mainLanguage == null ||agent.mainLanguage == "" || Main.LANGS.indexOf(agent.mainLanguage) == -1)
-		{
-			agent.mainLanguage = lang;
-		}
+		agent.mainLanguage = FIND_LANG(agent.mainLanguage);
 		s.serialize(agent);
 		Cookie.set(config.cookie, s.toString(), 86400 * 15, config.scriptName);
+	}
+	public static function clearCookie()
+	{
+		Cookie.remove(config.cookie, config.scriptName);
+		Browser.location.reload(true);
+	}
+	static function FIND_LANG(?lang:String="")
+	{
+		return  Main.LANGS[Main.LANGS.indexOf(lang)>-1 ? Main.LANGS.indexOf(lang): 0];
 	}
 	function get_location():Location 
 	{
