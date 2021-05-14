@@ -18,6 +18,7 @@ class VersionTracker extends Http
 	public function new(url:String, ?script:String="")
 	{
 		super(url);
+		this.addParameter("scriptfile", script);
 		scriptStart = script;
 		scriptChangedSignal = new FlxTypedSignal<Bool->Void>();
 		this.async = true;
@@ -63,27 +64,33 @@ class VersionTracker extends Http
 		else
 		{
 			trace(scriptFileVersion + " JS Script doesn't match version format ");
+			Main.VERSION = "0";
 		}
 	}
 	
 	
-
+	/**
+	 * @TODO skip when no file found and debug mode
+	 * @param	data
+	 */
 	private function ondata(data:String)
 	{
-
+		if (Main.DEBUG)
+		{
+			trace('version ${Main.VERSION} vs $data');
+		}
 		//Main.VERSION = reg.matched(1);
 		if (data > Main.VERSION)
 		{
 			#if debug
 			trace('update ${Main.VERSION} to $data');
 			#end
-			trace('update ${Main.VERSION} to $data');
 			scriptChangedSignal.dispatch(true);
 		}
 		else
 		{
 			#if debug
-			trace('current version ${Main.VERSION} is aligned with $data');
+			trace('current version ${Main.VERSION} is aligned with $data or debugging ');
 			
 			#end
 			scriptChangedSignal.dispatch(false);

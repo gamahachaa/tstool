@@ -4,6 +4,7 @@ import tstool.layout.UI;
 import tstool.salt.SOTemplate;
 import tstool.salt.TemplateMail;
 import tstool.utils.ExpReg;
+import tstool.utils.StringUtils;
 import tstool.utils.SwiftMailWrapper.Result;
 
 /**
@@ -81,9 +82,11 @@ class TripletTemplate extends TripletMultipleInput
 		//Both
 		if (validateYes())
 		{
-			mail.setTemplateSubject(BOTH, multipleInputs.getText(MSISDN_INPUT), multipleInputs.getText(EMAIL_INPUT));
+			mail.setTemplateSubject(BOTH, StringUtils.removeWhite(multipleInputs.getText(MSISDN_INPUT)), StringUtils.removeWhite(multipleInputs.getText(EMAIL_INPUT)));
 			
 			send();
+			//super.onYesClick();
+			
 			this.clicked = Yes;
 		}
 	}
@@ -99,8 +102,9 @@ class TripletTemplate extends TripletMultipleInput
 		//email
 		if (validateNo())
 		{
-			mail.setTemplateSubject(EMAIL, multipleInputs.getText(MSISDN_INPUT), multipleInputs.getText(EMAIL_INPUT));
+			mail.setTemplateSubject(EMAIL, StringUtils.removeWhite(multipleInputs.getText(MSISDN_INPUT)), StringUtils.removeWhite(multipleInputs.getText(EMAIL_INPUT)));
 			send();
+			//super.onNoClick();
 			this.clicked = No;
 		}
 	}
@@ -115,8 +119,9 @@ class TripletTemplate extends TripletMultipleInput
 		//SMS
 		if (validateMid())
 		{
-			mail.setTemplateSubject(SMS, multipleInputs.getText(MSISDN_INPUT), multipleInputs.getText(EMAIL_INPUT));
+			mail.setTemplateSubject(SMS, StringUtils.removeWhite(multipleInputs.getText(MSISDN_INPUT)), StringUtils.removeWhite(multipleInputs.getText(EMAIL_INPUT)));
 			send();
+			//super.onMidClick();
 			this.clicked = Mid;
 		}
 	}
@@ -129,32 +134,48 @@ class TripletTemplate extends TripletMultipleInput
 			case No: super.onNoClick();
 			case Mid: super.onMidClick();
 			case _: return;
-			
 		}
 	}
 	function send()
 	{
-		
+		this.multipleInputs.showAll(false); // hide input fields before sending as they are below mouse
 		#if debug
 		trace("tstool.process.ActionMail::onClick");
-		openSubState(new TicketSendSub(UI.THEME.bg));
+		openSubState(new TemplateSendSub());
 		mail.successSignal.addOnce(onMailSuccess);
-		mail.build( "<h1>Super Office Template</h1>" );
+		mail.build( '<h1>S.O Template</h1> <h2>${soTemplate.desc}</h2><p>to:</p>' );
 		mail.send();
 		
 		#else
-		openSubState(new TicketSendSub(UI.THEME.bg));
+		openSubState(new TemplateSendSub());
 		mail.successSignal.addOnce(onMailSuccess);
-		mail.build( "<h1>Super Office Template</h1>" );
+		mail.build( '<h1>S.O Template</h1> <h2>${soTemplate.desc}</h2><p>to:</p>' );
 		mail.send();
 		#end
 	}
 	
-	function onMailSuccess(parameter0:Result):Void 
+	function onMailSuccess(data:Result):Void 
 	{
 		#if debug
-		trace("tstool.process.TripletTemplate::onMailSuccess::parameter0", parameter0 );
+		trace("tstool.process.TripletTemplate::onMailSuccess::parameter0", data );
 		#end
+		closeSubState();
+		switch data.status {
+			case "success" : clickListener();
+			case "failed" : openSubState(new DataView(UI.THEME.bg, this._name, '\nFailed to create the ticket !!!\n\nPlease do a print screen of this and send it to qook@salt.ch\n+${data.error} (${data.additional}). Also make note of the steps and send the same S.O. ${soTemplate.desc} tempalte manually '));
+		}
+	}
+	function onMailError(parameter0:Dynamic):Void
+	{
+		#if debug
+		trace("tstool.process.ActionMail::onMailError::onMailError", parameter0 );
+		#end
+		closeSubState();
+	}
+	function onMailStatus(parameter0:Int):Void
+	{
+		closeSubState();
+		if (parameter0 != 200) openSubState(new DataView(UI.THEME.bg, this._name, '\n\nhttp status $parameter0, \n\nCould not send the template !!!\nPlease do a print screen of this and send it to qook@salt.ch STATUS ${parameter0} . \nAlso make note of the steps and send the same S.O. ${soTemplate.desc} tempalte manually '));
 	}
 	/*
 	override public function validateMid():Bool

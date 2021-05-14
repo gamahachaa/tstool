@@ -84,7 +84,7 @@ class Triplet extends Process
 		setStyle();
 		setStyle();
 	}
-	function positionThis()
+	function positionThis(?offSet:FlxPoint)
 	{
 		//var btnSep = (2 * FlxG.width / 3) / 3;
 		//btnNo.x = FlxG.width / 3 + _padding;
@@ -92,7 +92,7 @@ class Triplet extends Process
 		//btnYes.x =  btnMid.x + btnSep;
 //
 		//btnMid.y = btnNo.y = btnYes.y = this.question.y + this.question.height + (_padding * 2);
-		positionMain(  [btnNo,btnMid,btnYes] );
+		positionMain(  [btnNo,btnMid,btnYes], offSet );
 	}
 	override public function setStyle()
 	{

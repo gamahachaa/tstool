@@ -15,12 +15,13 @@ enum TemplateStyle {
 class TemplateMail extends Mail 
 {
 	var soTemplate:SOTemplate;
-	var _currentProcess:Process;
+	//var _currentProcess:Process;
 
+	//public function new( soTemplate:SOTemplate, currentProcess:Process) 
 	public function new( soTemplate:SOTemplate, currentProcess:Process) 
 	{
 		super();
-		this._currentProcess = currentProcess;
+		//this._currentProcess = currentProcess;
 		this.soTemplate = soTemplate;
 		setReciepients(soTemplate.email);
 		//setTemplateSubject();
@@ -43,8 +44,8 @@ class TemplateMail extends Mail
 	{
 		var mailBody = memo;
 		mailBody += Main.customer.buildCustomerBody( memo.indexOf( Main.customer.contract.mobile ) >-1);
-		mailBody += Main.HISTORY.buildHistoryEmailBody(MainApp.agent.mainLanguage, _currentProcess, false);
-		mailBody += MainApp.agent.buildEmailBody( Main.HISTORY.getFirst().start, Main.HISTORY.getLast().start);
+		//mailBody += Main.HISTORY.buildHistoryEmailBody(MainApp.agent.mainLanguage, _currentProcess, false);
+		//mailBody += MainApp.agent.buildEmailBody( Main.HISTORY.getFirst().start, Main.HISTORY.getLast().start);
 		super.setBody(mailBody);
 	}
 	

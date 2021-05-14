@@ -18,8 +18,8 @@ class Descision extends Process
 	var _buttonYesTxt(default, set):String = Main.tongue.get("$defaultBtn_UI3","meta");
 	// var _buttonNoTxt(default, set):String = "No";Main.tongue.get(
 	var _buttonNoTxt(default, set):String = Main.tongue.get("$defaultBtn_UI1","meta");
-	var _nextNoProcesses:Array<Process> = [];
-	var _nextYesProcesses:Array<Process> = [];
+	//var _nextNoProcesses:Array<Process> = [];
+	//var _nextYesProcesses:Array<Process> = [];
 	var btnNo:FlxButton;
 	var btnYes:FlxButton;
 	//var seperator:flixel.addons.display.shapes.FlxShapeBox;

@@ -1,6 +1,7 @@
 package tstool.process;
 
 import flixel.FlxG;
+import flixel.math.FlxPoint;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import tstool.layout.History.Interactions;
 import tstool.layout.UIInputTfCore;
@@ -34,7 +35,10 @@ class TripletMultipleInput extends Triplet
 	}
 	override public function create( ):Void
 	{
-
+		for (j in inputs)
+		{
+			if ( j.hasTranslation != null && j.hasTranslation) j.input.titleTranslated = translate(this._name, j.input.prefix, "headers");
+		}
 		multipleInputs = new MultipleInput(this, [for (i in inputs) i.input]);
 		//itetateme = multipleInputs.inputs.iterator();
 		super.create();
@@ -65,34 +69,37 @@ class TripletMultipleInput extends Triplet
 		super.setStyle();
 		multipleInputs.setStyle();
 	}
-	override function positionThis()
+	override function positionThis(?offSet:FlxPoint)
 	{
-		super.positionThis();
-		//trace(this.question.height);
+		super.positionThis(offSet);
 		var p = multipleInputs.positionThis();
-		//positionButtons(p);
 		positionBottom(p);
+		positionButtons(p);
 	}
 	override function pushToHistory( buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>= null)
 	{
 		
-		super.pushToHistory( buttonTxt, interactionType, values== null ? [for (k=>v in multipleInputs.inputs) k => v.getInputedText()]: values);
+		super.pushToHistory( buttonTxt, interactionType,  [for (k=>v in multipleInputs.inputs) k => v.getInputedText()]);
 	}
 	override public function onYesClick():Void
 	{
 		if (validateYes())
 		{
+			yesValidatedSignal.dispatch(true);
 			super.onYesClick();
 		}
+		else
+			yesValidatedSignal.dispatch(false);
 	}
 	override public function onNoClick():Void
 	{
-		//#if debug
-		//super.onNoClick(); // test only
-		//#else
 		if (validateNo())
 		{
+			noValidatedSignal.dispatch(true);
 			super.onNoClick();
+		}
+		else{
+			noValidatedSignal.dispatch(false);
 		}
 		
 		//#end
@@ -104,8 +111,10 @@ class TripletMultipleInput extends Triplet
 		//#else
 		if (validateMid())
 		{
+			midValidatedSignal.dispatch(true);
 			super.onMidClick();
 		}
+		else midValidatedSignal.dispatch(false);
 		
 		//#end
 	}
@@ -130,22 +139,24 @@ class TripletMultipleInput extends Triplet
 	{
 		return validate(Mid);
 	}
-	function validate(interaction:Interactions)
+	function validate(interaction:Interactions):Bool
 	{
 		var inp:UIInputTfCore = null;
 		for ( i in this.inputs)
 		{
-			//trace(i);
+
 			if (i.ereg == null) continue;
 			if (i.input.mustValidate != null && i.input.mustValidate.indexOf(interaction) == -1) continue;
 			inp = this.multipleInputs.inputs.get(i.input.prefix);
-			if (!i.ereg.match(inp.getInputedText()))
+			//trace("tstool.process.DescisionMultipleInput::validate::inp", inp );
+			if (!i.ereg.match(StringTools.trim(inp.getInputedText())))
 			{
 				inp.blink(true);
 				return false;
 			}
 		}
 		return true;
+		//#end
 	}
 	
 	function get_yesValidatedSignal():FlxTypedSignal<Bool->Void> 
@@ -162,15 +173,4 @@ class TripletMultipleInput extends Triplet
 	{
 		return midValidatedSignal;
 	}
-	
-	//function validateNo()
-	//{
-		//if (!noValidator.match(singleInput.uiInput.getInputedText()))
-		//{
-			//singleInput.uiInput._labelValidator = Main.tongue.get("$" + this._name + "_NO", "validators");
-			//singleInput.uiInput.blink(true);
-			//return false;
-		//}
-		//return true;
-	//}
 }

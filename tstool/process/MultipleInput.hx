@@ -17,6 +17,7 @@ import lime.math.Rectangle;
 typedef ValidatedInputs = {
 	var ereg:EReg;
 	var input:Input;
+	var ?hasTranslation:Bool;
 }
 typedef Input = {
 	var ?buddy:String;
@@ -26,6 +27,7 @@ typedef Input = {
 	var ?position:Array<Direction>;
 	var ?debug:String;
 	var ?mustValidate:Array<Interactions>;
+	var ?titleTranslated:String;
 } 
  
 class MultipleInput implements IFlxDestroyable
@@ -55,7 +57,9 @@ class MultipleInput implements IFlxDestroyable
 		//var tab = 1;
 		for ( i in ins)
 		{
-			tmp = new UIInputTfCore(Std.int(i.width), i.prefix, i.position);
+			tmp = new UIInputTfCore(Std.int(i.width), i.prefix, i.position, i.titleTranslated);
+			//tmp = new UIInputTfCore(Std.int(i.width), parent.translate(parent._name,i.prefix,"headers"), i.position, i.titleTranslated);
+			//tmp = new UIInputTfCore(Std.int(i.width), parent.translate(parent._name,i.prefix,"headers"), i.position, i.titleTranslated);
 			tmp.addToParent(this.parent);
 			#if debug
 			tmp.inputtextfield.text = i.debug == null || i.debug == "" ? "":i.debug;
@@ -75,12 +79,18 @@ class MultipleInput implements IFlxDestroyable
 	}
 	public function getNextFocus():UIInputTfCore
 	{
+		//#if debug
+		//trace("tstool.process.MultipleInput::getNextFocus::tabOrder", tabOrder );
+		//#end
 		if (focus == null)
 		{
 			focus = inputs.get(tabOrder[0]);
 		}
 		else{
-			var i = this.tabOrder.indexOf( focus._label );
+			var i = this.tabOrder.indexOf( focus.id );
+			//#if debug
+			//trace("tstool.process.MultipleInput::getNextFocus::i", i );
+			//#end
 			if ( i + 1 < tabOrder.length)
 			{
 				focus = inputs.get(tabOrder[i+1]);
@@ -88,7 +98,9 @@ class MultipleInput implements IFlxDestroyable
 			else{
 				focus = inputs.get(tabOrder[0]);
 			}
-			
+			//#if debug
+			//trace("tstool.process.MultipleInput::getNextFocus::focus", focus );
+			//#end
 		}
 		FlxG.stage.focus = focus.inputtextfield;
 		return focus;
@@ -97,18 +109,20 @@ class MultipleInput implements IFlxDestroyable
 	function onChildFocus(child:UIInputTfCore):Void 
 	{
 		focus = child;
-		#if debug
+		//#if debug
 			//trace(focus);
-		#end
+		//#end
 		FlxG.stage.focus = focus.inputtextfield;
 	}
 	
-	//function onTfClicked(e:MouseEvent):Void 
-	//{
-		//#if debug
-		//trace(e.currentTarget);
-		//#end
-	//}
+	public function showAll(?yes:Bool=true):Void
+	{
+		for (i in inputs)
+		{
+			i.show(yes);
+		}
+	}
+	
 	public function getText(id:String):String
 	{
 		return inputs.get(id).getInputedText();
@@ -135,6 +149,9 @@ class MultipleInput implements IFlxDestroyable
 			}
 			else{
 				ui.positionMe(inputs.get(v.buddy).boundingRect);
+				#if debug
+				trace("tstool.process.MultipleInput::positionThis::v.buddy", v.buddy );
+				#end
 			}
 			//trace(ui.x + ui.width, ui.x + ui.width > pt.x);
 			if (ui.x + ui.width > pt.x)

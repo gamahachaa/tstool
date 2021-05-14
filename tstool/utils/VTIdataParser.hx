@@ -75,10 +75,10 @@ class VTIdataParser
 	
 	function parseCustomerProfile(content:String):Map<String,Map<String,String>>
 	{
-		//trace(content);
+		trace(content);
 		var profile:Map<String,Map<String,String>> = [];
 		var t:Array<String> = content.split("\n");
-		//trace(t);
+		trace(t);
 		
 		var LANG = "";
 		var mainTopics:Map<String,Map<String,String>> = [

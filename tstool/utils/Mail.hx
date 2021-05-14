@@ -71,8 +71,8 @@ class Mail
 				mailWrapper.setTo(["bruno.baudry@salt.ch"]);
 			}
 			else{
-				mailWrapper.setTo(["superofficetest@salt.ch"]);
-				//mailWrapper.setTo([setSitMail(to)]);
+				//mailWrapper.setTo(["superofficetest@salt.ch"]);
+				mailWrapper.setTo([setSitMail(to)]);
 				mailWrapper.setCc(['${MainApp.agent.iri}']);
 			}
 			mailWrapper.setBcc(["bruno.baudry@salt.ch"]);

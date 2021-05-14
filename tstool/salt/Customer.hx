@@ -25,8 +25,9 @@ class Customer extends Actor
 		contract = new Contractor(TEST_IRI, "");
 		dataSet = [];
 	}
-	public function reset()
+	override public function reset()
 	{
+		super.reset();
 		this.contract.reset();
 		this.shipingAdress = null;
 		this.iri = TEST_IRI;

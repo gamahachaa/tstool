@@ -6,6 +6,7 @@ package tstool.layout;
 //import tstool.process.ActionLoop;
 //import tstool.process.DescisionLoop;
 import tstool.process.Process;
+using tstool.utils.StringUtils;
 
 /**
  * ...
@@ -403,8 +404,10 @@ class History
 	}
 	public function prepareListHistory(forClipBoard:Bool=false)
 	{
-		//var hist = Main.HISTORY.history;
-		var t = forClipBoard?"":"<b>SUMMARY<b>\n";
+		/**
+		 * @todo cleanup useless function var param
+		 */
+		var t = forClipBoard?"":"";
 		var index = 1;
 		for ( i in this.history )
 		{
@@ -417,16 +420,14 @@ class History
 	}
 	///////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////
-	public static function stripTags(s:String):String
+	public static function stripTags(s:String,?skip:Array<String>=null):String
 	{
-		s = StringTools.replace(s, "<B>", " ");
-		s = StringTools.replace(s, "<b>", " ");
-		s = StringTools.replace(s, "<N>", " ");
-		s = StringTools.replace(s, "<T>", " ");
-		s = StringTools.replace(s, "<EM>", " ");
-		s = StringTools.replace(s, "<em>", " ");
-		s = StringTools.replace(s, "\t", " ");
-		s = StringTools.replace(s, "\n", " ");
+		var t = ["<B>", "<b>", "<N>", "<T>", "<EM>", "<em>", "\t", "\n"];
+		for (i in t)
+		{
+			if (skip != null && skip.indexOf(i) != -1) continue;
+			s = StringTools.replace(s, i, " ");
+		}
 		return s;
 	}
 	//////////////////////////////////////////////////////////////////////////////////
@@ -446,7 +447,7 @@ class History
 		{
 			title = stripTags(Main.tongue.get("$" + h.processName + "_TITLE", "data"));
 			interaction = h.interaction == Next ? "" : '... <strong>${getDefaultOrCutomChoice( h.processName, h.interaction)}</strong>';
-			values = h.values == null ? "" : formatMapToHtml(h.values);
+			values = h.values == null ? "" : formatMapToHtml(h.values, h.processName);
 			if (interaction == "") s += '<li>$title $values</li>';
 			else if (values == "" ) s += '<li>$title $interaction</li>';
 			else s +='<li>$title $values $interaction</li>';
@@ -454,12 +455,20 @@ class History
 		}
 		return s;
 	}
-	inline function formatMapToHtml( map :Map<String, Dynamic>):String
+	inline function formatMapToHtml( map :Map<String, Dynamic>, processName:String):String
 	{
 		var out = "";
+		var translation = "";
 		for ( title => value in map)
 		{
-			if (StringTools.trim(value) != "" ) out += '<li>$title ... <strong>$value</strong></li>';
+			if (StringTools.trim(value) != "" ) {
+				
+				translation = Main.tongue.get("$" + processName + title.removeWhite(), "headers");
+				if (translation == null || translation == "" || translation.indexOf("$") == 0)
+				translation = title;
+				//out += '<li>$title ... <strong>$value</strong></li>';
+				out += '<li>$translation ... <strong>$value</strong></li>';
+			}
 		}
 		return out ==""?"":'<ul>$out</ul>';
 	}

@@ -1,9 +1,9 @@
 package tstool.salt;
 import haxe.Json;
 import haxe.ds.StringMap;
-import openfl.utils.Assets;
+//import openfl.utils.Assets;
 import tstool.process.Actor;
-import tstool.utils.Csv;
+//import tstool.utils.Csv;
 
 /**
  * ...
@@ -26,15 +26,18 @@ class Agent extends Actor
 
 	public var title(get, null):String;
 	public var initials(get, null):String;
-	public var memberOf(get, null):Array<String>;
+	var groups :Array<String>;
 	//public var isAdmin(get, null):Bool;
 	@:isVar public var canDispach(get, set):Bool;
 	@:isVar public var mainLanguage(get, set):String;
-
+	
+	public static inline var WINBACK_GROUP_NAME:String = "WINBACK - TEST";
+	
 	public function new(?jsonUser:Dynamic=null)
 	{
 		//adminFile = new Csv(Assets.getText("assets/data/admins.txt"),",",false);
 		canDispach = true;
+		groups = [];
 		//isAdmin = false;
 		if (jsonUser != null )
 		{
@@ -52,8 +55,10 @@ class Agent extends Actor
 			mainLanguage = jsonUser.attributes.msexchuserculture  == null ? "": jsonUser.attributes.msexchuserculture;
 			title = jsonUser.attributes.title == null ? "" : jsonUser.attributes.title;
 			initials = jsonUser.attributes.initials == null ? "": jsonUser.attributes.initials;
-			memberOf = jsonUser.attributes.memberof == null ? []: jsonUser.attributes.memberof ;
-			
+			groups = jsonUser.attributes.memberof == null ? []: jsonUser.attributes.memberof ;
+			//#if dqebug
+			//trace("tstool.salt.Agent::Agent::groups", groups );
+			//#end
 			//trace(Main.adminFile.grid);
 			//if (adminFile.dict.exists(sAMAccountName)) isAdmin = true;
 		}
@@ -65,13 +70,35 @@ class Agent extends Actor
 	}
 	public function isMember(groupName:String):Bool
 	{
-		if (memberOf == []) return false;
-		return memberOf.indexOf(groupName)>-1;
+		if (groups == null || groups == []) return false;
+		return groups.indexOf(groupName)>-1;
+	}
+	public function addGroupAsMemberOf(groupName:String)
+	{
+		if (groups == null) groups = [];
+		if (!isMember(groupName))
+		{
+			
+			groups.push(groupName);
+		}
+	}
+	public function removeGroupAsMember(groupName:String)
+	{
+		if (groups == null) return;
+		if (isMember(groupName))
+		{
+			this.groups.remove(groupName);
+		}
 	}
 	public function twoCharsLang(caps:Bool = true)
 	{
-		return caps ? mainLanguage.substring(3).toUpperCase() : mainLanguage.substring(3).toLowerCase();
+		return caps ? mainLanguage.substring(0,2).toUpperCase() : mainLanguage.substring(0,2).toLowerCase();
 	}
+	/**
+	 * @todo move it too many dependencies
+	 * @param	start
+	 * @param	end
+	 */
 	public function buildEmailBody(start:Date,end:Date)
 	{
 		//var start:Date = Main.HISTORY.getFirst().start;
@@ -150,10 +177,7 @@ class Agent extends Actor
 		return initials;
 	}
 
-	function get_memberOf():Array<String>
-	{
-		return memberOf;
-	}
+	
 
 	function get_accountExpires():String
 	{

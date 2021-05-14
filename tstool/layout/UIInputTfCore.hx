@@ -30,7 +30,10 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 	//var _autoFocus:Bool;
 	public var focusSignal(get, null):FlxTypedSignal<UIInputTfCore->Void>;
 	public var positionsToParent(get, null):Array<Direction>;
-	public var _label(get, null):String;
+	public var id(get, null):String;
+	/**
+	 * @todo remove
+	 */
 	public var _labelValidator(default, set):String;
 	public var inputtextfield(get, null):TextField;
 	public var imputLabel(get, null):FlxText;
@@ -39,20 +42,27 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 	public var x(get, null):Float;
 	public var y(get, null):Float;
 	public var boundingRect(get, null):Rectangle;
-	//
-	static var textFieldFormat:TextFormat;
+	/**
+	* @todo move text format declatration to layout or UI or main
+	*/
+	static var _TFFormat:TextFormat;
 	var pt:FlxPoint;
+	var _label :String;
+	
 	//
 	//public function new(textFieldWidth:Int, inputPrefix:String, positionsToParent:Array<Direction>, ?inpuHeight:Int=20)
-	public function new(textFieldWidth:Int, inputPrefix:String, positionsToParent:Array<Direction>)
+	public function new(textFieldWidth:Int, id:String, positionsToParent:Array<Direction>, ?titleTranslated:String="")
 	{
+		
 		var inpuHeight:Int = 20;
-		if (textFieldFormat == null) textFieldFormat = new TextFormat(Assets.getFont("assets/fonts/JetBrainsMono-Regular.ttf").name, 13);
+		this.id = id;
 		pt = new FlxPoint(0, 0);
 		focusSignal = new FlxTypedSignal<UIInputTfCore->Void>();
 		this.positionsToParent = positionsToParent;
-		//var dummy:UIInputTf = null;
-		_label = inputPrefix;
+		if (_TFFormat == null) _TFFormat = new TextFormat(Assets.getFont("assets/fonts/JetBrainsMono-Regular.ttf").name, 13);
+		
+		_label = titleTranslated;
+		//_label = titleTranslated == "" ? id : titleTranslated;
 		_labelValidator = "";
 
 		imputLabel = new FlxText(0, 0, textFieldWidth, _label + " :", 20);
@@ -79,7 +89,10 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 
 	public function addToParent(parent:Process)
 	{
-
+		if (_label == "" || imputLabel.text == "")
+		{
+			imputLabel.text = parent.translate(parent._name, id, "headers");
+		}
 		parent.add(imputLabel);
 
 		FlxG.addChildBelowMouse( inputtextfield );
@@ -197,7 +210,7 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 	{
 		imputLabel.color = UI.THEME.meta;
 
-		inputtextfield.setTextFormat(textFieldFormat);
+		inputtextfield.setTextFormat(_TFFormat);
 		inputtextfield.multiline = false;
 		inputtextfield.type = TextFieldType.INPUT;
 		inputtextfield.backgroundColor = SaltColor.WHITE;
@@ -223,7 +236,6 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 		{
 			_labelValidator != "" ? imputLabel.text = _labelValidator : _label;
 			FlxFlicker.flicker(imputLabel, 0, .5);
-			//inputtextfield.hasFocus = true;
 		}
 		else
 		{
@@ -231,11 +243,6 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 			FlxFlicker.stopFlickering(imputLabel);
 		}
 
-	}
-
-	function get__label():String
-	{
-		return _label;
 	}
 
 	public function getInputedText()
@@ -284,6 +291,11 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 function get_positionsToParent():Array<Direction> 
 {
 	return positionsToParent;
+}
+
+function get_id():String 
+{
+	return id;
 }
 
 	public function destroy()

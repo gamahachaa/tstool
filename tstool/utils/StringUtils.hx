@@ -9,4 +9,8 @@ class StringUtils
 	{
 		return "0" + s.substr(2);
 	}
+	static inline public function removeWhite(s:String):String
+	{
+		return s.split(" ").join("");
+	}
 }

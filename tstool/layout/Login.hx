@@ -10,6 +10,7 @@ import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxSave;
 import haxe.Exception;
+import openfl.utils.Assets;
 //import flow.Intro;
 //import flow.TutoTree;
 //import openfl.text.TextField;
@@ -51,9 +52,11 @@ class Login extends FlxState
 	var markerFormat:FlxTextFormatMarkerPair;
 	var dummyAgent:tstool.salt.Agent;
 	var submitButton:flixel.ui.FlxButton;
+	var testers_file:String;
 	override public function create()
 	{
-		loginUrl = new Http(Main.LOCATION.origin + Main.LOCATION.pathname + Main.LIB_FOLDER + "php/login/index.php" );
+		testers_file = Assets.getText("assets/data/testers.txt");
+		loginUrl = new Http(Main.LOCATION.origin + Main.LIB_FOLDER_LOGIN + "login/index.php" );
 		Main.setUpSystemDefault(false);
 		//lang =  // default
 		//trace(MainApp.save.data.user);
@@ -85,8 +88,9 @@ class Login extends FlxState
 			logo.y = 50;
 			loginTxt = new FlxText(0, 0, 100, "USERNAME",14);
 			pwdTxt = new FlxText(0, 0, 100, "PASSWORD", 14);
+			
 
-			pwdTxtInfo = new FlxText(0, 0, 1280, "", 14);
+			pwdTxtInfo = new FlxText(0, 0, 1280, Main.DEBUG?"Testing platform\nAUTHORISED PERSON ONLY\nIf you need access contact qook@salt.ch":"", 14);
 			pwdTxtInfo.screenCenter();
 			
 
@@ -227,33 +231,13 @@ class Login extends FlxState
 	}
 	function ondata(data:String)
 	{
-		trace("tstool.layout.Login::ondata");
 		
 		var d:Dynamic = parseJsonAgent(data);
-		//#if debug
-			////trace(data);
-			//if (Main.DEBUG)
-			//{
-				//d = Json.parse(data);
-			//}
-			//else{
-				//d = cretaDummyAgent();	
-			//}
-//
-		//#else
-		//d = Json.parse(data);
-		//#end
 
 		if (d.authorized)
 		{
 			createAgent(d);
-			/*try{
-				MainApp.agent = new Agent(d);
-			}
-			catch (e: Exception)
-			{
-				trace(e.details,e.message,e.previous,e.native, e.stack);
-			}*/
+
 			
 			#if !debug
 				Main.track.setActor();
@@ -310,11 +294,17 @@ class Login extends FlxState
 				pwdTxtInfo.applyMarkup("Need <b>username<b> (NT login)", [markerFormat]);
 				return;
 			}
+			else if (testers_file.indexOf(username.text) ==-1)
+			{
+				pwdTxtInfo.applyMarkup('<b>${username.text}<b> not authorised\nto use this test platform', [markerFormat]);
+				return;
+			}
 			if (StringTools.trim(pwd.text) == "")
 			{
 				pwdTxtInfo.applyMarkup("Need <b>password<b> (Same as your NT one)", [markerFormat]);
 				return;
 			}
+			
 			//trace(location);
 			loginUrl.setParameter("username", username.text);
 			loginUrl.setParameter("pwd",  Base64.encode(Bytes.ofString(pwd.text)));
@@ -334,6 +324,11 @@ class Login extends FlxState
 		if (StringTools.trim(username.text) == "")
 		{
 			pwdTxtInfo.applyMarkup("Need <b>username<b> (NT login)", [markerFormat]);
+			return;
+		}
+		if (StringTools.trim(pwd.text) == "")
+		{
+			pwdTxtInfo.applyMarkup("Need <b>password<b> (Same as your NT one)", [markerFormat]);
 			return;
 		}
 		if (StringTools.trim(pwd.text) == "")

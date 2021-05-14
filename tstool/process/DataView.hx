@@ -49,6 +49,9 @@ class DataView extends ClosableSubState
 	{
 		if ( FlxG.keys.justReleased.ESCAPE )
 		{
+			#if debug
+			trace("tstool.process.DataView::update::FlxG.keys.justReleased.ESCAPE", FlxG.keys.justReleased.ESCAPE );
+			#end
 			close();
 		}
 	}

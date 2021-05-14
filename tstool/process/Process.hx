@@ -1,4 +1,5 @@
 package tstool.process;
+using tstool.utils.StringUtils;
 import tstool.layout.History;
 import tstool.layout.PageLoader;
 import tstool.layout.ScriptView;
@@ -22,7 +23,8 @@ import openfl.system.Capabilities;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
 
-typedef ProcessContructor = {
+typedef ProcessContructor =
+{
 	var step:Class<Process>;
 	var ?params:Array<ProcessContructor>;
 }
@@ -35,17 +37,16 @@ typedef ProcessContructor = {
 class Process extends FlxState
 {
 	static public var STORAGE:Map<String,Dynamic> = new Map<String,Dynamic>();
-	
 
 	var _titleTxt(default, set):String = "";
 	var _detailTxt(default, set):String = "";
 	var _illustration(default, set):String = "";
 	var _qook(default, set):String = "";
-	
+
 	public var _name(get, null):String;
 	public var _class(get, null):Class<Process>;
 	var _nexts:Array<ProcessContructor>;
-	
+
 	var _historyTxt:String = "";
 	var _qookLink:Array<String>;
 	var hasQook:Bool;
@@ -53,19 +54,19 @@ class Process extends FlxState
 	var hasReminder:Bool;
 	//var isFocused:Bool;
 	var isAnimated:Bool;
-	
+
 	/************************
 	 * UI
 	/************************/
 	var _menu:Menu;
 	var ui:UI;
-	var howToSubState:Instructions;	
+	var howToSubState:Instructions;
 	var dataView:tstool.process.DataView;
-	
+
 	public var _padding(get, null):Int = 30;
 	public var details(get, null):FlxText;
 	public var question(get, null):Question;
-	
+
 	/**
 	 * @todo REMOVE once all tested ok
 	 */
@@ -83,50 +84,48 @@ class Process extends FlxState
 	override public function create()
 	{
 		_nexts = [];
-		
 
 		isAnimated = false;
 		parseAllLinksForNames();
-		
+
 		//FlxG.camera.fade(UI.THEME.bg, 0.33, true);
-		
+
 		super.create();
 		#if debug
 		//trace(Main.VERSION);
 		#end
-		
+
 		/************************
 		 * UI
 		/************************/
-		
+
 		ui = new UI(0, 0);
-		
+
 		ui.stringSignal.add( listener );
-		
+
 		howToSubState = new Instructions();
 		/**
 		 * @todo change to Class<T>
 		 */
 		dataView = new DataView(UI.THEME.bg, this._name);
-		
-		
-		// PROCESS UI		
+
+		// PROCESS UI
 		question = ui.question;
 		question.text = _titleTxt;
-		
+
 		details = ui.details;
 		details.text = _detailTxt;
-		
+
 		add(ui);
-		
+
 		destroySubStates = false;
-		
+
 		hasQook = _qookLink.length>0 && _qookLink[0]!="";
 		hasIllustration = _illustration != "";
-		
+
 		//FIXME texet input displays over
 		ui.showHowto(false);
-		
+
 		if (hasQook)
 		{
 			ui.qook.text = Main.tongue.get("$helpBtn_UI1", "meta") + " " + parseAllLinksForNames().join(", ") +")";
@@ -142,7 +141,7 @@ class Process extends FlxState
 			ui.setReminder(buildReminderString());
 		}
 		ui.backBtn.visible = Main.HISTORY.history.length > 0;
-		
+
 	}
 	function buildReminderString():String
 	{
@@ -151,7 +150,7 @@ class Process extends FlxState
 		var separator = "\t";
 		for ( k => v in STORAGE )
 		{
-			
+
 			separator = ( i % 2 == 0) ?".\t": "\n";
 			s += k + ": " + v + separator;
 			i++;
@@ -161,7 +160,7 @@ class Process extends FlxState
 	function positionMain(btns:Array<FlxButton>, ?offSet:FlxPoint)
 	{
 		ui.position(btns);
-	}	
+	}
 	function positionButtons(?offSet:FlxPoint)
 	{
 		ui.positionButtons(offSet.x,offSet.y);
@@ -170,7 +169,7 @@ class Process extends FlxState
 	{
 		ui.positionBottom(offSet.y);
 	}
-	
+
 	//UI
 	function setStyle()
 	{
@@ -179,13 +178,13 @@ class Process extends FlxState
 		//this.bgColor = UI.THEME.bg;
 		this.details.color = UI.THEME.basic;
 		this.details.applyMarkup(this._detailTxt, [UI.THEME.basicStrong, UI.THEME.basicEmphasis]);
-		
+
 		this.question.color = UI.THEME.title;
 		this.question.applyMarkup(this._titleTxt, [UI.THEME.basicStrong, UI.THEME.basicEmphasis]);
 		question.drawFrame();
 		details.drawFrame();
 	}
-	
+
 	//ui
 	function onButtonOver()
 	{
@@ -197,21 +196,21 @@ class Process extends FlxState
 		Mouse.cursor = MouseCursor.ARROW;
 	}
 	//ui
-	function get__padding():Int 
+	function get__padding():Int
 	{
 		return _padding;
 	}
 	//ui
-	function get_question():Question 
+	function get_question():Question
 	{
 		return question;
 	}
-	
+
 	//ui
-	 function get_details():FlxText 
-	 {
-		 return details;
-	 }
+	function get_details():FlxText
+	{
+		return details;
+	}
 	//ui
 	function registerButton(btn:Dynamic)
 	{
@@ -223,6 +222,7 @@ class Process extends FlxState
 	{
 		FlxG.keys.preventDefaultKeys = [FlxKey.BACKSPACE, FlxKey.TAB];
 		STORAGE = [];
+
 		Main.customer.reset();
 		Main.HISTORY.init();
 		//Main.CHECK_NEW_VERSION();
@@ -232,14 +232,15 @@ class Process extends FlxState
 	 *
 	static public function GET_PREVIOUS_INSTANCE()
 	{
-		
+
 		return Main.HISTORY.getPreviousInstance();
 	}
 	*/
-	function listener(s:String):Void 
+	function listener(s:String):Void
 	{
 		//trace("tstool.process.Process::listener");
-		switch (s){
+		switch (s)
+		{
 			case "en-GB" : switchLang("en-GB");
 			case "it-IT" : switchLang("it-IT");
 			case "de-DE" : switchLang("de-DE");
@@ -256,44 +257,42 @@ class Process extends FlxState
 			case "openSubState" : openSubState(dataView);
 		}
 	}
-	
-	function onlogout() 
+
+	function onlogout()
 	{
 		MainApp.clearCookie();
 	}
-	
-	
+
 	function switchLang(lang:String)
 	{
-	
+
 		MainApp.agent.mainLanguage = lang;
 		MainApp.flush();
-		
-		Main.tongue.initialize(lang , ()->(
-			//FlxG.camera.fade(UI.THEME.bg, 0.33, false, ()->
-										FlxG.switchState( 
-											Type.createInstance( _class, [])
-											)
-										)
-									//)
-						);
+
+		Main.tongue.initialize(lang, ()->(
+								   //FlxG.camera.fade(UI.THEME.bg, 0.33, false, ()->
+								   FlxG.switchState(
+									   Type.createInstance( _class, [])
+								   )
+							   )
+							   //)
+							  );
 	}
-	function onClipBoardClick() 
+	function onClipBoardClick()
 	{
 		//Browser.document.execCommand("copy");
 		//trace('Browser.document.execCommand("copy")');
 	}
-	function onHowTo() 
+	function onHowTo()
 	{
 		openSubState(howToSubState);
 	}
-	
-	
-	function toogleTrainingMode() 
+
+	function toogleTrainingMode()
 	{
 		MainApp.agent.canDispach = !MainApp.agent.canDispach;
 	}
-	
+
 	function set__qook(value:String):String
 	{
 		return _qook = value;
@@ -331,73 +330,65 @@ class Process extends FlxState
 	}
 	function onComment():Void
 	{
+		var v = StringTools.replace(Main.VERSION, ".min.js", "");
 		var to = "mailto:qook@salt.ch?";
-		var subject = "subject=[TROUBLE share] " + this._name;
-		var doubleBreak = "\n\n";
-		var content = "TITLE:\n" + History.stripTags(_titleTxt) + doubleBreak;
+		var subject = "subject=[TROUBLE share "+ MainApp.config.scriptName +"] " + this._name;
+		var doubleBreak = "\n---------------\n";
+		var content = "SCRIPT VERSION: " + v + doubleBreak;
+		content += "TITLE:\n" + History.stripTags(_titleTxt) + doubleBreak;
 
 		content += "DETAILS:\n" + History.stripTags(_detailTxt) + doubleBreak ;
-		//var history = "";
-		//var line = "";
-		//var t = Main.HISTORY.getLocalizedStepsStrings();
-		//for ( i in t)
-		//{
-			//history += i;
-		//}
 		content += "HISTORY:\n" + Main.HISTORY.getLocalizedStepsStringsList() + doubleBreak;
-			
-		Browser.window.location.href = to + subject + "?&body=" + StringTools.urlEncode(content);
-		/*
-		try{
-			for (i in 0...Main.HISTORY.history.length)
-			{
-				line = "";
-				line += (i+1) + ". " ;
-				line += Main.HISTORY.history[i].processTitle +" ";
-				line += Main.HISTORY.history[i].iteractionTitle +" ";
-				history += stripTags(line) + "\n";
-			}
 
-			content += "HISTORY:\n" + history + doubleBreak;
-			
-			Browser.window.location.href = to + subject + "?&body=" + StringTools.urlEncode(content);
-		}
-		catch (e:Dynamic)
-		{
-			trace(e);
-		}*/
+		Browser.window.location.href = to + subject + "?&body=" + StringTools.urlEncode(content);
+
 	}
-	
-	
-	function translate(txt:String, suffix:String, ?context="data"):String
+
+	public function translate(txt:String, ?suffix:String="", ?context="data"):String
 	{
-		
-		var defaultString = "$" + txt + "_" + suffix;
-		var customString = "$" + this._name + "_" + suffix;
-		
+
+		//var defaultString = "$" + txt + "_" + suffix;
+		//var customString = "$" + this._name + "_" + suffix;
+		var tString = switch (context)
+		{
+			case "data" : "$" + this._name + "_" + suffix;
+			case "headers" : "$" + txt + "" + suffix.removeWhite();
+			case _ : "$" + txt + "_" + suffix;
+		}
+
 		//var t = context == "data" ? Main.tongue.get(customString, context) : Main.tongue.get(defaultString, context);
 		/**
 		 * @todo put context as an object
 		 */
-		var t = Main.tongue.get(context == "data" ? customString : defaultString, context);
-		
+		var t = Main.tongue.get(tString, context);
+		//var s = t.indexOf("$") == 0 || StringTools.trim(t) == "" ? context == "headers"? suffix: txt : t;
+		var s = if (t.indexOf("$") == 0 || StringTools.trim(t) == "")
+		{
+			//couldn't translate
+			if (context == "headers")
+			{
+				//then show the suffix
+				suffix;
+			}
+			else
+			{
+				//or show the original string not translated
+				txt;
+			}
+		}
+		else {
+			//could translate
+			t;
+		}
 		#if debug
-			//trace("tstool.process.Process::translate::txt", txt );
-			//trace("tstool.process.Process::translate::suffix", suffix );
-			//trace("tstool.process.Process::translate::context", context );
-			//trace(defaultString);
-			//trace(customString);
-			//trace(t);
-			//return t;
-			//return StringTools.trim(t) == "" ? txt : t;
-		if(Main.DEBUG)
-			return t.indexOf("$") == 0 || StringTools.trim(t) == "" ? txt : t;
-		else	
-			return StringTools.trim(t) == "" ? txt : t;
+		if (Main.DEBUG || Main.DEBUG_LEVEL == 0)
+			return s;
+		else
+			return StringTools.trim(t) == "" ? context == "headers"? suffix: txt : t;
 		#else
-			return t.indexOf("$") == 0 || StringTools.trim(t) == "" ? txt : t;
+		return s;
 		#end
-		
+
 	}
 	/**
 	 * Override when child class takes contructor parameters
@@ -430,12 +421,12 @@ class Process extends FlxState
 		return _illustration = value;
 	}
 	/**
-	 * 
+	 *
 	 *
 	function move_to_next(nexts:Array<Process>, interaction:Interactions)
 	{
 		//trace("tstool.process.Process::move_to_next");
-		
+
 		var iteration = Main.HISTORY.getIterations(_name, interaction) - 1;
 		var index = iteration >= nexts.length ? nexts.length - 1 : iteration;
 		FlxG.switchState(nexts[index]);
@@ -451,15 +442,17 @@ class Process extends FlxState
 		#if debug
 		//trace("tstool.process.Process::moveToNextClassProcess::Type.getSuperClass(_nexts[index].step)", Type.getSuperClass(_nexts[index].step) );
 		#end
-		if (slowClasses.indexOf(Type.getSuperClass(_nexts[index].step)) >-1) {
+		if (slowClasses.indexOf(Type.getSuperClass(_nexts[index].step)) >-1)
+		{
 			openSubState(new PageLoader());
 		}
-		else{
+		else
+		{
 			#if debug
 			//trace("tstool.process.Process::moveToNextClassProcess::not sper slow");
 			#end
 		}
-		FlxG.switchState(Type.createInstance(_nexts[index].step ,_nexts[index].params));
+		FlxG.switchState(Type.createInstance(_nexts[index].step,_nexts[index].params));
 	}
 	override public function update(elapsed):Void
 	{
@@ -472,12 +465,12 @@ class Process extends FlxState
 		dataView = null;
 		super.destroy();
 	}
-	function get__name():String 
+	function get__name():String
 	{
 		return _name;
 	}
-	
-	public static function STORE(k:String,v:Dynamic):Void 
+
+	public static function STORE(k:String,v:Dynamic):Void
 	{
 		//trace("tstool.process.Process::STORE");
 		if (STORAGE.exists(k) && STORAGE.get(k).indexOf(v) == -1)
@@ -488,12 +481,12 @@ class Process extends FlxState
 			STORAGE.set(k, v);
 		}
 	}
-	
-	function get__class():Class<Process> 
+
+	function get__class():Class<Process>
 	{
 		return _class;
 	}
-	
+
 	function onBack()
 	{
 		FlxG.switchState(Main.HISTORY.onStepBack());

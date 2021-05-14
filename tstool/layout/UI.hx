@@ -36,7 +36,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 {
 	var menu:Menu;
 	var separatorH: FlxShapeBox;
-	var isFocused:Bool;
+	//var isFocused:Bool;
 	static inline var BUTTON_HEIGTH:Float = 40;
 	var btns:Array<FlxButton>;
 	public var separatorV: FlxShapeBox;
@@ -88,7 +88,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 	{
 		super(X, Y, MaxSize);
 		stringSignal = new FlxTypedSignal<String->Void>();
-		isFocused = false;
+		
 		menu = new Menu(0, 0);
 		for (i in menu.buttons)
 		{
@@ -215,7 +215,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 		qook.y = this.details.y + this.details.height + (PADDING * 2);
 		qook.x = PADDING / 2;
 		script.y = qook.y;
-		script.x = FlxG.width/2;
+		script.x = details.width/2;
 	}
 	public function positionButtons(?X:Float=0,?Y:Float=0)
 	{
@@ -227,7 +227,8 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 		var btnH = Math.max(this.question.y + this.question.height + PADDING , Y - PADDING);
 		for ( i in 0...l )
 		{
-			btns[i].x = unit * ( i + 1) + X;
+			// prevent from going outside the screen
+			btns[i].x = Math.min(unit * ( i + 1) + X, FlxG.stage.width - btns[i].width + PADDING*2);
 			btns[i].y = btnH;
 		}
 	}
@@ -240,6 +241,8 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 	function setStyle()
 	{
 		this.qook.label.color = UI.THEME.meta;
+		this.script.label.color = UI.THEME.meta;
+		this.script.label.drawFrame();
 		this.qook.label.drawFrame();
 		stringSignal.dispatch("setStyle");
 	}
@@ -279,7 +282,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 	
 	override public function update(elapsed:Float):Void
 	{
-		if (FlxG.keys.pressed.ALT && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT &&  FlxG.keys.pressed.S  && !isFocused)
+		if (FlxG.keys.pressed.ALT && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT &&  FlxG.keys.pressed.S)
 		{
 			/***************************************
 			 * Debug only 
@@ -298,7 +301,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 			//onBack();
 			stringSignal.dispatch("onBack");
 		}
-		else if (FlxG.keys.pressed.ALT && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.C && !isFocused)
+		else if (FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.C)
 		{
 			/***************************************
 			 * Generate comment mail
@@ -307,7 +310,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 			//trace("combo");
 			stringSignal.dispatch("onComment");
 		}
-		else if (qook.visible == true && FlxG.keys.pressed.Q && FlxG.keys.pressed.ALT && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && !isFocused)
+		else if (qook.visible == true && FlxG.keys.pressed.Q && FlxG.keys.pressed.SHIFT)
 		{
 			/***************************************
 			* Open Qook links

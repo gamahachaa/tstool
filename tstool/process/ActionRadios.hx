@@ -3,6 +3,7 @@ import flixel.math.FlxPoint;
 import tstool.layout.History.Interactions;
 import tstool.layout.IPositionable;
 import tstool.layout.RadioTitle;
+import lime.math.Rectangle;
 
 /**
  * ...
@@ -14,6 +15,9 @@ typedef RadioDef = {
 	var ?labels:Array<String>;
 	var ?buddy:IPositionable; //@todo
 	var ?position:Array<Direction>;
+	var ?titleTranslation:String;
+	var ?hasTranslation:Bool;
+	var ?widthMultiplier:Float;
 }
 class ActionRadios extends Action 
 {
@@ -37,11 +41,21 @@ class ActionRadios extends Action
 	{
 		//var p:FlxPoint = new FlxPoint(0, 0);
 		var r:RadioTitle;
+		var labels : Array<String> = null;
 		//var most:Rectangle = new Rectangle(0, 0,0,0);
 		for (i in radios)
 		{
-			//r = new RadioTitle(i.title, i.values, status);
-			r = new RadioTitle(i.title, i.values, i.labels);
+			if (i.hasTranslation != null && i.hasTranslation == true)
+			{
+				i.titleTranslation = translate(this._name, i.title, "headers");
+				labels = [];
+				for (j in i.values)
+				{
+					labels.push(translate(this._name, j, "headers"));
+				}
+			}
+			
+			r = new RadioTitle(i.title, i.values, labels, i.titleTranslation, null, i.widthMultiplier);
 			//trace(r.boundingRect.x + r.boundingRect.width > p.x);
 			r.changeSignal.add(changeListener);
 			rds.push( r );
@@ -52,17 +66,26 @@ class ActionRadios extends Action
 		super.create();
 		var dir:Array<Direction>;
 		var buddy:IPositionable;
+		var bdRect:Rectangle = null;
 		for (i in 0...rds.length)
 		{
 			add(rds[i]);
 			dir = positions.get(rds[i]).position;
 			buddy = positions.get(rds[i]).buddy;
+			
 			if (i == 0 )
 			{
+				
 				//rds[i].positionMe( buddy == null ? this.question.boundingRect : buddy.boundingRect, 4 , dir);
-				rds[i].positionMe( this.question.boundingRect, RADIO_PADDING , [bottom,left]);
+				rds[i].positionMe( this.question.boundingRect, 0 , [bottom,left]);
 			}else{
-				rds[i].positionMe(buddy == null ? rds[i-1].boundingRect:buddy.boundingRect , RADIO_PADDING ,dir == null ?[top,right]:dir);
+				
+				bdRect = buddy == null ? rds[i - 1].boundingRect:buddy.boundingRect;
+				#if debug
+				trace("tstool.process.ActionRadios::create::bdRect", bdRect );
+				#end
+				//rds[i].positionMe(buddy == null ? rds[i-1].boundingRect:buddy.boundingRect , RADIO_PADDING ,dir == null ?[top,right]:dir);
+				rds[i].positionMe(bdRect , 0 ,dir == null ?[top,right]:dir);
 			}
 		}
 		position();
@@ -75,6 +98,9 @@ class ActionRadios extends Action
 		for (i in 0...rds.length)
 		{
 			rd = rds[i];
+			#if debug
+			trace("tstool.process.ActionRadios::position::rd.boundingRect", rd.boundingRect );
+			#end
 			if (rd.boundingRect.x + rd.boundingRect.width > p.x) {
 				p.x = rd.boundingRect.x + rd.boundingRect.width;
 			}
@@ -97,7 +123,8 @@ class ActionRadios extends Action
 		for (i in rds)
 		{
 			//trace(i.titleUI.text, status.get(i.titleUI.text));
-			if (status.get(i.titleUI.text) == null || status.get(i.titleUI.text) == "") {
+			//if (status.get(i.titleUI.text) == null || status.get(i.titleUI.text) == "") {
+			if (status.get(i._title) == null || status.get(i._title) == "") {
 				
 				i.blink(true);
 				return false;

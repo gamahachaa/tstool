@@ -78,7 +78,10 @@ class DescisionMultipleInput extends Descision
 	//////////////////////////////
 	override public function create( ):Void
 	{
-
+		for (j in inputs)
+		{
+			if ( j.hasTranslation != null && j.hasTranslation) j.input.titleTranslated = translate(this._name, j.input.prefix, "headers");
+		}
 		multipleInputs = new MultipleInput(this, [for (i in inputs) i.input]);
 		super.create();
 	}
@@ -107,7 +110,7 @@ class DescisionMultipleInput extends Descision
 	
 	override function positionThis(?offSet:FlxPoint)
 	{
-		super.positionThis();
+		super.positionThis(offSet);
 		var p = multipleInputs.positionThis();
 		positionBottom(p);
 		positionButtons(p);

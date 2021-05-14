@@ -29,7 +29,7 @@ class ActionMultipleInput extends Action
 	//keep
 	override public function onClick():Void
 	{
-		if (validate())
+		if (validate(Next))
 		{
 			nextValidatedSignal.dispatch(true);
 			super.onClick();
@@ -45,7 +45,12 @@ class ActionMultipleInput extends Action
 	////////////////////////////////////////////////////////////////////
 	override public function create( ):Void
 	{
-		
+		/**/
+		for (j in inputs)
+		{
+			if ( j.hasTranslation!=null && j.hasTranslation) j.input.titleTranslated = translate(this._name, j.input.prefix, "headers");
+		}
+		/**/
 		multipleInputs = new MultipleInput(this, [for (i in inputs) i.input]);
 		super.create();
 	}
@@ -85,7 +90,7 @@ class ActionMultipleInput extends Action
 	
 	
 	
-	function validate()
+	function validate(?interaction:Interactions=Next)
 	{
 		var inp:UIInputTfCore = null;
 		for ( i in this.inputs)
@@ -93,6 +98,7 @@ class ActionMultipleInput extends Action
 			//trace(i);
 			
 			if (i.ereg == null) continue;
+			if (i.input.mustValidate != null && i.input.mustValidate.indexOf(interaction) == -1) continue;
 			inp = this.multipleInputs.inputs.get(i.input.prefix);
 			inp.blink(false);
 			if (!i.ereg.match(inp.getInputedText()))

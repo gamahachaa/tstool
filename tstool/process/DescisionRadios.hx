@@ -30,12 +30,20 @@ class DescisionRadios extends Descision
 	override public function create()
 	{
 		var r:RadioTitle;
-		//var most:Rectangle = new Rectangle(0, 0,0,0);
+		var labels : Array<String> = null;
 		for (i in radios)
 		{
-			//r = new RadioTitle(i.title, i.values, status);
-			r = new RadioTitle(i.title, i.values, i.labels);
-			//trace(r.boundingRect.x + r.boundingRect.width > p.x);
+			if (i.hasTranslation != null && i.hasTranslation == true)
+			{
+				i.titleTranslation = translate(this._name, i.title, "headers");
+				labels = [];
+				for (j in i.values)
+				{
+					labels.push(translate(this._name, j, "headers"));
+				}
+			}
+			
+			r = new RadioTitle(i.title, i.values, labels, i.titleTranslation);
 			r.changeSignal.add(changeListener);
 			rds.push( r );
 			positions.set(r, i);
@@ -82,7 +90,6 @@ class DescisionRadios extends Descision
 	}
 	function changeListener(radioID:String, value:String)
 	{
-		//trace("tstool.process.ActionRadios::changeListener::radioID, value", radioID, value );
 		status.set(radioID, value);
 	}
 	public function validate() 
@@ -90,7 +97,9 @@ class DescisionRadios extends Descision
 		for (i in rds)
 		{
 			//trace(i.titleUI.text, status.get(i.titleUI.text));
-			if (status.get(i.titleUI.text) == null || status.get(i.titleUI.text) == "") {
+			//if (status.get(i.titleUI.text) == null || status.get(i.titleUI.text) == "")
+			if (status.get(i._title) == null || status.get(i._title) == "")
+			{
 				
 				i.blink(true);
 				return false;

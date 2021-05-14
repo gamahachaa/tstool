@@ -13,12 +13,14 @@ import tstool.salt.SOTickets;
 class XapiTracker
 {
 	var u:Http;
+	static inline var PARAM_STATEMENT:String = "statement";
+	static inline var PARAM_VERB:String = "verb";
 	public var dispatcher(get, null):FlxTypedSignal<Bool->Void>;
 
 	public function new(wraperPath:String) 
 	{
 		dispatcher = new FlxTypedSignal<Bool->Void>();
-		u = new Http(wraperPath + "php/xapi/index.php");
+		u = new Http(wraperPath + "xapi/index.php");
 		u.async = true;
 		u.onData = onData;
 	}
@@ -50,12 +52,18 @@ class XapiTracker
 		u.setParameter("mbox", MainApp.agent.iri);
 		u.setParameter("name", MainApp.agent.sAMAccountName);
 	}
-	public function setCustomer()
+	public function setCustomer(?mobile=false)
 	{
-		u.setParameter("contractor", Main.customer.iri);
-		u.setParameter("voip", Main.customer.voIP);
+		if (mobile)
+		{
+			u.setParameter("msisdn", Main.customer.iri);
+		}
+		else{
+			u.setParameter("contractor", Main.customer.contract.contractorID);
+			u.setParameter("voip", Main.customer.voIP);
+		}
 	}
-	public function setCase( soTicket:SOTickets)
+	public function setCase( soTicket:SOTickets )
 	{
 		//setVerb("submitted");
 		u.setParameter("case", soTicket.domain + "_" + soTicket.number );
@@ -94,11 +102,11 @@ class XapiTracker
 	}
 	public function setVerb(did:String)
 	{
-		u.setParameter("verb", did);
+		u.setParameter(PARAM_VERB, did);
 	}
 	public function setStatementRef(id:String)
 	{
-		u.setParameter("statement", id);
+		u.setParameter(PARAM_STATEMENT, id);
 	}
 	
 	function get_dispatcher():FlxTypedSignal<Bool->Void> 

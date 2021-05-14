@@ -11,6 +11,9 @@ import js.Browser;
 import js.Cookie;
 import openfl.display.Sprite;
 import js.html.Location;
+import openfl.display.StageAlign;
+import openfl.display.StageScaleMode;
+import openfl.events.Event;
 import tstool.layout.History;
 import tstool.layout.SaltColor;
 import tstool.salt.Agent;
@@ -32,7 +35,7 @@ typedef Config = {
 class MainApp extends Sprite 
 {
 	//static inline var lang:String = "en-GB";
-	static inline var LIB_FOLDER = "../trouble/";
+	static inline var LIB_FOLDER = "../trouble/php/";
 	static inline var DEFAULT_COOKIE = "tstool";
 	static inline var SCRIPT_NAME:String = "nointernet"; //historical
 	
@@ -49,18 +52,24 @@ class MainApp extends Sprite
 	public static var agent:Agent;
 	static var s:Serializer;
 	
-	static var config:Config;
+	public static var config:Config;
 	
 	public function new(?cfg:Config) 
 	{
 		super();
-		
+		/*
+		 * scale
+		 * 
+		stage.scaleMode = StageScaleMode.NO_SCALE;
+		stage.align = StageAlign.TOP_LEFT;
+		stage.addEventListener (Event.RESIZE, resizeDisplay);
+		*/
 		location = Browser.location;
 		debug = location.origin.indexOf("qook.test.salt.ch") > -1;
 		FlxAssets.FONT_DEFAULT =  "Consolas";
 		config = 
 		{
-			libFolder : cfg.libFolder == null || cfg.libFolder == "" ? LIB_FOLDER : cfg.libFolder,
+			libFolder : cfg.libFolder == null || cfg.libFolder == "" ? location.pathname + LIB_FOLDER : cfg.libFolder,
 			cookie : cfg.cookie == null ? DEFAULT_COOKIE : cfg.cookie,
 			scriptName : cfg.scriptName == null ? SCRIPT_NAME : cfg.scriptName
 		};
@@ -95,7 +104,7 @@ class MainApp extends Sprite
 
 		translator = new Translator();
 		versionTracker = new VersionTracker( location.origin + location.pathname +  "php/version/index.php", config.scriptName);
-		xapiTracker =  new XapiTracker(location.origin + location.pathname + config.libFolder);
+		xapiTracker =  new XapiTracker(location.origin +  config.libFolder);
 		cust = new Customer();
 		//agent= new Agent();
 		translator.initialize("fr-FR",
@@ -125,8 +134,18 @@ class MainApp extends Sprite
 	{
 		return location;
 	}
-	
-	
+	/*
+	 * scale
+	function resizeDisplay(e:Event):Void 
+	{
+		var width = stage.stageWidth;
+		var height = stage.stageHeight;
+
+		// Resize the main content area
+		this.width = width;
+		this.height = height;
+	}
+	*/
 	
 	
 }
