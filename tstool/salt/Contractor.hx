@@ -5,8 +5,13 @@ package tstool.salt;
  * ...
  * @author bb
  */
+enum Service{
+	Fiber;
+	Gigabox;
+}
 class Contractor
 {
+	public var service(get,null):Service;
 	public var contractorID:String;
 	public var voip:String;
 	public var fix:String;
@@ -26,7 +31,9 @@ class Contractor
 						?vtiOwner:Role=null,
 						?vtiPayer:Role=null,
 						?vtiUser:Role=null,
-						?vtiOwnerValidateEmail:Bool=false, ?vtiBalance:Balance=null)
+						?vtiOwnerValidateEmail:Bool = false, 
+						?vtiBalance:Balance = null,
+						?serviceVti:Service=Fiber)
 	{
 		contractorID=StringTools.trim(vtiContractor);
 		voip=StringTools.trim(vtiVoip);
@@ -40,6 +47,7 @@ class Contractor
 		user=vtiUser;
 		ownerValidateEmail=vtiOwnerValidateEmail;
 		balance = vtiBalance;
+		service = serviceVti;
 		if(this.owner!=null)
 		setRoles();
 	}
@@ -105,6 +113,11 @@ class Contractor
 	function get_user():Role 
 	{
 		return user;
+	}
+	
+	function get_service():Service 
+	{
+		return service;
 	}
 	
 	function set_user(value:Role):Role 

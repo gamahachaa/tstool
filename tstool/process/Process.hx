@@ -128,7 +128,7 @@ class Process extends FlxState
 
 		if (hasQook)
 		{
-			ui.qook.text = Main.tongue.get("$helpBtn_UI1", "meta") + " " + parseAllLinksForNames().join(", ") +")";
+			ui.qook.text = MainApp.translator.get("$helpBtn_UI1", "meta") + " " + parseAllLinksForNames().join(", ") +")";
 			ui.qook.visible = true;
 		}
 
@@ -269,7 +269,7 @@ class Process extends FlxState
 		MainApp.agent.mainLanguage = lang;
 		MainApp.flush();
 
-		Main.tongue.initialize(lang, ()->(
+		MainApp.translator.initialize(lang, ()->(
 								   //FlxG.camera.fade(UI.THEME.bg, 0.33, false, ()->
 								   FlxG.switchState(
 									   Type.createInstance( _class, [])
@@ -352,15 +352,15 @@ class Process extends FlxState
 		var tString = switch (context)
 		{
 			case "data" : "$" + this._name + "_" + suffix;
-			case "headers" : "$" + txt + "" + suffix.removeWhite();
+			case "headers" : "$" + txt + "." + suffix.removeWhite();
 			case _ : "$" + txt + "_" + suffix;
 		}
 
-		//var t = context == "data" ? Main.tongue.get(customString, context) : Main.tongue.get(defaultString, context);
+		//var t = context == "data" ? MainApp.translator.get(customString, context) : MainApp.translator.get(defaultString, context);
 		/**
 		 * @todo put context as an object
 		 */
-		var t = Main.tongue.get(tString, context);
+		var t = MainApp.translator.get(tString, context);
 		//var s = t.indexOf("$") == 0 || StringTools.trim(t) == "" ? context == "headers"? suffix: txt : t;
 		var s = if (t.indexOf("$") == 0 || StringTools.trim(t) == "")
 		{

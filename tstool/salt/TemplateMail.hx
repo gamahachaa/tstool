@@ -31,7 +31,7 @@ class TemplateMail extends Mail
 	{
 		var _queue = soTemplate.queue + "_"; // Nico change 25.03.2020
 		var _mailSubject = soTemplate.domain + "-" + soTemplate.number + " " + soTemplate.desc;
-		var msisdnLocalised = msisdn.indexOf("07") == 0 ? msisdn : msisdn.intlToLocalMSISDN();
+		var msisdnLocalised = msisdn.indexOf("07") == 0 || msisdn== "" ? msisdn : msisdn.intlToLocalMSISDN();
 		#if debug
 		var s = '[${msisdnLocalised}][$_queue][${MainApp.agent.twoCharsLang()}][${Std.string(style)}][$email][$msisdnLocalised][${soTemplate.number}] ${_mailSubject}' ;
 		#else

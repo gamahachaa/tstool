@@ -76,6 +76,14 @@ class Customer extends Actor
 		}
 		return b;
 	}
+	public function getOwner()
+	{
+		return if (this.contract.owner == null || this.contract.owner.name== null){
+			"";
+		}else{
+			this.contract.owner.name;
+		}
+	}
 	function get_shipingAdress():Adress 
 	{
 		return this.contract.address;

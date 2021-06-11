@@ -1,9 +1,12 @@
 package tstool;
 
+import flixel.FlxG;
+import flixel.FlxGame;
+import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxAssets;
-import flixel.text.FlxText.FlxTextFormat;
-import flixel.text.FlxText.FlxTextFormatMarkerPair;
-import flixel.util.FlxColor;
+//import flixel.text.FlxText.FlxTextFormat;
+//import flixel.text.FlxText.FlxTextFormatMarkerPair;
+//import flixel.util.FlxColor;
 import flixel.util.FlxSave;
 import haxe.Serializer;
 import haxe.Unserializer;
@@ -15,7 +18,9 @@ import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
 import openfl.events.Event;
 import tstool.layout.History;
+import tstool.layout.Login;
 import tstool.layout.SaltColor;
+import tstool.layout.Sorry;
 import tstool.salt.Agent;
 import tstool.salt.Customer;
 import tstool.utils.Translator;
@@ -26,40 +31,41 @@ import tstool.utils.XapiTracker;
  * ...
  * @author bb
  */
-typedef Config = {
+typedef Config =
+{
 	var ?libFolder:String;
 	var cookie:String;
 	var scriptName:String;
 }
 
-class MainApp extends Sprite 
+class MainApp extends Sprite
 {
 	//static inline var lang:String = "en-GB";
 	static inline var LIB_FOLDER = "../trouble/php/";
 	static inline var DEFAULT_COOKIE = "tstool";
 	static inline var SCRIPT_NAME:String = "nointernet"; //historical
-	
+
 	static var debug:Bool;
 	static var xapiTracker:XapiTracker;
 	//public static var save:FlxSave = new FlxSave();
-	static var location:Location;
+	static public var location:Location;
 	//var TEST = "teststring";
-	
+
 	static var versionTracker:VersionTracker;
-	static var translator:Translator;
+	static public var translator:Translator;
 	static var stack:History;
 	static var cust:Customer;
 	public static var agent:Agent;
 	static var s:Serializer;
-	
+
 	public static var config:Config;
-	
-	public function new(?cfg:Config) 
+
+	public function new(?cfg:Config)
 	{
 		super();
 		/*
 		 * scale
-		 * 
+		 *
 		stage.scaleMode = StageScaleMode.NO_SCALE;
 		stage.align = StageAlign.TOP_LEFT;
 		stage.addEventListener (Event.RESIZE, resizeDisplay);
@@ -67,7 +73,7 @@ class MainApp extends Sprite
 		location = Browser.location;
 		debug = location.origin.indexOf("qook.test.salt.ch") > -1;
 		FlxAssets.FONT_DEFAULT =  "Consolas";
-		config = 
+		config =
 		{
 			libFolder : cfg.libFolder == null || cfg.libFolder == "" ? location.pathname + LIB_FOLDER : cfg.libFolder,
 			cookie : cfg.cookie == null ? DEFAULT_COOKIE : cfg.cookie,
@@ -91,7 +97,8 @@ class MainApp extends Sprite
 			#end
 			//trace(a);
 		}
-		else{
+		else
+		{
 			#if debug
 			trace("tstool.MainApp::MainApp::", "COOKIE NOT EXISTS" );
 			#end
@@ -103,16 +110,37 @@ class MainApp extends Sprite
 		}
 
 		translator = new Translator();
-		versionTracker = new VersionTracker( location.origin + location.pathname +  "php/version/index.php", config.scriptName);
+		#if debug
+		versionTracker = new VersionTracker( location.origin + config.libFolder, config.scriptName, true);
+		#else
+		versionTracker = new VersionTracker( location.origin + config.libFolder, config.scriptName);
+		#end
 		xapiTracker =  new XapiTracker(location.origin +  config.libFolder);
 		cust = new Customer();
 		//agent= new Agent();
 		translator.initialize("fr-FR",
-					function(){
-					#if debug
-					//trace(tongue.get("$flow.nointernet.vti.CheckContractorVTI_UI1", "meta"));
-					#end
-				});
+							  function()
+		{
+			/**
+			 * @todo Set a language message
+			 */
+			#if debug
+			//trace(tongue.get("$flow.nointernet.vti.CheckContractorVTI_UI1", "meta"));
+			#end
+		});
+		
+	}
+	function initScreen()
+	{
+		if (Browser.navigator.userAgent.indexOf("Firefox") == -1)
+		{
+			//Browser.window.alert("" + Browser.navigator.userAgent);
+			addChild(new FlxGame(1400, 880, tstool.layout.Sorry, 1, 30, 30, true, true));
+		}
+		else
+		{
+			addChild(new FlxGame(1400, 880, Login, 1, 30, 30, true, true));
+		}
 	}
 	public static function flush()
 	{
@@ -126,17 +154,23 @@ class MainApp extends Sprite
 		Cookie.remove(config.cookie, config.scriptName);
 		Browser.location.reload(true);
 	}
+	static public function setUpSystemDefault(?block:Bool = false )
+	{
+		FlxG.sound.soundTrayEnabled = false;
+		FlxG.mouse.useSystemCursor = block;
+		FlxG.keys.preventDefaultKeys = block ? [FlxKey.BACKSPACE, FlxKey.TAB] : [FlxKey.TAB];
+	}
 	static function FIND_LANG(?lang:String="")
 	{
 		return  Main.LANGS[Main.LANGS.indexOf(lang)>-1 ? Main.LANGS.indexOf(lang): 0];
 	}
-	function get_location():Location 
+	function get_location():Location
 	{
 		return location;
 	}
 	/*
 	 * scale
-	function resizeDisplay(e:Event):Void 
+	function resizeDisplay(e:Event):Void
 	{
 		var width = stage.stageWidth;
 		var height = stage.stageHeight;
@@ -146,6 +180,5 @@ class MainApp extends Sprite
 		this.height = height;
 	}
 	*/
-	
-	
+
 }

@@ -323,12 +323,12 @@ class History
 		if (translate && needsEnTranslation)
 		{
 			b += "<h4>English:</h4>";
-			Main.tongue.initialize( "en-GB" );
+			MainApp.translator.initialize( "en-GB" );
 			b += '<ol>${listSteps(steps)}</ol>';
 			#if debug
-				Main.tongue.initialize(Main.LANGS[0]);
+				MainApp.translator.initialize(Main.LANGS[0]);
 			#else
-			Main.tongue.initialize(lang);
+			MainApp.translator.initialize(lang);
 			#end
 		}
 		return b;
@@ -388,17 +388,17 @@ class History
 		
 		var question = "";
 		var choice = "";
-		Main.tongue.initialize( toLangPair );
+		MainApp.translator.initialize( toLangPair );
 		for (i in history)
 		{
-			question = Main.tongue.get("$" + i.processName + "_TITLE", "data");
+			question = MainApp.translator.get("$" + i.processName + "_TITLE", "data");
 			choice = getDefaultOrCutomChoice( i.processName, i.interaction);
 			t.push({step: question, interaction: choice, values: i.values==null?"":i.values.toString()});
 		}
 		#if debug
-		Main.tongue.initialize("fr-FR");
+		MainApp.translator.initialize("fr-FR");
 		#else
-		Main.tongue.initialize(MainApp.agent.mainLanguage);
+		MainApp.translator.initialize(MainApp.agent.mainLanguage);
 		#end
 		return t;
 	}
@@ -445,7 +445,7 @@ class History
 
 		for (h in stepsArray)
 		{
-			title = stripTags(Main.tongue.get("$" + h.processName + "_TITLE", "data"));
+			title = stripTags(MainApp.translator.get("$" + h.processName + "_TITLE", "data"));
 			interaction = h.interaction == Next ? "" : '... <strong>${getDefaultOrCutomChoice( h.processName, h.interaction)}</strong>';
 			values = h.values == null ? "" : formatMapToHtml(h.values, h.processName);
 			if (interaction == "") s += '<li>$title $values</li>';
@@ -463,7 +463,7 @@ class History
 		{
 			if (StringTools.trim(value) != "" ) {
 				
-				translation = Main.tongue.get("$" + processName + title.removeWhite(), "headers");
+				translation = MainApp.translator.get("$" + processName + title.removeWhite(), "headers");
 				if (translation == null || translation == "" || translation.indexOf("$") == 0)
 				translation = title;
 				//out += '<li>$title ... <strong>$value</strong></li>';
@@ -474,10 +474,10 @@ class History
 	}
 	inline function getDefaultOrCutomChoice( process:String, interaction:Interactions): String
 	{
-		var choice = Main.tongue.get("$" + process + "_" + getCustomInteractionTranslationHeader(interaction), "data");
+		var choice = MainApp.translator.get("$" + process + "_" + getCustomInteractionTranslationHeader(interaction), "data");
 		if (choice == "" || choice == null || choice.indexOf("$") == 0)
 		{
-			choice = Main.tongue.get("$defaultBtn_" + getDefaultInteractionTranslationHeader(interaction), "meta");
+			choice = MainApp.translator.get("$defaultBtn_" + getDefaultInteractionTranslationHeader(interaction), "meta");
 		}
 		return choice;
 	}

@@ -4,11 +4,12 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.addons.ui.FlxUIButton;
-import flixel.addons.ui.FlxUIInputText;
+//import flixel.addons.ui.FlxUIButton;
+//import flixel.addons.ui.FlxUIInputText;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
-import flixel.util.FlxColor;
-import flixel.util.FlxSave;
+//import flixel.util.FlxColor;
+//import flixel.util.FlxSave;
 import haxe.Exception;
 import openfl.utils.Assets;
 //import flow.Intro;
@@ -22,10 +23,10 @@ import haxe.Json;
 import haxe.crypto.Base64;
 import haxe.io.Bytes;
 import js.Browser;
-import js.html.ClipboardEvent;
-import js.html.Event;
-import js.html.Permissions;
-import lime.system.Clipboard;
+//import js.html.ClipboardEvent;
+//import js.html.Event;
+//import js.html.Permissions;
+//import lime.system.Clipboard;
 import tstool.salt.Agent;
 
 //@:bitmap("assets/images/CustomPreload/default.png") class LogoImage extends BitmapData { }
@@ -56,8 +57,9 @@ class Login extends FlxState
 	override public function create()
 	{
 		testers_file = Assets.getText("assets/data/testers.txt");
-		loginUrl = new Http(Main.LOCATION.origin + Main.LIB_FOLDER_LOGIN + "login/index.php" );
-		Main.setUpSystemDefault(false);
+		//loginUrl = new Http(Main.LOCATION.origin + Main.LIB_FOLDER_LOGIN + "login/index.php" );
+		loginUrl = new Http(MainApp.location.origin + Main.LIB_FOLDER_LOGIN + "login/index.php" );
+		MainApp.setUpSystemDefault(false);
 		//lang =  // default
 		//trace(MainApp.save.data.user);
 		if (MainApp.agent != null)

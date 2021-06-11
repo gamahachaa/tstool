@@ -29,17 +29,17 @@ class XapiTracker
 	{
 		//trace(data);
 		try{
-		var d = Json.parse(data);
-		if (d.status == "success") 
-		{
-			//data.indexOf("success")>-1)
-			var s:Array<String> = cast d.statementsIds;
-			setStatementRef(s[0]);
-			dispatcher.dispatch(true);
-		}
-		else{
-			dispatcher.dispatch(false);
-		}
+			var d = Json.parse(data);
+			if (d.status == "success") 
+			{
+				//data.indexOf("success")>-1)
+				var s:Array<String> = cast d.statementsIds;
+				setStatementRef(s[0]);
+				dispatcher.dispatch(true);
+			}
+			else{
+				dispatcher.dispatch(false);
+			}
 		}
 		catch (e:Exception)
 		{
@@ -98,7 +98,7 @@ class XapiTracker
 	}
 	public function setActivity(object:String)
 	{
-		u.setParameter("activity", object.indexOf("http")==0? object: Main.LOCATION.origin + Main.LOCATION.pathname + object);
+		u.setParameter("activity", object.indexOf("http")==0? object: MainApp.location.origin + MainApp.location.pathname + object);
 	}
 	public function setVerb(did:String)
 	{

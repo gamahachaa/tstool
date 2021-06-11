@@ -16,11 +16,12 @@ class Mail
 	@:isVar public var statusSignal(get, set):FlxTypedSignal<Int->Void>;
 	@:isVar public var errorSignal(get, set):FlxTypedSignal<Dynamic->Void>;
 	
-	static var PHP_MAIL_PATH:String = "../trouble/php/mail/index.php";
+	//static var PHP_MAIL_PATH:String = "../trouble/php/mail/index.php";
+	static var PHP_MAIL_PATH:String = "/commonlibs/mail/index.php";
 	
 	public function new()
 	{
-		mailWrapper = new SwiftMailWrapper(Browser.location.origin + Browser.location.pathname + PHP_MAIL_PATH);
+		mailWrapper = new SwiftMailWrapper(Browser.location.origin + PHP_MAIL_PATH);
 		successSignal = mailWrapper.successSignal;
 		statusSignal = mailWrapper.statusSignal;
 		errorSignal = mailWrapper.errorSignal;

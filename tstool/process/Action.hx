@@ -17,7 +17,7 @@ import tstool.process.Process.ProcessContructor;
 class Action extends Process
 {
 
-	var _buttonTxt(default, set):String = Main.tongue.get("$defaultBtn_UI2","meta");
+	var _buttonTxt(default, set):String = MainApp.translator.get("$defaultBtn_UI2","meta");
 	var _nextProcesses:Array<Process> = [];
 	var _nextClassProcesses:Array<ProcessContructor> = [];
 	var btn:FlxButton;

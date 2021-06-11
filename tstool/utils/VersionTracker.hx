@@ -15,9 +15,11 @@ class VersionTracker extends Http
 	//static inline var SCRIPT_NAME:String = "nointernet";
 	var scriptStart:String;
 	public var scriptChangedSignal(get, null):FlxTypedSignal<Bool->Void>;
-	public function new(url:String, ?script:String="")
+	public function new(url:String, ?script:String="",?debug:Bool=false)
 	{
-		super(url);
+		super(url +  "version/index.php");
+		//trace(url);
+		//trace(script);
 		this.addParameter("scriptfile", script);
 		scriptStart = script;
 		scriptChangedSignal = new FlxTypedSignal<Bool->Void>();

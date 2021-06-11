@@ -85,7 +85,7 @@ class ActionMultipleInput extends Action
 	}
 	override public function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
-		super.pushToHistory(buttonTxt, interactionType, [for (k=>v in multipleInputs.inputs) k => v.getInputedText()]);
+		super.pushToHistory(buttonTxt, interactionType, values==null?[for (k=>v in multipleInputs.inputs) k => v.getInputedText()]:values);
 	}
 	
 	

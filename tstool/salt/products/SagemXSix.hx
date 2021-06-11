@@ -7,7 +7,7 @@ package tstool.salt.products;
 class SagemXSix extends Product
 {
 
-	public function new(?id;String="" ) 
+	public function new(?id:String="" ) 
 	{
 		super(sagem,"Sagem X6",id);
 	}

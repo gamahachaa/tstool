@@ -31,7 +31,9 @@ class Agent extends Actor
 	@:isVar public var canDispach(get, set):Bool;
 	@:isVar public var mainLanguage(get, set):String;
 	
-	public static inline var WINBACK_GROUP_NAME:String = "WINBACK - TEST";
+	public static inline var WINBACK_GROUP_NAME:String = "WINBACK";
+	public static inline var CSR1_GROUP_NAME:String = "CSR1";
+	public static inline var CSR2_GROUP_NAME:String = "CSR2";
 	
 	public function new(?jsonUser:Dynamic=null)
 	{

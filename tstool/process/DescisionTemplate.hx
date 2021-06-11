@@ -100,7 +100,7 @@ class DescisionTemplate extends DescisionMultipleInput
 		//Both
 		if (validateYes())
 		{
-			mail.setTemplateSubject(fields, StringUtils.removeWhite(multipleInputs.getText(MSISDN_INPUT)), StringUtils.removeWhite(multipleInputs.getText(EMAIL_INPUT)));
+			mail.setTemplateSubject(fields, (fields== EMAIL)?"":StringUtils.removeWhite(multipleInputs.getText(MSISDN_INPUT)), (fields== SMS)?"":StringUtils.removeWhite(multipleInputs.getText(EMAIL_INPUT)));
 
 			send();
 			//super.onYesClick();

@@ -42,7 +42,7 @@ class DescisionLoop extends Descision
 		MainApp.agent.mainLanguage = lang;
 		MainApp.flush();
 		
-		Main.tongue.initialize(lang , ()->(
+		MainApp.translator.initialize(lang , ()->(
 										FlxG.switchState( 
 											Type.createInstance( _class, [_nextYesProcess, _nextNoProcess])
 											)

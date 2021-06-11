@@ -10,24 +10,26 @@ import lime.utils.Assets;
  * ...
  * @author bb
  */
-enum VtiInterface{
+enum VtiInterface
+{
 	healtcheck;
 	account;
 	events;
 }
-typedef RegexableProfile = {
+typedef RegexableProfile =
+{
 	var matched:Bool;
 	var universal:String;
 	var ereg: String;
 }
-class VTIdataParser 
+class VTIdataParser
 {
 	var type:VtiInterface;
 	//var getLangEreg:EReg;
 	//var allInclusivEreg:EReg;
 	var regDict:Map<String, EReg>;
 	public var signal(get, null):FlxTypedSignal<Map<String,Map<String,String>>->Void>;
-	public function new(what:VtiInterface) 
+	public function new(what:VtiInterface)
 	{
 		this.type = what;
 		#if debug
@@ -45,67 +47,68 @@ class VTIdataParser
 		regDict.set("contractorEreg", new EReg("^3\\d{7}$", ""));
 		regDict.set("personEreg", new EReg("^(Mr\\.|Ms\\.|Herr)\\s[\\S\\s]+$", ""));
 		regDict.set("phoneEreg", new EReg("^[- ]{0,2}(41[0-9]{9})$", ""));
+		regDict.set("voipGigaBox", new EReg("^([0-9]{11})$", ""));   //00000000000
 		regDict.set("optionalPhoneEreg", new EReg("(41[0-9]{9})|(\\A\\z)", ""));
 		regDict.set("emailEreg", ~/[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/i);
 		signal = new FlxTypedSignal<Map<String,Map<String,String>>->Void>();
 		Browser.document.addEventListener("paste", onPaste);
 	}
-	
-	function onPaste(e):Void 
+
+	function onPaste(e):Void
 	{
 		var content = e.clipboardData.getData("text/plain");
 		signal.dispatch(
-			switch(type)
-			{
-				case account : parseCustomerProfile(content);
-				case healtcheck : parseHealthCheckDashboard(content);
-				case events : [];
-			}
+			switch (type)
+	{
+		case account : parseCustomerProfile(content);
+			case healtcheck : parseHealthCheckDashboard(content);
+			case events : [];
+		}
 		);
 	}
 	public function destroy()
 	{
 		Browser.document.removeEventListener("paste", onPaste);
 	}
-	
-	function get_signal():FlxTypedSignal<Map<String, Map<String, String>>->Void> 
+
+	function get_signal():FlxTypedSignal<Map<String, Map<String, String>>->Void>
 	{
 		return signal;
 	}
-	
+
 	function parseCustomerProfile(content:String):Map<String,Map<String,String>>
 	{
-		trace(content);
+		//trace(content);
 		var profile:Map<String,Map<String,String>> = [];
 		var t:Array<String> = content.split("\n");
-		trace(t);
-		
+		//trace(t);
+
 		var LANG = "";
 		var mainTopics:Map<String,Map<String,String>> = [
-			"FR" => ["meta"=>"meta", "Owner"=>"owner", "Payeur"=>"payer", "Solde courant"=>"balance", "Offre : Salt Fiber"=>"plan"],
-			"IT" => ["meta"=>"meta", "Owner"=>"owner", "Pagatore"=>"payer", "Saldo"=>"balance", "Abo : Salt Fiber"=>"plan"],
-			"DE" => ["meta"=>"meta", "Owner"=>"owner", "Zahler"=>"payer", "Aktueller Saldo"=>"balance", "Angebot : Salt Fiber"=>"plan"],
-			"EN" => ["meta"=>"meta", "Owner"=>"owner", "Payer"=>"payer", "Current Balance"=>"balance", "Abo : Salt Fiber"=>"plan"],
+			"FR" => ["meta"=>"meta", "Owner"=>"owner", "Payeur"=>"payer", "Solde courant"=>"balance", "Offre : Salt Fiber"=>"plan","Offre : Salt GigaBox"=>"plan"],
+			"IT" => ["meta"=>"meta", "Owner"=>"owner", "Pagatore"=>"payer", "Saldo"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan"],
+			"DE" => ["meta"=>"meta", "Owner"=>"owner", "Zahler"=>"payer", "Aktueller Saldo"=>"balance", "Angebot : Salt Fiber"=>"plan", "Angebot : Salt GigaBox"=>"plan"],
+			"EN" => ["meta"=>"meta", "Owner"=>"owner", "Payer"=>"payer", "Current Balance"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan"],
 		];
-		
+
 		///////////////////////////////////////////////////////////////////////////////
 		/**
 		 * GET TOPICS FOR CONFIG
 		 */
 		var topicsLoded = Json.parse(Assets.getText("assets/data/customerProfile.json"));
-		
+
 		var topics:Map<String, Map<String, Map<String, RegexableProfile>>> = [];
 		// map
 		for ( lang in Reflect.fields(topicsLoded))
 		{
 			//trace(lang);
-			if (!topics.exists(lang)) 
+			if (!topics.exists(lang))
 				topics.set(lang, []);
 			var lanObj = Reflect.field( topicsLoded, lang);
 			for ( mainT in Reflect.fields(lanObj))
 			{
 				//trace(mainT);
-				if (!topics.get(lang).exists(mainT)) 
+				if (!topics.get(lang).exists(mainT))
 					topics.get(lang).set(mainT, []);
 				var  mainTObject = Reflect.field(lanObj, mainT);
 				for ( subT in Reflect.fields(mainTObject))
@@ -122,8 +125,9 @@ class VTIdataParser
 		var currentSubTopic = "";
 		var currentEreg = "";
 		var dataMainTopic = "";
-		for (line in t){
-			
+		for (line in t)
+		{
+              
 			if (LANG =="" && regDict.get("getLangEreg").match(line))
 			{
 				//LANG = getLangEreg.matched(2);
@@ -131,11 +135,25 @@ class VTIdataParser
 				currentTopic = "meta";
 				currentSubTopic = "";
 			}
-			else if(LANG !="")
+			else if (LANG !="")
 			{
+					#if debug
+				  trace("tstool.utils.VTIdataParser::parseCustomerProfile::line", line );
+				  #end
 				dataMainTopic = mainTopics.get(LANG).get(currentTopic);
-				if(currentTopic !="" && topics.get(LANG).exists( currentTopic ) && currentSubTopic!= "" && topics.get(LANG).get( currentTopic ).exists(currentSubTopic) ){
+				#if debug
+				trace("tstool.utils.VTIdataParser::parseCustomerProfile::dataMainTopic", dataMainTopic );
+				#end
+
+				if (currentTopic !="" && topics.get(LANG).exists( currentTopic ) && currentSubTopic!= "" && topics.get(LANG).get( currentTopic ).exists(currentSubTopic) )
+				{
 					currentEreg = topics.get(LANG).get( currentTopic ).get(currentSubTopic).ereg;
+					//#if debug
+					//trace("tstool.utils.VTIdataParser::parseCustomerProfile::LANG", LANG );
+					//trace("tstool.utils.VTIdataParser::parseCustomerProfile::currentTopic", currentTopic );
+					//trace("tstool.utils.VTIdataParser::parseCustomerProfile::currentSubTopic", currentSubTopic );
+					//trace("tstool.utils.VTIdataParser::parseCustomerProfile::currentEreg", currentEreg );
+					//#end
 				}
 				else
 				{
@@ -144,12 +162,16 @@ class VTIdataParser
 					//trace("catched " + e);
 				}
 				//trace(currentEreg);
-				
+
 				if (topics.get(LANG).exists(line) && currentTopic != line)
 				{
-					//trace("STORE MAIN -------------");
+
 					currentTopic = line;
 					currentSubTopic = "";
+					#if debug
+					trace("tstool.utils.VTIdataParser::parseCustomerProfile:: dataMainTopic ", dataMainTopic );
+					trace("tstool.utils.VTIdataParser::parseCustomerProfile:: SET currentTopic ", currentTopic );
+					#end
 				}
 				//else if (currentSubTopic != "" && topics.get(LANG).get( mainTopics.get(LANG).get(currentTopic) ).get(currentSubTopic).ereg.match(line))
 				else if (currentSubTopic != "" && regDict.get(currentEreg).match(line))
@@ -158,9 +180,14 @@ class VTIdataParser
 					if (!profile.exists( dataMainTopic ))
 					{
 						profile.set(dataMainTopic, [topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal => line]);
+						if (dataMainTopic == "plan")
+						{
+							profile.get(dataMainTopic).set(dataMainTopic, currentTopic);
+						}
 					}
-					else{
-						profile.get( dataMainTopic ).set( topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal ,line);
+					else
+					{
+						profile.get( dataMainTopic ).set( topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal,line);
 					}
 					topics.get(LANG).get( currentTopic ).get(currentSubTopic).matched = true;
 					currentSubTopic = "";
@@ -170,24 +197,29 @@ class VTIdataParser
 					//trace("STORE SUB ###############");
 					currentSubTopic = line;
 				}
+			}else{
+				
+				#if debug
+				  trace("tstool.utils.VTIdataParser::parseCustomerProfile::line SKIPED", line );
+				  #end
 			}
 
 		}
 		#if debug
-			trace( profile );
-			trace( topics.get(LANG));
+		trace( profile );
+		trace( topics.get(LANG));
 		#end
 		/**
 		 * @todo manage vti oparsing error send email to agent
 		 */
 		//if(LANG !="")
-			//healthCheckCustomerProfile(topics, LANG, content);
+		//healthCheckCustomerProfile(topics, LANG, content);
 		return profile;
 	}
 	/*
 	function healthCheckCustomerProfile(topics, lng, content)
 	{
-		
+
 		var noMatch: Array<Dynamic> = [];
 		var top:Map<String,Map<String,Dynamic>> = cast(topics.get(lng));
 		for ( k=>v in top)
@@ -199,23 +231,21 @@ class VTIdataParser
 				}
 			}
 		}
-	
+
 		if (noMatch.length > 0)
 		{
 			var b = "language " + lng + "<br/><ul>";
 			for (a in noMatch) b += '<li>TOPIC ${a.mainTopic} VAR ${a.subtopic} NOT FOUND: "${a.textNotFound}"</li>';
-			
+
 			var mail = new SwiftMailWrapper(Browser.location.origin + Browser.location.pathname + Main.MAIL_WRAPPER_URL);
-			
+
 			mail.setSubject('[TSTOOL ALERT] VTI customer profile $lng'  );
 			mail.setFrom("bruno.baudry@salt.ch");
 			mail.setTo(["bruno.baudry@salt.ch"]);
 			mail.setBody("<body>" + b + "</ul>"+Main.user.iri + " " + Browser.navigator.userAgent+"<br/>" + content +"</body>");
-			
-			
-			
+
 			mail.send(true);//sending copy paste failure report
-			
+
 			#if debug
 			trace("mail should be sent" );
 			#end
@@ -224,12 +254,12 @@ class VTIdataParser
 			#if debug
 			trace("All good no mail should be sent" );
 			#end
-			
+
 		}
-		
+
 	}*/
 	function parseHealthCheckDashboard(s:String):Map<String,Map<String,String>>
-	{		
+	{
 		var mainTopics:Array<String> = ["META", "CRM", "TV", "VOD", "Selfcare", "Voice", "Fiber FLL", "IPs", "DHCP", "ONT Config TFTP", "OLT (nokia/huawei)", "Router"];
 		var dataSet:Map<String, Map<String,String>> = [];
 		for ( f in mainTopics)
@@ -293,48 +323,48 @@ class VTIdataParser
 		regDict.set("remoteManagementEreg", new EReg('^"remoteManagement": (true|false),?$', ""));
 		var topics = [
 			"META" => [
-				"lang" => {matched:false, ereg: "getLangEreg"}
+		"lang" => {matched:false, ereg: "getLangEreg"}
 			],
-			"Fiber FLL" => [	
-				"otoId" =>{matched:false, ereg: "otoEreg"},
-				"otoPortId"=>{matched:false, ereg: "otoPortEreg"},
-				"routerSerialNumber"=>{matched:false, ereg: "boxSerialEreg"},
-				"lexId"=>{matched:false, ereg: "lexIdEreg"},
-				"oltName"=>{matched:false, ereg: "oltNameEreg"},
-				"status"=>{matched:false, ereg: "allInclusivEreg"},
-				"oltObject" =>{matched:false, ereg: "oltObject"}
-				],
-			"ONT Config TFTP"=>[
-				"ARC_WAN_1_IP4_Gateway" =>{matched:false, ereg: "ip4GatewayEreg"},	
-				"ARC_WAN_1_IP6_StaticGateway"=>{matched:false, ereg: "allInclusivEreg"}
-			],
-			"OLT (nokia/huawei)"=>[
-				"provider" =>{matched:false, ereg: "providerEreg"}
-			],
-			"Router" => [
-				"idStatus"=>{matched:false, ereg: "idStatusEreg"},
-				"eventdate"=>{matched:false, ereg: "eventdateEreg"},
-				"reachable" =>{matched:false, ereg: "reachableEreg"},
-				"tempCpu"=>{matched:false, ereg: "tempCpuEreg"},
-				"tempTransceiver"=>{matched:false, ereg: "tempTransceiverEreg"},
-				"uptime"=>{matched:false, ereg: "uptimeEreg"},
-				"statusWanmgt"=>{matched:false, ereg: "statusWanmgtEreg"},
-				"statusWanhsi"=>{matched:false, ereg: "statusWanhsiEreg"},
-				"statusWanvoip"=>{matched:false, ereg: "statusWanvoipEreg"},
-				"statusVoiceReg"=>{matched:false, ereg: "statusVoiceRegEreg"},
-				"nberDectHandset"=>{matched:false, ereg: "nberDectHandsetEreg"},
-				"statusWifi24g"=>{matched:false, ereg: "statusWifi24gEreg"},
-				"statusWifi5g"=>{matched:false, ereg: "statusWifi5gEreg"},
-				"cpuUsage"=>{matched:false, ereg: "cpuUsageEreg"},
-				"usedMemory"=>{matched:false, ereg: "usedMemoryEreg"},
-				"statusFwupgrade"=>{matched:false, ereg: "statusFwupgradeEreg"},
-				"version"=>{matched:false, ereg: "versionEreg"},
-				"snBox"=>{matched:false, ereg: "snBoxEreg"},
-				"snTecrep"=>{matched:false, ereg: "snTecrepEreg"},
-				"rx"=>{matched:false, ereg: "rxEreg"},
-				"tx"=>{matched:false, ereg: "txEreg"},
-				"remoteManagement"=>{matched:false, ereg: "remoteManagementEreg"}
-			]
+		"Fiber FLL" => [
+		"otoId" =>{matched:false, ereg: "otoEreg"},
+		"otoPortId"=>{matched:false, ereg: "otoPortEreg"},
+		"routerSerialNumber"=>{matched:false, ereg: "boxSerialEreg"},
+		"lexId"=>{matched:false, ereg: "lexIdEreg"},
+		"oltName"=>{matched:false, ereg: "oltNameEreg"},
+		"status"=>{matched:false, ereg: "allInclusivEreg"},
+		"oltObject" =>{matched:false, ereg: "oltObject"}
+		],
+		"ONT Config TFTP"=>[
+		"ARC_WAN_1_IP4_Gateway" =>{matched:false, ereg: "ip4GatewayEreg"},
+		"ARC_WAN_1_IP6_StaticGateway"=>{matched:false, ereg: "allInclusivEreg"}
+		],
+		"OLT (nokia/huawei)"=>[
+		"provider" =>{matched:false, ereg: "providerEreg"}
+		],
+		"Router" => [
+		"idStatus"=>{matched:false, ereg: "idStatusEreg"},
+		"eventdate"=>{matched:false, ereg: "eventdateEreg"},
+		"reachable" =>{matched:false, ereg: "reachableEreg"},
+		"tempCpu"=>{matched:false, ereg: "tempCpuEreg"},
+		"tempTransceiver"=>{matched:false, ereg: "tempTransceiverEreg"},
+		"uptime"=>{matched:false, ereg: "uptimeEreg"},
+		"statusWanmgt"=>{matched:false, ereg: "statusWanmgtEreg"},
+		"statusWanhsi"=>{matched:false, ereg: "statusWanhsiEreg"},
+		"statusWanvoip"=>{matched:false, ereg: "statusWanvoipEreg"},
+		"statusVoiceReg"=>{matched:false, ereg: "statusVoiceRegEreg"},
+		"nberDectHandset"=>{matched:false, ereg: "nberDectHandsetEreg"},
+		"statusWifi24g"=>{matched:false, ereg: "statusWifi24gEreg"},
+		"statusWifi5g"=>{matched:false, ereg: "statusWifi5gEreg"},
+		"cpuUsage"=>{matched:false, ereg: "cpuUsageEreg"},
+		"usedMemory"=>{matched:false, ereg: "usedMemoryEreg"},
+		"statusFwupgrade"=>{matched:false, ereg: "statusFwupgradeEreg"},
+		"version"=>{matched:false, ereg: "versionEreg"},
+		"snBox"=>{matched:false, ereg: "snBoxEreg"},
+		"snTecrep"=>{matched:false, ereg: "snTecrepEreg"},
+		"rx"=>{matched:false, ereg: "rxEreg"},
+		"tx"=>{matched:false, ereg: "txEreg"},
+		"remoteManagement"=>{matched:false, ereg: "remoteManagementEreg"}
+		]
 		];
 		var line = "";
 		var key = "";
@@ -343,10 +373,11 @@ class VTIdataParser
 		for (j in n)
 		{
 			line = StringTools.trim(j);
-			if (skip.indexOf(line) >-1 ) {
+			if (skip.indexOf(line) >-1 )
+			{
 				continue;
 			}
-			
+
 			if ( mainTopics.indexOf(line) > -1 )
 			{
 				currentSet = line;
@@ -372,11 +403,11 @@ class VTIdataParser
 							var o = topics.get(currentSet).get(key);
 							if ( regDict.get(o.ereg).match( line ))
 							{
-								dataSet.get(currentSet).set(key , regDict.get(o.ereg).matched(1));
+								dataSet.get(currentSet).set(key, regDict.get(o.ereg).matched(1));
 								topics.get(currentSet).get(key).matched = true;
 								currentSubSet = "";
 							}
-							
+
 						}
 					}
 					else if (currentSet == "ONT Config TFTP")
@@ -388,14 +419,16 @@ class VTIdataParser
 						val = StringTools.trim(tmp[1]);
 						if (topics.get(currentSet).exists(key))
 						{
-							dataSet.get(currentSet).set(key , val);
+							dataSet.get(currentSet).set(key, val);
 							topics.get(currentSet).get(key).matched = true;
 							currentSubSet = "";
 						}
 					}
-					else{
+					else
+					{
 						//all others
-						if (!topics.exists(currentSet)) {
+						if (!topics.exists(currentSet))
+						{
 							continue;
 						}
 						if (currentSubSet == "")
@@ -403,19 +436,21 @@ class VTIdataParser
 							currentSubSet = topics.get(currentSet).exists(line)? line :"";
 							continue;
 						}
-						else if (topics.get(currentSet).exists(currentSubSet) ){
+						else if (topics.get(currentSet).exists(currentSubSet) )
+						{
 							val = line;
 							// set value
 							if (regDict.get(topics.get(currentSet).get(currentSubSet).ereg).match(val) )
 							{
-								dataSet.get(currentSet).set(currentSubSet , val);
+								dataSet.get(currentSet).set(currentSubSet, val);
 								topics.get(currentSet).get(currentSubSet).matched = true;
 								currentSubSet = "";
 							}
-							else{
+							else
+							{
 								trace("no match for " + currentSubSet + " " + val  + " (ereg) " + regDict.get(topics.get(currentSet).get(currentSubSet).ereg ));
 							}
-							
+
 						}
 						else
 						{
@@ -441,10 +476,10 @@ class VTIdataParser
 	}
 	function cleanKey(s:String):String
 	{
-		return 
-			StringTools.replace(
-				StringTools.replace(s, 
-				'"', ""),
+		return
+		StringTools.replace(
+			StringTools.replace(s,
+		'"', ""),
 			",", "");
 	}
 }

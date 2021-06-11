@@ -13,4 +13,12 @@ class StringUtils
 	{
 		return s.split(" ").join("");
 	}
+	static inline public function phonSpaces(s:String):String
+	{
+		var t = s.split("");
+		 t.insert(8, " ");
+			t.insert(6, " ");
+			t.insert(3, " ");
+		return t.join("");
+	}
 }

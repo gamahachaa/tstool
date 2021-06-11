@@ -24,7 +24,7 @@ class Instructions extends ClosableSubState
 	override public function create():Void
 	{
 		super.create();
-		var illustration = new FlxSprite(0, 0, "assets/images/" + Main.tongue.get("$flow.TutoTree_ILLUSTRATION", "data") + ".png");
+		var illustration = new FlxSprite(0, 0, "assets/images/" + MainApp.translator.get("$flow.TutoTree_ILLUSTRATION", "data") + ".png");
 		add(illustration);
 		illustration.screenCenter();
 	}
