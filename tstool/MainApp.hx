@@ -92,7 +92,10 @@ class MainApp extends Sprite
 			//trace(Cookie.get(config.cookie));
 			var d = new Unserializer(Cookie.get(config.cookie));
 			agent = d.unserialize();
+			
+			
 			#if debug
+			trace("REMOVED TS tool GROUPS");
 			trace("tstool.MainApp::MainApp::agent.isMember(Customer Operations - Training)", agent.isMember("Customer Operations - Training") );
 			#end
 			//trace(a);

@@ -82,7 +82,7 @@ class ActionRadios extends Action
 				
 				bdRect = buddy == null ? rds[i - 1].boundingRect:buddy.boundingRect;
 				#if debug
-				trace("tstool.process.ActionRadios::create::bdRect", bdRect );
+				//trace("tstool.process.ActionRadios::create::bdRect", bdRect );
 				#end
 				//rds[i].positionMe(buddy == null ? rds[i-1].boundingRect:buddy.boundingRect , RADIO_PADDING ,dir == null ?[top,right]:dir);
 				rds[i].positionMe(bdRect , 0 ,dir == null ?[top,right]:dir);
@@ -99,7 +99,7 @@ class ActionRadios extends Action
 		{
 			rd = rds[i];
 			#if debug
-			trace("tstool.process.ActionRadios::position::rd.boundingRect", rd.boundingRect );
+			//trace("tstool.process.ActionRadios::position::rd.boundingRect", rd.boundingRect );
 			#end
 			if (rd.boundingRect.x + rd.boundingRect.width > p.x) {
 				p.x = rd.boundingRect.x + rd.boundingRect.width;

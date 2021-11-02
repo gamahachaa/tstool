@@ -1,5 +1,6 @@
 package tstool.process;
 import flixel.FlxG;
+import haxe.PosInfos;
 import tstool.layout.History.Interactions;
 import tstool.process.Process.ProcessContructor;
 
@@ -36,7 +37,7 @@ class DescisionLoop extends Descision
 		this._nexts = [_nextNoProcess == null ? Main.HISTORY.getPreviousClass() : _nextNoProcess];
 		super.onNoClick();
 	}
-	override function switchLang(lang:String)
+	override function switchLang(lang:String, ?pos:PosInfos)
 	{
 	
 		MainApp.agent.mainLanguage = lang;

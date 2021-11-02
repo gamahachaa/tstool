@@ -58,7 +58,7 @@ class Mail
 			MainApp.agent.sAMAccountName == null ? "bbaudry" : MainApp.agent.sAMAccountName
 		);
 		#if debug
-			trace(MainApp.agent);
+			//trace(MainApp.agent);
 		#end
 	}
 	/**

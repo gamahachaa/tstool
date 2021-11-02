@@ -1,5 +1,6 @@
 package tstool.process;
 import flixel.FlxG;
+import haxe.PosInfos;
 import tstool.layout.History.Interactions;
 import tstool.process.Process.ProcessContructor;
 
@@ -27,7 +28,7 @@ class ActionLoop extends Action
 	{
 		Main.HISTORY.add({step:this._class, params: _nexts }, interactionType, _titleTxt, buttonTxt, values);
 	}
-	override function switchLang(lang:String)
+	override function switchLang(lang:String, ?pos:PosInfos)
 	{
 	
 		MainApp.agent.mainLanguage = lang;

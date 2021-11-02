@@ -247,7 +247,7 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 
 	public function getInputedText()
 	{
-		return inputtextfield.text;
+		return StringTools.trim(inputtextfield.text);
 	}
 
 	function set__labelValidator(value:String):String

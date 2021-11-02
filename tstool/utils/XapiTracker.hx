@@ -13,8 +13,19 @@ import tstool.salt.SOTickets;
 class XapiTracker
 {
 	var u:Http;
-	static inline var PARAM_STATEMENT:String = "statement";
+	static inline var PARAM_STATEMENTREF:String = "statement";
 	static inline var PARAM_VERB:String = "verb";
+	static inline var PARAM_MBOX:String = "mbox";
+	static inline var PARAM_NAME:String = "name";
+	static inline var PARAM_MSISDN:String = "msisdn";
+	static inline var PARAM_CONTRACTOR:String = "contractor";
+	static inline var PARAM_VOIP:String = "voip";
+	static inline var PARAM_CASE:String = "case";
+	static inline var PARAM_TOTAL_STEPS:String = "total_steps";
+	static inline var PARAM_VALUES:String = "values";
+	static inline var PARAM_STEPS:String = "steps";
+	static inline var PARAMS_ACTIVITY:String = "activity";
+	static var INITABLE = [PARAM_STATEMENTREF, PARAM_VERB,PARAM_MSISDN, PARAM_CONTRACTOR, PARAM_VOIP, PARAM_CASE, PARAM_TOTAL_STEPS, PARAM_VALUES, PARAM_STEPS, PARAMS_ACTIVITY]; 
 	public var dispatcher(get, null):FlxTypedSignal<Bool->Void>;
 
 	public function new(wraperPath:String) 
@@ -27,7 +38,9 @@ class XapiTracker
 	
 	function onData(data:String) 
 	{
-		//trace(data);
+		#if debug
+		if (Main.DEBUG) trace(data);
+		#end
 		try{
 			var d = Json.parse(data);
 			if (d.status == "success") 
@@ -35,9 +48,11 @@ class XapiTracker
 				//data.indexOf("success")>-1)
 				var s:Array<String> = cast d.statementsIds;
 				setStatementRef(s[0]);
+				setVerb("resolved");
 				dispatcher.dispatch(true);
 			}
 			else{
+				setVerb("initialized");
 				dispatcher.dispatch(false);
 			}
 		}
@@ -49,24 +64,24 @@ class XapiTracker
 	}
 	public function setActor()
 	{
-		u.setParameter("mbox", MainApp.agent.iri);
-		u.setParameter("name", MainApp.agent.sAMAccountName);
+		u.setParameter(PARAM_MBOX, MainApp.agent.iri);
+		u.setParameter(PARAM_NAME, MainApp.agent.sAMAccountName);
 	}
 	public function setCustomer(?mobile=false)
 	{
 		if (mobile)
 		{
-			u.setParameter("msisdn", Main.customer.iri);
+			u.setParameter(PARAM_MSISDN, Main.customer.iri);
 		}
 		else{
-			u.setParameter("contractor", Main.customer.contract.contractorID);
-			u.setParameter("voip", Main.customer.voIP);
+			u.setParameter(PARAM_CONTRACTOR, Main.customer.contract.contractorID);
+			u.setParameter(PARAM_VOIP, Main.customer.voIP);
 		}
 	}
 	public function setCase( soTicket:SOTickets )
 	{
 		//setVerb("submitted");
-		u.setParameter("case", soTicket.domain + "_" + soTicket.number );
+		u.setParameter(PARAM_CASE, soTicket.domain + "_" + soTicket.number );
 	}
 	public function setResolution()
 	{
@@ -92,13 +107,28 @@ class XapiTracker
 		{
 			if(j.values != "") values += '${j.values}|';
 		}
-		u.setParameter("total_steps",  Std.string(h.length) );
-		u.setParameter("values", values );
-		u.setParameter("steps",  steps);
+		u.setParameter(PARAM_TOTAL_STEPS,  Std.string(h.length) );
+		u.setParameter(PARAM_VALUES, values );
+		u.setParameter(PARAM_STEPS,  steps);
+	}
+	function init(?filter:Array<String>)
+	{
+		for (i  in INITABLE)
+		{
+			if( filter.indexOf(i) == -1) u.setParameter(i, null);
+		}
+	}
+	public function initKeepActor()
+	{
+		init([PARAM_MBOX,PARAM_NAME]);
+	}
+	public function initKeepActorAndStatementRef()
+	{
+		init([PARAM_MBOX,PARAM_NAME, PARAM_STATEMENTREF]);
 	}
 	public function setActivity(object:String)
 	{
-		u.setParameter("activity", object.indexOf("http")==0? object: MainApp.location.origin + MainApp.location.pathname + object);
+		u.setParameter(PARAMS_ACTIVITY, object.indexOf("http")==0? object: MainApp.location.origin + MainApp.location.pathname + object);
 	}
 	public function setVerb(did:String)
 	{
@@ -106,7 +136,17 @@ class XapiTracker
 	}
 	public function setStatementRef(id:String)
 	{
-		u.setParameter(PARAM_STATEMENT, id);
+		u.setParameter(PARAM_STATEMENTREF, id);
+	}
+	public function sendInitial(activity:String)
+	{
+		Main.track.initKeepActor();
+		Main.track.setVerb("initialized");
+		Main.track.setStatementRef(null);
+		Main.track.setCustomer(true);
+		Main.track.setActivity( activity);
+        Main.track.send();
+		Main.track.setVerb("resolved");
 	}
 	
 	function get_dispatcher():FlxTypedSignal<Bool->Void> 
@@ -118,7 +158,14 @@ class XapiTracker
 	{
 		//trace(u);
 		//trace("statementSent");
+		#if !debug
 		u.request(true);
+		#else
+		if (Main.DEBUG) u.request(true);
+		else{
+			onData("{'status':'success'}");
+		}
+		#end
 	}
 	
 }

@@ -32,8 +32,8 @@ class Agent extends Actor
 	@:isVar public var mainLanguage(get, set):String;
 	
 	public static inline var WINBACK_GROUP_NAME:String = "WINBACK";
-	public static inline var CSR1_GROUP_NAME:String = "CSR1";
-	public static inline var CSR2_GROUP_NAME:String = "CSR2";
+	public static inline var CSR1_GROUP_NAME:String = "TS_TOOL_CSR1";
+	public static inline var CSR2_GROUP_NAME:String = "TS_TOOL_CSR2";
 	
 	public function new(?jsonUser:Dynamic=null)
 	{
@@ -72,6 +72,9 @@ class Agent extends Actor
 	}
 	public function isMember(groupName:String):Bool
 	{
+		#if debug
+		//trace("tstool.salt.Agent::isMember::groups", groups );
+		#end
 		if (groups == null || groups == []) return false;
 		return groups.indexOf(groupName)>-1;
 	}
@@ -91,6 +94,12 @@ class Agent extends Actor
 		{
 			this.groups.remove(groupName);
 		}
+	}
+	public function removeAllTSToolGroups()
+	{
+		removeGroupAsMember(Agent.CSR1_GROUP_NAME);
+		removeGroupAsMember(Agent.CSR2_GROUP_NAME);
+		removeGroupAsMember(Agent.WINBACK_GROUP_NAME);
 	}
 	public function twoCharsLang(caps:Bool = true)
 	{

@@ -48,7 +48,7 @@ class ActionMemo extends Action
 	override function positionThis(?offSet:FlxPoint)
 	{
 		super.positionThis();
-		var p = this.memoTxtArea.positionMe(this.question.boundingRect, _padding);
+		var p = this.memoTxtArea.positionMe(this.question.boundingRect, 0);
 		positionBottom(p);
 		positionButtons(p);
 		

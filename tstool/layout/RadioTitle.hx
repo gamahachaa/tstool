@@ -139,14 +139,14 @@ class RadioTitle extends FlxGroup implements IPositionable
 		{
 			//if (i.length * RADIO_SIZE > w) w = i.length * RADIO_SIZE;
 			#if debug
-			trace(s.length);
+			//trace(s.length);
 			#end
 			if (i.length * RADIO_SIZE/widthMultiplier > w) w = i.length * RADIO_SIZE/widthMultiplier;
 		}
 		#if debug
-		trace(s.length);
-		trace(RADIO_SIZE/widthMultiplier);
-		trace(w);
+		//trace(s.length);
+		//trace(RADIO_SIZE/widthMultiplier);
+		//trace(w);
 		#end
 		return w;
 	}

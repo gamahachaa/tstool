@@ -240,12 +240,12 @@ class Login extends FlxState
 		{
 			createAgent(d);
 
-			
+			 /*
 			#if !debug
 				Main.track.setActor();
 			#else 
 				trace("tstool.layout.Login::ondata::MainApp.agent", MainApp.agent );
-			#end
+			#end  */
 			
 			MainApp.flush();
 			Main.MOVE_ON(); // launch APP

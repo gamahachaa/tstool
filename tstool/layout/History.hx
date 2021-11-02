@@ -5,6 +5,7 @@ package tstool.layout;
 //import tstool.utils.Mail;
 //import tstool.process.ActionLoop;
 //import tstool.process.DescisionLoop;
+import haxe.PosInfos;
 import tstool.process.Process;
 using tstool.utils.StringUtils;
 
@@ -201,7 +202,7 @@ class History
 		return false;
 	}
 	
-	public function isClassInHistory(step:Class<Process>)
+	public function isClassInHistory(step:Class<Process>):Bool
 	{
 		for ( i in history )
 		{
@@ -290,12 +291,12 @@ class History
 	}
 	public function findValueOfFirstClassInHistory(step:Class<Process>, valueIndex:String, ?fromBegining:Bool = true):ValueReturn{
 		var v:Snapshot = findStepsClassInHistory(step, 1, fromBegining)[0];
-		if (v.values.exists(valueIndex)){
-			return {exists:true, value: v.values.get(valueIndex)};
+		if (v.values == null || !v.values.exists(valueIndex)){
+			return {exists:false, value: null};
 		}
 		else
 		{
-			return {exists:false, value: null};
+			return {exists:true, value: v.values.get(valueIndex)};
 		}
 	}
 	public function buildHistoryEmailBody( currentLang:String, _currentProcess:Process, ?translate:Bool= true)
@@ -381,8 +382,11 @@ class History
 	 * Default to English
 	 * @param	toLangPair
 	 */
-	public function getStoredStepsTranslatedArray( toLangPair:String="en-GB" )
+	public function getStoredStepsTranslatedArray( toLangPair:String="en-GB", ?pos:PosInfos )
 	{
+		#if debug
+		trace('CALLED FROM ${pos.className} ${pos.methodName} ${pos.fileName} ${pos.lineNumber}');
+		#end
 		var t = [];
 		//var s = 0;
 		
@@ -430,8 +434,13 @@ class History
 		}
 		return s;
 	}
+	
 	//////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////
+	public function prepareClipboard(additionalText:String)
+	{
+		return stripTags(additionalText + "\n" + prepareListHistory(), ["\n"])  ;
+	}
 	//////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////
 	inline function listSteps(stepsArray:Array<Snapshot>):String

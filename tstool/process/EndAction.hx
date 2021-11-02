@@ -13,7 +13,7 @@ class EndAction extends Action
 	override public function create()
 	{
 		//scriptText = Main.HISTORY.prepareListHistory(true);
-		scriptView = new ScriptView( Main.HISTORY.prepareListHistory(true));
+		scriptView = new ScriptView( Main.HISTORY.prepareListHistory(true) );
 		super.create();
 		ui.script.visible = true;
 		Main.track.setResolution();

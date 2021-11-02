@@ -50,7 +50,7 @@ class ActionTicket extends ActionMemo
 		
 		memoTxtArea.inputtextfield.text = defaultMemo;
 		
-		this.question.text += "\n" + ticket.desc;
+		//this.question.text += "\n" + ticket.desc;
 		details.autoSize = true;
 		this.details.textField.htmlText = _detailTxt;
 	}
@@ -73,6 +73,7 @@ class ActionTicket extends ActionMemo
 		closeSubState();
 		Main.track.setCase(this.ticket);
 		Main.track.setVerb("submitted");
+		//Main.track.
 		
 		switch data.status {
 			case "success" : super.onClick();

@@ -125,6 +125,9 @@ class MultipleInput implements IFlxDestroyable
 	
 	public function getText(id:String):String
 	{
+		#if debug
+		//trace("tstool.process.MultipleInput::getText::id", id );
+		#end
 		return inputs.get(id).getInputedText();
 	}
 	public function setInputDefault(id:String, text:String):Void
@@ -150,7 +153,7 @@ class MultipleInput implements IFlxDestroyable
 			else{
 				ui.positionMe(inputs.get(v.buddy).boundingRect);
 				#if debug
-				trace("tstool.process.MultipleInput::positionThis::v.buddy", v.buddy );
+				//trace("tstool.process.MultipleInput::positionThis::v.buddy", v.buddy );
 				#end
 			}
 			//trace(ui.x + ui.width, ui.x + ui.width > pt.x);

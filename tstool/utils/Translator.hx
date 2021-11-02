@@ -3,6 +3,7 @@ package tstool.utils;
 import firetongue.FireTongue;
 import firetongue.FireTongue.Case;
 import firetongue.FireTongue.Framework;
+import haxe.PosInfos;
 
 /**
  * ...
@@ -19,7 +20,10 @@ class Translator extends FireTongue
 		this.folder = folder;
 		
 	}
-	public function initialize(lang:String, ?callback:Void->Void= null){
+	public function initialize(lang:String, ?callback:Void->Void = null, ?pos:PosInfos){
+		#if debug
+		trace('CALLED FROM ${pos.className} ${pos.methodName} ${pos.fileName} ${pos.lineNumber}');
+		#end
 		this.init(lang, callback, false, false, folder);
 	}
 }

@@ -54,6 +54,7 @@ class Process extends FlxState
 	var hasReminder:Bool;
 	//var isFocused:Bool;
 	var isAnimated:Bool;
+	var commentDebounce:Int;
 
 	/************************
 	 * UI
@@ -73,6 +74,7 @@ class Process extends FlxState
 	public function new()
 	{
 		super();
+		commentDebounce = 0;// prevent to send share duplicate mails
 		_class = Type.getClass(this);
 		_name = Type.getClassName(_class);
 		_titleTxt = translate( _titleTxt, "TITLE");
@@ -252,7 +254,7 @@ class Process extends FlxState
 			case "onHowTo" : onHowTo();
 			case "toogleTrainingMode" : toogleTrainingMode();
 			case "logout" : onlogout();
-			case "onComment" : onComment();
+			case "onComment" : if(commentDebounce ==0) onComment();
 			case "setStyle" : setStyle();
 			case "openSubState" : openSubState(dataView);
 		}
@@ -263,12 +265,13 @@ class Process extends FlxState
 		MainApp.clearCookie();
 	}
 
-	function switchLang(lang:String)
+	function switchLang(lang:String, ?pos: haxe.PosInfos)
 	{
-
+        #if debug
+		trace('CALLED FROM ${pos.className} ${pos.methodName} ${pos.fileName} ${pos.lineNumber}');
+		#end
 		MainApp.agent.mainLanguage = lang;
 		MainApp.flush();
-
 		MainApp.translator.initialize(lang, ()->(
 								   //FlxG.camera.fade(UI.THEME.bg, 0.33, false, ()->
 								   FlxG.switchState(
@@ -330,6 +333,7 @@ class Process extends FlxState
 	}
 	function onComment():Void
 	{
+		commentDebounce = 300;
 		var v = StringTools.replace(Main.VERSION, ".min.js", "");
 		var to = "mailto:qook@salt.ch?";
 		var subject = "subject=[TROUBLE share "+ MainApp.config.scriptName +"] " + this._name;
@@ -401,7 +405,7 @@ class Process extends FlxState
 	{
 		//Main.HISTORY.add({step:_class, params:[]}, interactionType, _titleTxt, buttonTxt, values);
 		#if debug
-		trace("tstool.process.Process::pushToHistory::question.text", question.text );
+		//trace("tstool.process.Process::pushToHistory::question.text", question.text );
 		#end
 		Main.HISTORY.add({step:_class, params:[]}, interactionType, question.text, buttonTxt, values);
 	}
@@ -457,7 +461,14 @@ class Process extends FlxState
 	override public function update(elapsed):Void
 	{
 		super.update(elapsed);
-		//trace(this._titleTxt);
+		//#if debug
+		//trace("tstool.process.Process::update::commentDebounce", commentDebounce );
+		//#end
+		if (commentDebounce != 0)
+		{
+			commentDebounce--;
+		}
+		
 	}
 	override public function destroy():Void
 	{
