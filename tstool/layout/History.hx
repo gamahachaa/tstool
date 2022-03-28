@@ -5,9 +5,10 @@ package tstool.layout;
 //import tstool.utils.Mail;
 //import tstool.process.ActionLoop;
 //import tstool.process.DescisionLoop;
+import firetongue.Replace;
 import haxe.PosInfos;
 import tstool.process.Process;
-using tstool.utils.StringUtils;
+using string.StringUtils;
 
 /**
  * ...
@@ -23,6 +24,12 @@ typedef Snapshot =
 	var start:Date;
 	var ?step:ProcessContructor;
 }
+typedef Steps = {
+			var nb:Int;
+			var processName:String;
+			var interaction:Interactions;
+			var values:String;
+	}
 enum Interactions
 {
 	Yes;
@@ -76,6 +83,7 @@ class History
 			//_params: process.params
 		}
 		);
+		//trace(history);
 	}
 	
 	public function init():Void
@@ -206,6 +214,7 @@ class History
 	{
 		for ( i in history )
 		{
+		
 			if (i.step.step == step )
 			{
 				return true;
@@ -368,16 +377,22 @@ class History
 		}
 		return t;
 	}
-	public function getRawStepsArray()
+	public function getRawStepsArray():Array<Steps>
 	{
 		var t = [];
 		var s = 0;
 		for (i in history)
 		{
-			t.push({nb:s++, step:i.step, interaction: i.interaction, values: i.values==null?"":i.values.toString()});
+			t.push(
+			{
+				nb:s++, 
+				processName:i.processName, 
+				interaction: i.interaction, 
+				values: i.values==null?"":i.values.toString()});
 		}
 		return t;
 	}
+
 	/**
 	 * Default to English
 	 * @param	toLangPair
@@ -427,6 +442,13 @@ class History
 	public static function stripTags(s:String,?skip:Array<String>=null):String
 	{
 		var t = ["<B>", "<b>", "<N>", "<T>", "<EM>", "<em>", "\t", "\n"];
+		if (Replace.TAGS.length>0)
+		{        
+			t = Lambda.concat( t, Replace.TAGS);
+		}
+		#if debug
+		trace("tstool.layout.History::stripTags::t", t );
+		#end
 		for (i in t)
 		{
 			if (skip != null && skip.indexOf(i) != -1) continue;
@@ -443,7 +465,7 @@ class History
 	}
 	//////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////
-	inline function listSteps(stepsArray:Array<Snapshot>):String
+	function listSteps(stepsArray:Array<Snapshot>):String
 	{
 		var s = "";
 		

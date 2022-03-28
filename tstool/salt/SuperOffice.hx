@@ -9,7 +9,7 @@ class SuperOffice
 	public var domain(get, null):String;
 	public var number(get, null):String;
 	@:isVar public var queue(get, set):String;
-	public var desc(get, null):String;
+	@:isVar public var desc(get, set):String;
 	public var email(get, null):String;
 	///////////////////// CONSTRUCTOR //////////////////////
 	public function new(domain:String,number:String,queue:String,desc:String,email:String) 
@@ -19,6 +19,10 @@ class SuperOffice
 		this.queue = queue;
 		this.number = number;
 		this.domain = domain;
+	}
+	public function toString():String
+	{
+		return '${domain}_${number}_${queue}_${desc}';
 	}
 	//////////////////// GETTERS ///////////////////////////
 	function get_domain():String 
@@ -44,6 +48,11 @@ class SuperOffice
 	function get_desc():String 
 	{
 		return desc;
+	}
+	
+	function set_desc(value:String):String 
+	{
+		return desc = value;
 	}
 	
 	function get_email():String 

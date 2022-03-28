@@ -3,8 +3,8 @@ import tstool.layout.History.Interactions;
 import tstool.layout.UI;
 import tstool.salt.SOTemplate;
 import tstool.salt.TemplateMail;
-import tstool.utils.ExpReg;
-import tstool.utils.StringUtils;
+import regex.ExpReg;
+import string.StringUtils;
 import tstool.utils.SwiftMailWrapper.Result;
 
 /**
@@ -127,7 +127,7 @@ class TripletTemplate extends TripletMultipleInput
 	}
 	function clickListener()
 	{
-		this._nexts = [{step: getNext(), params: []}];
+		//this._nexts = [{step: getNext(), params: []}];
 		switch (clicked)
 		{
 			case Yes: super.onYesClick();

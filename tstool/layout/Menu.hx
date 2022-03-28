@@ -168,7 +168,8 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		comment.x = howTo.x - (UI.PADDING * 3) - comment.width;
 		comment.y = 4;
 		
-		reminderMsgBox.y = menuBG.height/2 - (reminderMsgBox.height/2);
+		//reminderMsgBox.y = menuBG.height/2 - (reminderMsgBox.height/2);
+		reminderMsgBox.y = 0;
 		reminderMsgBox.x = UI.PADDING/2 ;
 	}
 	//function onBack() 

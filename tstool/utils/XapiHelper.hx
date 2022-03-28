@@ -31,17 +31,20 @@ class XapiHelper extends Http
 	var canRequest:Bool;
 	var statementsRefs:Array<StatementRef>;
 	var statement: xapi.Statement;
-	var object:IObject;
+	@:isVar public var object(get, set):IObject;
 	var verb:Verb;
 	var result:xapi.Result;
 	var context:Context;
 	var _mainDebug:Bool;
-	//var serializer:haxe.Serializer;
+	var _start:Float;
 	@:isVar var actor(get, set):Agent;
 	public var dispatcher:Signal1<Bool>;
 	public function new(url:String)
 	{
 		super(url + "xapi/index.php");
+		#if debug
+		trace('tstool.utils.XapiHelper::XapiHelper::url', this.url);
+		#end
 		_mainDebug = Browser.location.origin.indexOf("salt.ch") > -1;
 		this.async = true;
 		Serializer.USE_CACHE = true;
@@ -53,8 +56,9 @@ class XapiHelper extends Http
 		object = null;
 		verb = null;
 		context = null;
-		result = new Result();
+		result = new xapi.Result();
 		dispatcher = new Signal1<Bool>();
+		_start = Date.now().getTime();
 		//map = new Map<String,String>();
 		// minimal statement needs
 		//map.set("mbox", "");
@@ -63,14 +67,18 @@ class XapiHelper extends Http
 		canRequest = true;
 		this.onData = onMyData;
 	}
-	public function reset(referenceLast:Bool)
+	public function reset(?referenceLast:Bool=false)
 	{
-		if (!referenceLast) statementsRefs = [];
+		if (!referenceLast){
+			statementsRefs = [];
+			_start = Date.now().getTime();
+		}
 		statement = null;
 		actor = null;
 		object = null;
 		verb = null;
 		context = null;
+		
 	}
 	public function validateBeforeSending()
 	{
@@ -119,24 +127,45 @@ class XapiHelper extends Http
 	}
 	public function setVerb(did:Verb)
 	{
+		//verb = new Verb(did.id);
 		verb = did;
 	}
+	/*
 	public function setResult(
-		scoreScaled:Float,
+		?scoreScaled:Float,
 		?extensions:Map<String,Dynamic>,
 		?success:Bool,
 		?completion:Bool,
 		?response:String,
 		?duration:Float)
 	{
-		result = new Result(new Score(scoreScaled * 100), success, true, null, duration, extensions);
-	}
+		result = new Result(
+			scoreScaled == null ? scoreScaled : new Score(scoreScaled * 100),
+			success,
+			completion,
+			null,
+			duration,
+			extensions
+		);
+	}*/
+	/**/
 	public function setContext(instructor:Agent, parentActivity:String, platform:String, language:String, extensions:Map<String,Dynamic>)
 	{
-		
-		context = new Context(null, instructor, null,null, null, platform, language, statementsRefs.length > 0?statementsRefs[statementsRefs.length - 1]:null, extensions);
-		context.addContextActivity(parent, new Activity(parentActivity)); 
-	}
+
+		context = new Context(
+			null, 
+			instructor, 
+			null,
+			null, 
+			null, 
+			platform, 
+			language, 
+			statementsRefs.length > 0?statementsRefs[statementsRefs.length - 1]:null, 
+			extensions
+			);
+			if (parentActivity != null)
+				context.addContextActivity(parent, new Activity(parentActivity));
+	}/**/
 	public function setStatementRefs(statementRef:StatementRef)
 	{
 		statementsRefs = [statementRef];
@@ -158,26 +187,29 @@ class XapiHelper extends Http
 		//prepareParams();
 		try
 		{
-			statement = new Statement(actor, verb, object, result, context);
-			var serialized = Serializer.run(statement);
-				#if debug
-				if (_mainDebug){
-						//statement = new Statement(actor, verb, object, result, context);
-					//var serialized = Serializer.run(statement);
-					trace(serialized);
-					this.setParameter("statement", serialized);
-					this.request(true);
-				}
-				else{
-					trace(serialized);
-					onMyData(Json.stringify({status:"success", statementsIds:["24b31561-6138-4dbc-995e-d725b8b39dda"]}));
-				}
+			this.result.toISO8601Duration( Date.now().getTime() - _start );
+            statement = new Statement(actor, verb, object, result, context);
+			#if debug
 			
-			#else
-				statement = new Statement(actor, verb, object, result, context);
-				//var serialized = Serializer.run(cast statement);
-				this.setParameter("statement", Serializer.run(statement));
+			var serialized = Serializer.run(statement);
+			trace(statement);
+			trace(serialized);
+			if (_mainDebug)
+			{
+				this.setParameter("statement", serialized);
 				this.request(true);
+			}
+			else
+			{
+				//trace(serialized);
+				onMyData(Json.stringify({status:"success", statementsIds:["24b31561-6138-4dbc-995e-d725b8b39dda"]}));
+			}
+
+			#else
+			//statement = new Statement(actor, verb, object, result, context);
+			//var serialized = Serializer.run(cast statement);
+			this.setParameter("statement", Serializer.run(statement));
+			this.request(true);
 			#end
 		}
 		catch (e:Exception)
@@ -188,12 +220,12 @@ class XapiHelper extends Http
 			trace(e.details());
 			#end
 		}
-		
+
 	}
-	
+
 	function onMyData(data:String)
 	{
-		trace(data);
+		//trace(data);
 		try
 		{
 			var d = Json.parse(data);
@@ -228,6 +260,16 @@ class XapiHelper extends Http
 	function set_actor(value:xapi.Agent):xapi.Agent
 	{
 		return actor = value;
+	}
+
+	function get_object():IObject
+	{
+		return object;
+	}
+
+	function set_object(value:IObject):IObject
+	{
+		return object = value;
 	}
 
 }

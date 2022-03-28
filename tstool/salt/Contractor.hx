@@ -8,10 +8,11 @@ package tstool.salt;
 enum Service{
 	Fiber;
 	Gigabox;
+	Office;
 }
 class Contractor
 {
-	public var service(get,null):Service;
+	@:isVar public var service(get,set):Service;
 	public var contractorID:String;
 	public var voip:String;
 	public var fix:String;
@@ -118,6 +119,11 @@ class Contractor
 	function get_service():Service 
 	{
 		return service;
+	}
+	
+	function set_service(value:Service):Service 
+	{
+		return service = value;
 	}
 	
 	function set_user(value:Role):Role 

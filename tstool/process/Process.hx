@@ -1,5 +1,5 @@
 package tstool.process;
-using tstool.utils.StringUtils;
+
 import tstool.layout.History;
 import tstool.layout.PageLoader;
 import tstool.layout.ScriptView;
@@ -22,6 +22,8 @@ import js.Browser;
 import openfl.system.Capabilities;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
+
+using string.StringUtils;
 
 typedef ProcessContructor =
 {
@@ -74,13 +76,15 @@ class Process extends FlxState
 	public function new()
 	{
 		super();
+
 		commentDebounce = 0;// prevent to send share duplicate mails
 		_class = Type.getClass(this);
 		_name = Type.getClassName(_class);
-		_titleTxt = translate( _titleTxt, "TITLE");
-		_detailTxt = translate( _detailTxt, "DETAILS");
-		_illustration = translate( _illustration, "ILLUSTRATION");
-		_qookLink = translate(_qook, "QOOK").split("|");
+
+		_titleTxt = MainApp.translator.translate(_name, _titleTxt, "TITLE");
+		_detailTxt = MainApp.translator.translate(_name, _detailTxt, "DETAILS");
+		_illustration = MainApp.translator.translate(_name, _illustration, "ILLUSTRATION");
+		_qookLink = MainApp.translator.translate(_name,_qook, "QOOK").split("|");
 	}
 
 	override public function create()
@@ -93,9 +97,6 @@ class Process extends FlxState
 		//FlxG.camera.fade(UI.THEME.bg, 0.33, true);
 
 		super.create();
-		#if debug
-		//trace(Main.VERSION);
-		#end
 
 		/************************
 		 * UI
@@ -176,6 +177,7 @@ class Process extends FlxState
 	function setStyle()
 	{
 		//trace("tstool.process.Process::setStyle");
+
 		this.bgColor = UI.THEME.bg;
 		//this.bgColor = UI.THEME.bg;
 		this.details.color = UI.THEME.basic;
@@ -183,8 +185,11 @@ class Process extends FlxState
 
 		this.question.color = UI.THEME.title;
 		this.question.applyMarkup(this._titleTxt, [UI.THEME.basicStrong, UI.THEME.basicEmphasis]);
+
 		question.drawFrame();
+
 		details.drawFrame();
+
 	}
 
 	//ui
@@ -254,7 +259,7 @@ class Process extends FlxState
 			case "onHowTo" : onHowTo();
 			case "toogleTrainingMode" : toogleTrainingMode();
 			case "logout" : onlogout();
-			case "onComment" : if(commentDebounce ==0) onComment();
+			case "onComment" : if (commentDebounce ==0) onComment();
 			case "setStyle" : setStyle();
 			case "openSubState" : openSubState(dataView);
 		}
@@ -267,19 +272,17 @@ class Process extends FlxState
 
 	function switchLang(lang:String, ?pos: haxe.PosInfos)
 	{
-        #if debug
-		trace('CALLED FROM ${pos.className} ${pos.methodName} ${pos.fileName} ${pos.lineNumber}');
-		#end
+
 		MainApp.agent.mainLanguage = lang;
 		MainApp.flush();
 		MainApp.translator.initialize(lang, ()->(
-								   //FlxG.camera.fade(UI.THEME.bg, 0.33, false, ()->
-								   FlxG.switchState(
-									   Type.createInstance( _class, [])
-								   )
-							   )
-							   //)
-							  );
+										  //FlxG.camera.fade(UI.THEME.bg, 0.33, false, ()->
+										  FlxG.switchState(
+											  Type.createInstance( _class, [])
+										  )
+									  )
+									  //)
+									 );
 	}
 	function onClipBoardClick()
 	{
@@ -348,11 +351,10 @@ class Process extends FlxState
 
 	}
 
+	/*
 	public function translate(txt:String, ?suffix:String="", ?context="data"):String
 	{
 
-		//var defaultString = "$" + txt + "_" + suffix;
-		//var customString = "$" + this._name + "_" + suffix;
 		var tString = switch (context)
 		{
 			case "data" : "$" + this._name + "_" + suffix;
@@ -361,9 +363,7 @@ class Process extends FlxState
 		}
 
 		//var t = context == "data" ? MainApp.translator.get(customString, context) : MainApp.translator.get(defaultString, context);
-		/**
-		 * @todo put context as an object
-		 */
+
 		var t = MainApp.translator.get(tString, context);
 		//var s = t.indexOf("$") == 0 || StringTools.trim(t) == "" ? context == "headers"? suffix: txt : t;
 		var s = if (t.indexOf("$") == 0 || StringTools.trim(t) == "")
@@ -394,6 +394,7 @@ class Process extends FlxState
 		#end
 
 	}
+	*/
 	/**
 	 * Override when child class takes contructor parameters
 	 * @param	buttonTxt
@@ -456,7 +457,9 @@ class Process extends FlxState
 			//trace("tstool.process.Process::moveToNextClassProcess::not sper slow");
 			#end
 		}
-		FlxG.switchState(Type.createInstance(_nexts[index].step,_nexts[index].params));
+
+		FlxG.switchState(Type.createInstance(_nexts[index].step, _nexts[index].params));
+
 	}
 	override public function update(elapsed):Void
 	{
@@ -467,6 +470,11 @@ class Process extends FlxState
 		if (commentDebounce != 0)
 		{
 			commentDebounce--;
+		}
+		if (FlxG.mouse.justReleased)
+		{
+			
+            MainApp.VERSION_TIMER_value = MainApp.VERSION_TIMER_DURATION;
 		}
 		
 	}

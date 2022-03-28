@@ -30,9 +30,13 @@ class Descision extends Process
 	}
 	override public function create():Void
 	{
-		_buttonYesTxt = translate(_buttonYesTxt, "RIGHT-BTN");
-		_buttonNoTxt =  translate(_buttonNoTxt, "LEFT-BTN") ;
+		
+		_buttonYesTxt = MainApp.translator.translate(_name, _buttonYesTxt, "RIGHT-BTN");
+		
+		_buttonNoTxt =  MainApp.translator.translate(_name, _buttonNoTxt, "LEFT-BTN") ;
+		
 		super.create();
+		
 		/**
 		 * @todo SPEARATE layout items
 		 */
@@ -62,9 +66,12 @@ class Descision extends Process
 		btnYes.label.autoSize = true;
 		btnYes.updateHitbox();
 		btnNo.updateHitbox();
+		
 		positionThis();
+		
 		setStyle();
-		setStyle();
+		
+		//setStyle();
 	}
 	function positionThis(?offSet:FlxPoint)
 	{

@@ -1,55 +1,52 @@
 package tstool.process;
+
 import flixel.FlxG;
 import flixel.math.FlxPoint;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import tstool.layout.History.Interactions;
 import tstool.layout.UIInputTfCore;
-import tstool.process.MultipleInput;
 import tstool.process.MultipleInput.ValidatedInputs;
+import tstool.process.Process.ProcessContructor;
 
 /**
- * @todo factorise all multiple input redundancy
+ * @todo refactor to avoid duplication of code with othe Multiple inputs using a decorator
  * @author bb
  */
-class DescisionMultipleInput extends Descision
+class DescisionMultipleInputLoop extends DescisionLoop 
 {
-	
 	var inputs:Array<ValidatedInputs>;
 	var multipleInputs:MultipleInput;
 
-
-	public var yesValidatedSignal(get, null):FlxTypedSignal<Bool->Void>;//keep
-	public var noValidatedSignal(get, null):FlxTypedSignal<Bool->Void>;//keep
-	public function new(inputs:Array<ValidatedInputs>)
+	public function new(
+		inputs:Array<ValidatedInputs>, 
+		?yesProcess:ProcessContructor, 
+		?noProcess:ProcessContructor) 
 	{
-		super();
+		super(yesProcess, noProcess);
 		this.inputs = inputs;
-		yesValidatedSignal = new FlxTypedSignal<Bool->Void>();//keep
-		noValidatedSignal = new FlxTypedSignal<Bool->Void>();//keep
-
+		//yesValidatedSignal = new FlxTypedSignal<Bool->Void>();//keep
+		//noValidatedSignal = new FlxTypedSignal<Bool->Void>();//keep
 	}
-	//keep
-	
 	override public function onYesClick():Void
 	{
 		if (validateYes())
 		{
-			yesValidatedSignal.dispatch(true);
+			//yesValidatedSignal.dispatch(true);
 			super.onYesClick();
 		}
-		else
-			yesValidatedSignal.dispatch(false);
+		else {}
+			//yesValidatedSignal.dispatch(false);
 		//#end
 	}
 	override public function onNoClick():Void
 	{
 		if (validateNo())
 		{
-			noValidatedSignal.dispatch(true);
+			//noValidatedSignal.dispatch(true);
 			super.onNoClick();
 		}
 		else{
-			noValidatedSignal.dispatch(false);
+			//noValidatedSignal.dispatch(false);
 		}
 	}
 	/**
@@ -66,7 +63,7 @@ class DescisionMultipleInput extends Descision
 	{
 		return validate(No);
 	}
-	function get_yesValidatedSignal():FlxTypedSignal<Bool->Void>
+	/*function get_yesValidatedSignal():FlxTypedSignal<Bool->Void>
 	{
 		return yesValidatedSignal;
 	}
@@ -74,7 +71,7 @@ class DescisionMultipleInput extends Descision
 	function get_noValidatedSignal():FlxTypedSignal<Bool->Void>
 	{
 		return noValidatedSignal;
-	}
+	}*/
 	//////////////////////////////
 	override public function create( ):Void
 	{
@@ -117,7 +114,7 @@ class DescisionMultipleInput extends Descision
 	}
 	override function pushToHistory( buttonTxt:String, interactionType:tstool.layout.History.Interactions,?values:Map<String,Dynamic>=null)
 	{
-		super.pushToHistory( buttonTxt, interactionType, values ==null ?[for (k=>v in multipleInputs.inputs) k => v.getInputedText()] : values);
+		super.pushToHistory( buttonTxt, interactionType, [for (k=>v in multipleInputs.inputs) k => v.getInputedText()]);
 	}
 	override public function destroy()
 	{
@@ -143,6 +140,5 @@ class DescisionMultipleInput extends Descision
 		return true;
 		//#end
 	}
-
-
+	
 }

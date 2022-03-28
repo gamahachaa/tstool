@@ -91,7 +91,8 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 	{
 		if (_label == "" || imputLabel.text == "")
 		{
-			imputLabel.text = parent.translate(parent._name, id, "headers");
+			//imputLabel.text = parent.translate(parent._name, id, "headers");
+			imputLabel.text = MainApp.translator.translate(parent._name,parent._name, id, "headers");
 		}
 		parent.add(imputLabel);
 
@@ -226,9 +227,14 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 		var t = inputtextfield.text.split("");
 		t.pop();
 		inputtextfield.text = t.join("");
+		//inputtextfield.ca
 		//inputtextfield.caretIndex = t.length;
+		inputtextfield.setSelection( t.length, t.length );
+		inputtextfield.invalidate();
+		
 		//inputtextfield.draw();
 		//inputtextfield.drawFrame(true);
+		
 	}
 	public function blink( start:Bool )
 	{

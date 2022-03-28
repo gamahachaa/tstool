@@ -48,7 +48,7 @@ class ActionMultipleInput extends Action
 		/**/
 		for (j in inputs)
 		{
-			if ( j.hasTranslation!=null && j.hasTranslation) j.input.titleTranslated = translate(this._name, j.input.prefix, "headers");
+			if ( j.hasTranslation!=null && j.hasTranslation) j.input.titleTranslated = MainApp.translator.translate(_name,this._name, j.input.prefix, "headers");
 		}
 		/**/
 		multipleInputs = new MultipleInput(this, [for (i in inputs) i.input]);

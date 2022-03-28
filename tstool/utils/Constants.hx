@@ -16,6 +16,7 @@ class Constants
 	public static var FIBER_WINBACK_UTC_RANGES:Array<Opennings> = [ {open: 7, close:10.5}, {open: 11, close:15} ];// 15.30; //
 	
 	public static inline var FIBER_WINBACK_DAYS_OPENED_RANGE:String = "1,2,3,4,5"; //monday friday
+	public static inline var FIBER_WINBACK_BANK_HOLIDAYS:String = "2021-12-24,2021-12-31"; //monday friday
 	/**
 	 * tests
 	 */

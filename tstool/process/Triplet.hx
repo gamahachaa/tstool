@@ -33,10 +33,10 @@ class Triplet extends Process
 	override public function create():Void
 	{
 		//trace("tstool.process.Triplet::create::_buttonYesTxt BEFORE", _buttonYesTxt );
-		_buttonYesTxt = translate(_buttonYesTxt, "RIGHT-BTN");
+		_buttonYesTxt = MainApp.translator.translate(_name,_buttonYesTxt, "RIGHT-BTN");
 		//trace("tstool.process.Triplet::create::_buttonYesTxt AFTER", _buttonYesTxt );
-		_buttonMidTxt = translate(_buttonMidTxt, "MID-BTN");
-		_buttonNoTxt =  translate(_buttonNoTxt, "LEFT-BTN") ;
+		_buttonMidTxt = MainApp.translator.translate(_name,_buttonMidTxt, "MID-BTN");
+		_buttonNoTxt =  MainApp.translator.translate(_name,_buttonNoTxt, "LEFT-BTN") ;
 
 		super.create();
 		btnYes = new FlxButton(0, 0, _buttonYesTxt, onYesClick);
@@ -118,9 +118,17 @@ class Triplet extends Process
 	}
 	public function onYesClick():Void
 	{
-		
+		//#if debug
+		//trace("tstool.process.Triplet::onYesClick",1);
+		//#end
 		pushToHistory(_buttonYesTxt, Interactions.Yes);
+		//#if debug
+		//trace("tstool.process.Triplet::onYesClick",2);
+		//#end
 		moveToNextClassProcess(Interactions.Yes);
+		//#if debug
+		//trace("tstool.process.Triplet::onYesClick",3);
+		//#end
 		//if (this._nextYesProcesses.length > 0) // @todo 
 		//{
 			//move_to_next(_nextYesProcesses, Interactions.Yes);

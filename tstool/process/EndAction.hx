@@ -1,6 +1,9 @@
 package tstool.process;
+import js.Browser;
 import lime.system.Clipboard;
 import tstool.layout.ScriptView;
+import xapi.Activity;
+using StringTools;
 
 /**
  * ...
@@ -16,8 +19,18 @@ class EndAction extends Action
 		scriptView = new ScriptView( Main.HISTORY.prepareListHistory(true) );
 		super.create();
 		ui.script.visible = true;
-		Main.track.setResolution();
-		Main.track.send();
+
+		//#if debug
+			//Main.trackH.setResolution();
+			if (Main.trackH.object != null)
+			{
+				setResolution();
+				Main.trackH.send();
+			}
+		//#else
+			//Main.track.setResolution();
+			//Main.track.send();
+		//#end
 	}
 	override public function onClick():Void
 	{
@@ -44,6 +57,48 @@ class EndAction extends Action
 			case "setStyle" : setStyle();
 			case "openSubState" : openSubState(dataView);
 		}
+	}
+	function setResolution()
+	{
+		//setVerb("resolved");
+		var steps = "";
+		var stepsCode = "";
+		//var step = "";
+		//var interaction = "";
+		var values = "";
+		/**
+		 * @todo String to Class<Process> / isInHistory
+		 */
+		
+		var h = Main.HISTORY.getStoredStepsTranslatedArray();
+		for (i in h)
+		{
+			steps += '${i.step}|${i.interaction}£'.replace(",","/");
+			if(i.values != "") values += '${i.values}|';
+		}
+		steps = steps.replace(",", "/").replace("\r", " ").replace("\n", " ").replace('"', "-");
+		
+		var hc = Main.HISTORY.getRawStepsArray();
+		for (i in hc)
+		{
+			stepsCode += '${i.processName}|${i.interaction}£';
+		}
+//#if debug
+		cast(Main.trackH.object, Activity).definition.extensions.set(Browser.location.origin + "/troubleshooting/total_steps/", Std.string(h.length));
+		cast(Main.trackH.object, Activity).definition.extensions.set(Browser.location.origin +"/troubleshooting/steps/", steps);
+		cast(Main.trackH.object, Activity).definition.extensions.set(Browser.location.origin +"/troubleshooting/stepsCode/", stepsCode);
+		cast(Main.trackH.object, Activity).definition.extensions.set(Browser.location.origin +"/troubleshooting/script_version/", Main.VERSION);
+		#if debug
+		trace("tstool.process.EndAction::setResolution::steps", steps );
+		trace("tstool.process.EndAction::setResolution::stepsCode", stepsCode );
+		
+		#end
+		cast(Main.trackH.object, Activity).definition.extensions.set(Browser.location.origin +"/troubleshooting/values/", values);
+//#else
+//#end
+		//u.setParameter(PARAM_TOTAL_STEPS,  Std.string(h.length) );
+		//u.setParameter(PARAM_VALUES, values );
+		//u.setParameter(PARAM_STEPS,  steps);
 	}
 	
 	function onScript() 

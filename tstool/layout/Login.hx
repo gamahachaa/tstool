@@ -58,7 +58,7 @@ class Login extends FlxState
 	{
 		testers_file = Assets.getText("assets/data/testers.txt");
 		//loginUrl = new Http(Main.LOCATION.origin + Main.LIB_FOLDER_LOGIN + "login/index.php" );
-		loginUrl = new Http(MainApp.location.origin + Main.LIB_FOLDER_LOGIN + "login/index.php" );
+		loginUrl = new Http(MainApp.location.origin + MainApp.LIB_FOLDER + "login/index.php" );
 		MainApp.setUpSystemDefault(false);
 		//lang =  // default
 		//trace(MainApp.save.data.user);
@@ -177,7 +177,7 @@ class Login extends FlxState
 			submitButton.y = pwd.y + _padding * 2;
 
 			pwdTxtInfo.y = submitButton.y + (_padding * 2);
-			pwdTxtInfo.color = SaltColor.LIGHT_BLUE;
+			//pwdTxtInfo.color = SaltColor.LIGHT_BLUE;
 
 			add(submitButton);
 		}
@@ -239,13 +239,6 @@ class Login extends FlxState
 		if (d.authorized)
 		{
 			createAgent(d);
-
-			 /*
-			#if !debug
-				Main.track.setActor();
-			#else 
-				trace("tstool.layout.Login::ondata::MainApp.agent", MainApp.agent );
-			#end  */
 			
 			MainApp.flush();
 			Main.MOVE_ON(); // launch APP
@@ -307,17 +300,9 @@ class Login extends FlxState
 				return;
 			}
 			
-			//trace(location);
-			loginUrl.setParameter("username", username.text);
-			loginUrl.setParameter("pwd",  Base64.encode(Bytes.ofString(pwd.text)));
-			loginUrl.async = true;
-			loginUrl.onData = ondata;
-			loginUrl.onError = onError;
-			loginUrl.onStatus = onStatus;
-
-			loginUrl.request(true);
+			requestLoginToAD();
 		}else{
-			trace("tstool.layout.Login::onSubmit WARNING LOGIN NOT FECTHING DATA");
+			//trace("tstool.layout.Login::onSubmit WARNING LOGIN NOT FECTHING DATA");
 			ondata("");
 		}
 		
@@ -339,6 +324,15 @@ class Login extends FlxState
 			return;
 		}
 		//trace(location);
+		
+		requestLoginToAD();
+		//u.request(true);
+		#end
+		
+		
+	}
+	function requestLoginToAD()
+	{
 		loginUrl.setParameter("username", username.text);
 		loginUrl.setParameter("pwd",  Base64.encode(Bytes.ofString(pwd.text)));
 		loginUrl.async = true;
@@ -347,9 +341,6 @@ class Login extends FlxState
 		loginUrl.onStatus = onStatus;
 
 		loginUrl.request(true);
-		
-		//u.request(true);
-		#end
 	}
 
 	function onStatus(s:Int):Void

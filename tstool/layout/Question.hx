@@ -36,7 +36,7 @@ class Question extends FlxText implements IPositionable
 		return boundingRect;
 	}
 	
-	public function positionMe(p:Rectangle, ?padding:Int = 4, ?positionsToParent:Array<Direction> = null):FlxPoint 
+	public function positionMe(parentRectangle:Rectangle, ?padding:Int = 4, ?positionsToParent:Array<Direction> = null):FlxPoint 
 	{
 		var d:Array<Direction> = positionsToParent==null ? [bottom, left]: positionsToParent;
 		//var p = parent;
@@ -47,47 +47,47 @@ class Question extends FlxText implements IPositionable
 			case bottom:
 				switch(d[1])
 				{
-					case left : this.x = p.x;
-					case right : this.x = p.x + p.width + padding;
+					case left : this.x = parentRectangle.x;
+					case right : this.x = parentRectangle.x + parentRectangle.width + padding;
 					case bottom : throw new Exception('cant position $[d[0]} and $[d[1]}');
 					case top : throw new Exception('cant position $[d[0]} and $[d[1]}');
-					//this.x  = p.x + (d[1] == right ? p.width + padding : 0);
+					//this.x  = parentRectangle.x + (d[1] == right ? parentRectangle.width + padding : 0);
 					
 				}
-				this.y = p.y + p.height ;
+				this.y = parentRectangle.y + parentRectangle.height ;
 				//trace("bottom");
 			case top :
 				switch(d[1])
 				{
-					case left : this.x = p.x;
-					case right : this.x = p.x + p.width + padding;
+					case left : this.x = parentRectangle.x;
+					case right : this.x = parentRectangle.x + parentRectangle.width + padding;
 					case bottom : throw new Exception('cant position $[d[0]} and $[d[1]}');
 					case top : throw new Exception('cant position $[d[0]} and $[d[1]}');
 					
 					
 				}
-				this.y = p.y;
+				this.y = parentRectangle.y;
 				//trace("top");
 			case left:
 				switch(d[1])
 				{
-					case bottom: this.y = p.height + p.y + padding ;
-					case top : this.y = p.y;
+					case bottom: this.y = parentRectangle.height + parentRectangle.y + padding ;
+					case top : this.y = parentRectangle.y;
 					case left : throw new Exception('cant position $[d[0]} and $[d[1]}');
 					case right : throw new Exception('cant position $[d[0]} and $[d[1]}');
 				}
-				this.x  =  p.x ;
-				//this.y =  p.y + (d[1] == top ? 0 : p.height + padding) ;
+				this.x  =  parentRectangle.x ;
+				//this.y =  parentRectangle.y + (d[1] == top ? 0 : parentRectangle.height + padding) ;
 				//inputtextfield.y = this.imputLabel.y + this.imputLabel.height;
 			case right:
 				switch(d[1])
 				{
-					case bottom: this.y = p.height + p.y + padding ;
-					case top : this.y = p.y;
+					case bottom: this.y = parentRectangle.height + parentRectangle.y + padding ;
+					case top : this.y = parentRectangle.y;
 					case left : throw new Exception('cant position $[d[0]} and $[d[1]}');
 					case right : throw new Exception('cant position $[d[0]} and $[d[1]}');
 				}
-				this.x  = p.x + p.width + padding;
+				this.x  = parentRectangle.x + parentRectangle.width + padding;
 				//this.y =  p.y + (d[1] == top ? 0 : p.height + padding );
 
 		}

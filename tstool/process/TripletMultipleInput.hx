@@ -37,7 +37,7 @@ class TripletMultipleInput extends Triplet
 	{
 		for (j in inputs)
 		{
-			if ( j.hasTranslation != null && j.hasTranslation) j.input.titleTranslated = translate(this._name, j.input.prefix, "headers");
+			if ( j.hasTranslation != null && j.hasTranslation) j.input.titleTranslated = MainApp.translator.translate(_name, this._name, j.input.prefix, "headers");
 		}
 		multipleInputs = new MultipleInput(this, [for (i in inputs) i.input]);
 		//itetateme = multipleInputs.inputs.iterator();
@@ -79,7 +79,7 @@ class TripletMultipleInput extends Triplet
 	override function pushToHistory( buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>= null)
 	{
 		
-		super.pushToHistory( buttonTxt, interactionType,  [for (k=>v in multipleInputs.inputs) k => v.getInputedText()]);
+		super.pushToHistory( buttonTxt, interactionType,  values ==null ?[for (k=>v in multipleInputs.inputs) k => v.getInputedText()] : values);
 	}
 	override public function onYesClick():Void
 	{

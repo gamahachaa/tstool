@@ -4,28 +4,24 @@ import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxAssets;
-//import flixel.text.FlxText.FlxTextFormat;
-//import flixel.text.FlxText.FlxTextFormatMarkerPair;
-//import flixel.util.FlxColor;
-import flixel.util.FlxSave;
+import flixel.util.FlxTimer;
+import haxe.Timer;
+
 import haxe.Serializer;
 import haxe.Unserializer;
 import js.Browser;
 import js.Cookie;
 import openfl.display.Sprite;
 import js.html.Location;
-import openfl.display.StageAlign;
-import openfl.display.StageScaleMode;
-import openfl.events.Event;
 import tstool.layout.History;
 import tstool.layout.Login;
-import tstool.layout.SaltColor;
-import tstool.layout.Sorry;
+
 import tstool.salt.Agent;
 import tstool.salt.Customer;
 import tstool.utils.Translator;
 import tstool.utils.VersionTracker;
-import tstool.utils.XapiTracker;
+
+import tstool.utils.XapiHelper;
 
 /**
  * ...
@@ -40,16 +36,15 @@ typedef Config =
 
 class MainApp extends Sprite
 {
-	//static inline var lang:String = "en-GB";
-	static inline var LIB_FOLDER = "../trouble/php/";
+	public static inline var LIB_FOLDER = "/commonlibs/";
 	static inline var DEFAULT_COOKIE = "tstool";
 	static inline var SCRIPT_NAME:String = "nointernet"; //historical
 
 	static var debug:Bool;
-	static var xapiTracker:XapiTracker;
-	//public static var save:FlxSave = new FlxSave();
+
+	static var xapiHelper:XapiHelper;
+
 	static public var location:Location;
-	//var TEST = "teststring";
 
 	static var versionTracker:VersionTracker;
 	static public var translator:Translator;
@@ -60,9 +55,15 @@ class MainApp extends Sprite
 
 	public static var config:Config;
 
+	public static var idleTimer:Timer = new Timer(1000);
+	static public var VERSION_TIMER_DURATION:Float = 300;
+	static public var VERSION_TIMER_value:Float = VERSION_TIMER_DURATION;
+
 	public function new(?cfg:Config)
 	{
 		super();
+
+		idleTimer.run = onTimer;
 		/*
 		 * scale
 		 *
@@ -75,30 +76,18 @@ class MainApp extends Sprite
 		FlxAssets.FONT_DEFAULT =  "Consolas";
 		config =
 		{
-			libFolder : cfg.libFolder == null || cfg.libFolder == "" ? location.pathname + LIB_FOLDER : cfg.libFolder,
+			libFolder : cfg.libFolder == null || cfg.libFolder == "" ? LIB_FOLDER : cfg.libFolder,
 			cookie : cfg.cookie == null ? DEFAULT_COOKIE : cfg.cookie,
 			scriptName : cfg.scriptName == null ? SCRIPT_NAME : cfg.scriptName
 		};
-		//stack = new History();
-		//trace("tstool.MainApp::MainApp::config.cookie (name)", config.cookie );
+
 		stack = History.STACK;
 
 		if (Cookie.exists(config.cookie))
 		{
-			//trace("COOKIE EXISTS");
-			#if debug
-			trace("tstool.MainApp::MainApp::", "COOKIE EXISTS" );
-			#end
-			//trace(Cookie.get(config.cookie));
+
 			var d = new Unserializer(Cookie.get(config.cookie));
 			agent = d.unserialize();
-			
-			
-			#if debug
-			trace("REMOVED TS tool GROUPS");
-			trace("tstool.MainApp::MainApp::agent.isMember(Customer Operations - Training)", agent.isMember("Customer Operations - Training") );
-			#end
-			//trace(a);
 		}
 		else
 		{
@@ -113,12 +102,18 @@ class MainApp extends Sprite
 		}
 
 		translator = new Translator();
+		xapiHelper = new XapiHelper( location.origin +  config.libFolder );
 		#if debug
 		versionTracker = new VersionTracker( location.origin + config.libFolder, config.scriptName, true);
+
+		//xapiTracker =  new XapiTracker( location.origin +  config.libFolder);
+		//
+
 		#else
 		versionTracker = new VersionTracker( location.origin + config.libFolder, config.scriptName);
+		//xapiTracker =  new XapiTracker( location.origin +  "/trouble/php/");
 		#end
-		xapiTracker =  new XapiTracker(location.origin +  config.libFolder);
+
 		cust = new Customer();
 		//agent= new Agent();
 		translator.initialize("fr-FR",
@@ -131,7 +126,7 @@ class MainApp extends Sprite
 			//trace(tongue.get("$flow.nointernet.vti.CheckContractorVTI_UI1", "meta"));
 			#end
 		});
-		
+
 	}
 	function initScreen()
 	{
@@ -143,6 +138,39 @@ class MainApp extends Sprite
 		else
 		{
 			addChild(new FlxGame(1400, 880, Login, 1, 30, 30, true, true));
+		}
+	}
+	static function onTimer()
+	{
+		if (VERSION_TIMER_value < 0)
+		{
+			Main.VERSION_TRACKER.scriptChangedSignal.addOnce(onNewVersion);
+			Main.VERSION_TRACKER.request();
+			#if debug
+			trace("tstool.MainApp::onTimer::MainApp.VERSION_TIMER_value", VERSION_TIMER_value );
+			#end
+		}
+		else
+		{
+			VERSION_TIMER_value--;
+
+		}
+		#if debug
+		trace(MainApp.VERSION_TIMER_value);
+		#end
+	}
+	public static function onNewVersion(needsUpdate:Bool):Void
+	{
+		#if debug
+		trace("MainApp::onNewVersion::needsUpdate", needsUpdate );
+		#end
+		if (needsUpdate)
+		{
+			Browser.location.reload(true);
+		}
+		else{
+			//idleTimer.start(VERSION_TIMER_DURATION);
+			VERSION_TIMER_value = VERSION_TIMER_DURATION;
 		}
 	}
 	public static function flush()

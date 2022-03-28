@@ -138,6 +138,7 @@ class XapiTracker
 	{
 		u.setParameter(PARAM_STATEMENTREF, id);
 	}
+	/*
 	public function sendInitial(activity:String)
 	{
 		Main.track.initKeepActor();
@@ -148,7 +149,7 @@ class XapiTracker
         Main.track.send();
 		Main.track.setVerb("resolved");
 	}
-	
+	  */
 	function get_dispatcher():FlxTypedSignal<Bool->Void> 
 	{
 		return dispatcher;

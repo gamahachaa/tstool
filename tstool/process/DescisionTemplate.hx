@@ -4,8 +4,8 @@ import tstool.layout.UI;
 import tstool.process.MultipleInput.ValidatedInputs;
 import tstool.salt.SOTemplate;
 import tstool.salt.TemplateMail;
-import tstool.utils.ExpReg;
-import tstool.utils.StringUtils;
+import regex.ExpReg;
+import string.StringUtils;
 import tstool.utils.SwiftMailWrapper.Result;
 import tstool.layout.IPositionable.Direction;
 
@@ -179,7 +179,8 @@ class DescisionTemplate extends DescisionMultipleInput
 		#end
 		closeSubState();
 		switch data.status {
-		case "success" : clickListener();
+		//case "success" : clickListener();
+		case "success" : super.onYesClick();
 			case "failed" : openSubState(new DataView(UI.THEME.bg, this._name, '\nFailed to create the ticket !!!\n\nPlease do a print screen of this and send it to qook@salt.ch\n+${data.error} (${data.additional}). Also make note of the steps and send the same S.O. ${soTemplate.desc} tempalte manually '));
 		}
 	}

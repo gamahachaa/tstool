@@ -217,6 +217,20 @@ class DateToolsBB
 	 * @param	days
 	 * @param	date
 	 */
+	public static function isBankHolidayString(days:String, ?date:Date)
+	{
+		if (date == null) date = Date.now();
+		var s = '${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}';
+		#if debug
+		trace("tstool.utils.DateToolsBB::isBankHolidayString::s", s );
+		#end
+		return (days.indexOf(s)  > -1) ;
+	}
+	/**
+	 * 
+	 * @param	days
+	 * @param	date
+	 */
 	public static function isWithinUTCDaysString(days:String, ?date:Date)
 	{
 		if (date == null) date = Date.now();

@@ -12,7 +12,7 @@ import lime.utils.Assets;
  */
 enum VtiInterface
 {
-	healtcheck;
+	//healtcheck;
 	account;
 	events;
 }
@@ -22,12 +22,17 @@ typedef RegexableProfile =
 	var universal:String;
 	var ereg: String;
 }
+typedef MatchedEreg = {
+	var ereg:EReg;
+	var matched:Int;
+}
+
 class VTIdataParser
 {
 	var type:VtiInterface;
 	//var getLangEreg:EReg;
 	//var allInclusivEreg:EReg;
-	var regDict:Map<String, EReg>;
+	var regDict:Map<String, MatchedEreg>;
 	public var signal(get, null):FlxTypedSignal<Map<String,Map<String,String>>->Void>;
 	public function new(what:VtiInterface)
 	{
@@ -37,19 +42,22 @@ class VTIdataParser
 		//this.type = account;
 		#end
 		regDict = [];
-		regDict.set("getLangEreg",new EReg("^(PROD|SIT)(EN|FR|IT|DE)", ""));
-		regDict.set("allInclusivEreg", new EReg("^[\\s\\S]+$", ""));
+		regDict.set("getLangEreg", {ereg: new EReg("^(PROD|SIT)(EN|FR|IT|DE)", ""), matched:2});
+		regDict.set("allInclusivEreg", {ereg: new EReg("^[\\s\\S]+$", ""), matched:0});
+      
 
-		regDict.set("addressEreg",new EReg("^[0-9a-zA-Z]+\\s[\\S\\s-.]+,\\s[0-9]{4}\\s[\\S\\s-.]+$", "i"));
+		regDict.set("addressEreg",{ereg: new EReg("^[0-9a-zA-Z]+\\s[\\S\\s-.]+,\\s[0-9]{4}\\s[\\S\\s-.]+$", "i"), matched:0});
 
-		regDict.set("moneyEreg",new EReg("^\\-?[0-9]+,[0-9]{2}\\sCHF$", ""));
-		regDict.set("dateEreg", new EReg("^(2[0-9]{3}\\-[0-9]{2}\\-[0-9]{2})|(\\-?)$", ""));
-		regDict.set("contractorEreg", new EReg("^3\\d{7}$", ""));
-		regDict.set("personEreg", new EReg("^(Mr\\.|Ms\\.|Herr)\\s[\\S\\s]+$", ""));
-		regDict.set("phoneEreg", new EReg("^[- ]{0,2}(41[0-9]{9})$", ""));
-		regDict.set("voipGigaBox", new EReg("^([0-9]{11})$", ""));   //00000000000
-		regDict.set("optionalPhoneEreg", new EReg("(41[0-9]{9})|(\\A\\z)", ""));
-		regDict.set("emailEreg", ~/[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/i);
+		regDict.set("moneyEreg",{ereg: new EReg("^\\-?[0-9]+,[0-9]{2}\\sCHF$", ""), matched:0});
+		regDict.set("dateEreg", {ereg: new EReg("^(2[0-9]{3}\\-[0-9]{2}\\-[0-9]{2})|(\\-?)$", ""), matched:0});
+		regDict.set("contractorEreg", {ereg: new EReg("^3\\d{7}$", ""), matched:0});
+		regDict.set("personEreg", {ereg: new EReg("^(Mr\\.|Ms\\.|Herr|Personne morale)?\\s[\\S\\s]+$", ""), matched:0});
+		regDict.set("personB2BEreg", {ereg: new EReg("^(Mr\\.|Ms\\.|Herr|Personne Morale)\\s[\\S\\s]+$", ""), matched:0});
+		regDict.set("phoneEreg", {ereg: new EReg("^[- ]{0,2}(41[0-9]{9})$", ""), matched:0});
+		//regDict.set("phoneB2BEreg", {ereg: new EReg("^[- ]{0,2}(41[0-9]{9})$", ""), matched:1});
+		regDict.set("voipGigaBox", {ereg: new EReg("^([0-9]{11})$", ""), matched:0});   //00000000000
+		regDict.set("optionalPhoneEreg", {ereg: new EReg("(41[0-9]{9})|(\\A\\z)", ""), matched:0});
+		regDict.set("emailEreg", {ereg:~/[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/i, matched:0});
 		signal = new FlxTypedSignal<Map<String,Map<String,String>>->Void>();
 		Browser.document.addEventListener("paste", onPaste);
 	}
@@ -61,7 +69,7 @@ class VTIdataParser
 			switch (type)
 	{
 		case account : parseCustomerProfile(content);
-			case healtcheck : parseHealthCheckDashboard(content);
+			//case healtcheck : parseHealthCheckDashboard(content);
 			case events : [];
 		}
 		);
@@ -85,10 +93,10 @@ class VTIdataParser
 
 		var LANG = "";
 		var mainTopics:Map<String,Map<String,String>> = [
-			"FR" => ["meta"=>"meta", "Owner"=>"owner", "Payeur"=>"payer", "Solde courant"=>"balance", "Offre : Salt Fiber"=>"plan","Offre : Salt GigaBox"=>"plan"],
-			"IT" => ["meta"=>"meta", "Owner"=>"owner", "Pagatore"=>"payer", "Saldo"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan"],
-			"DE" => ["meta"=>"meta", "Owner"=>"owner", "Zahler"=>"payer", "Aktueller Saldo"=>"balance", "Angebot : Salt Fiber"=>"plan", "Angebot : Salt GigaBox"=>"plan"],
-			"EN" => ["meta"=>"meta", "Owner"=>"owner", "Payer"=>"payer", "Current Balance"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan"],
+			"FR" => ["meta"=>"meta", "Owner"=>"owner", "Payeur"=>"payer", "Solde courant"=>"balance", "Offre : Salt Fiber"=>"plan","Offre : Salt GigaBox"=>"plan", "Offre : Salt Office"=>"plan"],
+			"IT" => ["meta"=>"meta", "Owner"=>"owner", "Pagatore"=>"payer", "Saldo"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan",  "Abo : Salt Office"=>"plan"],
+			"DE" => ["meta"=>"meta", "Owner"=>"owner", "Zahler"=>"payer", "Aktueller Saldo"=>"balance", "Angebot : Salt Fiber"=>"plan", "Angebot : Salt GigaBox"=>"plan", "Angebot : Salt Office"=>"plan"],
+			"EN" => ["meta"=>"meta", "Owner"=>"owner", "Payer"=>"payer", "Current Balance"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan",  "Abo : Salt Office"=>"plan"],
 		];
 
 		///////////////////////////////////////////////////////////////////////////////
@@ -128,87 +136,110 @@ class VTIdataParser
 		for (line in t)
 		{
               
-			if (LANG =="" && regDict.get("getLangEreg").match(line))
+			if (LANG =="" && regDict.get("getLangEreg").ereg.match(line))
 			{
+				//#if debug
+				//trace('0. tstool.utils.LANG ${LANG}', line);
+				//#end
 				//LANG = getLangEreg.matched(2);
-				LANG = regDict.get("getLangEreg").matched(2);
+				LANG = regDict.get("getLangEreg").ereg.matched(regDict.get("getLangEreg").matched);
 				currentTopic = "meta";
 				currentSubTopic = "";
 			}
 			else if (LANG !="")
 			{
-					#if debug
-				  trace("tstool.utils.VTIdataParser::parseCustomerProfile::line", line );
-				  #end
 				dataMainTopic = mainTopics.get(LANG).get(currentTopic);
-				#if debug
-				trace("tstool.utils.VTIdataParser::parseCustomerProfile::dataMainTopic", dataMainTopic );
-				#end
+				//#if debug
+				//trace("1.A lang, line, dataMainTopic --> ", LANG, line, dataMainTopic, currentTopic );
+				//trace(mainTopics.get(LANG));
+				//#end
 
+				/**
+				 * FIND current sub topic
+				 */
 				if (currentTopic !="" && topics.get(LANG).exists( currentTopic ) && currentSubTopic!= "" && topics.get(LANG).get( currentTopic ).exists(currentSubTopic) )
 				{
 					currentEreg = topics.get(LANG).get( currentTopic ).get(currentSubTopic).ereg;
 					//#if debug
-					//trace("tstool.utils.VTIdataParser::parseCustomerProfile::LANG", LANG );
-					//trace("tstool.utils.VTIdataParser::parseCustomerProfile::currentTopic", currentTopic );
-					//trace("tstool.utils.VTIdataParser::parseCustomerProfile::currentSubTopic", currentSubTopic );
-					//trace("tstool.utils.VTIdataParser::parseCustomerProfile::currentEreg", currentEreg );
+					//trace('2.A found a sub topic $currentSubTopic setting the currentEreg -->', currentEreg);
 					//#end
 				}
 				else
 				{
 					// do nothing
 					currentEreg = "";
-					//trace("catched " + e);
 				}
-				//trace(currentEreg);
 
 				if (topics.get(LANG).exists(line) && currentTopic != line)
 				{
 
 					currentTopic = line;
 					currentSubTopic = "";
-					#if debug
-					trace("tstool.utils.VTIdataParser::parseCustomerProfile:: dataMainTopic ", dataMainTopic );
-					trace("tstool.utils.VTIdataParser::parseCustomerProfile:: SET currentTopic ", currentTopic );
-					#end
+					//#if debug
+					////trace(" dataMainTopic ", dataMainTopic );
+					//trace("3.A CHANGE OF currentTopic --> line, currentTopic ", line, currentTopic );
+					//#end
 				}
 				//else if (currentSubTopic != "" && topics.get(LANG).get( mainTopics.get(LANG).get(currentTopic) ).get(currentSubTopic).ereg.match(line))
-				else if (currentSubTopic != "" && regDict.get(currentEreg).match(line))
+				else if (currentSubTopic != "" && regDict.get(currentEreg).ereg.match(line))
 				{
-					//trace("MATCH");
+					//#if debug
+					//trace("3.B MATCH line, currentEreg --> ", line, currentEreg);
+					//#end
+					var matched = regDict.get(currentEreg).ereg.matched(regDict.get(currentEreg).matched);
 					if (!profile.exists( dataMainTopic ))
 					{
-						profile.set(dataMainTopic, [topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal => line]);
+						//#if debug
+						//trace('3.B.1 $dataMainTopic is not in the profile --> added now');
+						//#end
+						profile.set( dataMainTopic, 
+									[topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal => matched]);
 						if (dataMainTopic == "plan")
 						{
+							//#if debug
+						//trace('3.B.1.A dataMainTopic $dataMainTopic is of type PLAN  --> set ', currentTopic);
+						//#end
 							profile.get(dataMainTopic).set(dataMainTopic, currentTopic);
 						}
 					}
 					else
 					{
-						profile.get( dataMainTopic ).set( topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal,line);
+						//#if debug
+						//trace('3.B.2 Set dataMainTopic to topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal, line) -->', dataMainTopic, topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal, matched);
+						//#end
+						profile.get( dataMainTopic ).set( topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal, matched);
 					}
+					
 					topics.get(LANG).get( currentTopic ).get(currentSubTopic).matched = true;
+					//#if debug
+					//trace('3.B.LAST tell topic parser that it matched --> topics.get($LANG).get( $currentTopic ).get($currentSubTopic).matched SET TO TRUE now ', topics.get(LANG).get( currentTopic ).get(currentSubTopic) );
+					//#end
 					currentSubTopic = "";
 				}
 				else if (topics.get(LANG).get( currentTopic ).exists(line))
 				{
-					//trace("STORE SUB ###############");
+					//#if debug
+					//trace('3.C temporary store the currentSubTopic ($currentSubTopic) now set to ', line );
+					//#end
 					currentSubTopic = line;
+				}
+				else{
+					//#if debug
+					//trace('3.D Line ($line) Not matched ($currentEreg) and $currentTopic not in TOPICS ', line );
+					//#end
 				}
 			}else{
 				
-				#if debug
-				  trace("tstool.utils.VTIdataParser::parseCustomerProfile::line SKIPED", line );
-				  #end
+				//#if debug
+				  //trace("1.B line SKIPED", line );
+				  //#end
 			}
 
 		}
-		#if debug
-		trace( profile );
-		trace( topics.get(LANG));
-		#end
+		//#if debug
+		//trace("profile --> ", profile );
+		//trace("topics.get(LANG)",  topics.get(LANG));
+		//#end
 		/**
 		 * @todo manage vti oparsing error send email to agent
 		 */
@@ -258,6 +289,7 @@ class VTIdataParser
 		}
 
 	}*/
+	/*
 	function parseHealthCheckDashboard(s:String):Map<String,Map<String,String>>
 	{
 		var mainTopics:Array<String> = ["META", "CRM", "TV", "VOD", "Selfcare", "Voice", "Fiber FLL", "IPs", "DHCP", "ONT Config TFTP", "OLT (nokia/huawei)", "Router"];
@@ -282,45 +314,45 @@ class VTIdataParser
 		var hasCollum = 0;
 		var hasEqual = 0;
 		//regDict.set("
-		regDict.set("otoEreg", new EReg("^[A-B.0-9]+$", ""));
-		regDict.set("otoPortEreg", new EReg("^[A-D1-4]$", ""));
-		regDict.set("boxSerialEreg", new EReg("^SFAA[0-9]{8}$", ""));
-		regDict.set("lexIdEreg", new EReg("^[A-Z0-9]+$", ""));
-		regDict.set("oltNameEreg", new EReg("^[0-9]{2}$", ""));
-		regDict.set("oltObject", new EReg("^[0-9A-Z_\\-:]+$", ""));
-		regDict.set("ip4GatewayEreg", new EReg("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", ""));
-		regDict.set("providerEreg", new EReg('^"provider": "([\\S]+)",$', "i"));
-		//regDict.set("providerEreg", new EReg('^([\\S]+)"$', "i"));
-		regDict.set("numberOnlyEreg", new EReg("^[0-9]+$", ""));
-		regDict.set("eventDateEreg", new EReg("^[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}\\s[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]+$", ""));
-		regDict.set("boolEreg", new EReg("^true|false$", "i"));
-		regDict.set("decimalNumberEreg", new EReg("^[0-9.]+$", ""));
-		regDict.set("numberOnlyFlexibleEreg", new EReg("[0-9]+", ""));
-		regDict.set("numberOnlyStartEreg", new EReg("^[0-9]+", ""));
-		//regDict.set("rxValuesEreg", new EReg("^\\-[0-9.]+$", ""));
-		//regDict.set("statusEreg", new EReg('^"status": "([0-9a-zA-Z_]+)"', ""));
-		regDict.set("idStatusEreg", new EReg('^"idStatus": ([0-9a-zA-Z_]+),$', ""));
-		regDict.set("eventdateEreg", new EReg('^"eventdate": "([0-9_\\-\\:\\. ]+)",$', ""));
-		regDict.set("reachableEreg", new EReg('^"reachable": (true|false),$', ""));
-		regDict.set("tempCpuEreg", new EReg('^"tempCpu": ([0-9.]+),$', ""));
-		regDict.set("tempTransceiverEreg", new EReg('^"tempTransceiver": ([0-9.]+),$', ""));
-		regDict.set("uptimeEreg", new EReg('^"uptime": ([0-9]+),$', ""));
-		regDict.set("statusWanmgtEreg", new EReg('^"statusWanmgt": (true|false),$', ""));
-		regDict.set("statusWanhsiEreg", new EReg('^"statusWanhsi": (true|false),$', ""));
-		regDict.set("statusWanvoipEreg", new EReg('^"statusWanvoip": (true|false),$', ""));
-		regDict.set("statusVoiceRegEreg", new EReg('^"statusVoiceReg": (true|false),$', ""));
-		regDict.set("nberDectHandsetEreg", new EReg('^"nberDectHandset": ([0-9]+),$', ""));
-		regDict.set("statusWifi24gEreg", new EReg('^"statusWifi24g": (true|false),$', ""));
-		regDict.set("statusWifi5gEreg", new EReg('^"statusWifi5g": (true|false),$', ""));
-		regDict.set("cpuUsageEreg", new EReg('^"cpuUsage": ([0-9]+),$', ""));
-		regDict.set("usedMemoryEreg", new EReg('^"usedMemory": ([0-9]+),$', ""));
-		regDict.set("statusFwupgradeEreg", new EReg('^"statusFwupgrade": (true|false),$', ""));
-		regDict.set("versionEreg", new EReg('^"version": "([\\s\\S]+)",$', ""));
-		regDict.set("snBoxEreg", new EReg('^"snBox": "(SFAA[0-9]{8})",$', ""));
-		regDict.set("snTecrepEreg", new EReg('^"snTecrep": "(SFAA[0-9]{8})",$', ""));
-		regDict.set("rxEreg", new EReg('^"rx": (\\-[0-9.]+),$', ""));
-		regDict.set("txEreg", new EReg('^"tx": ([0-9.]+),$', ""));
-		regDict.set("remoteManagementEreg", new EReg('^"remoteManagement": (true|false),?$', ""));
+		regDict.set("otoEreg", {ereg: new EReg("^[A-B.0-9]+$", ""), matched:1});
+		regDict.set("otoPortEreg", {ereg: new EReg("^[A-D1-4]$", ""), matched:1});
+		regDict.set("boxSerialEreg", {ereg: new EReg("^SFAA[0-9]{8}$", ""), matched:1});
+		regDict.set("lexIdEreg", {ereg: new EReg("^[A-Z0-9]+$", ""), matched:1});
+		regDict.set("oltNameEreg", {ereg: new EReg("^[0-9]{2}$", ""), matched:1});
+		regDict.set("oltObject", {ereg: new EReg("^[0-9A-Z_\\-:]+$", ""), matched:1});
+		regDict.set("ip4GatewayEreg", {ereg: new EReg("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", ""), matched:1});
+		regDict.set("providerEreg", {ereg: new EReg('^"provider": "([\\S]+)",$', "i"), matched:1});
+		//regDict.set("providerEreg", {ereg: new EReg('^([\\S]+)"$', "i"), matched:1});
+		regDict.set("numberOnlyEreg", {ereg: new EReg("^[0-9]+$", ""), matched:1});
+		regDict.set("eventDateEreg", {ereg: new EReg("^[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}\\s[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]+$", ""), matched:1});
+		regDict.set("boolEreg", {ereg: new EReg("^true|false$", "i"), matched:1});
+		regDict.set("decimalNumberEreg", {ereg: new EReg("^[0-9.]+$", ""), matched:1});
+		regDict.set("numberOnlyFlexibleEreg", {ereg: new EReg("[0-9]+", ""), matched:1});
+		regDict.set("numberOnlyStartEreg", {ereg: new EReg("^[0-9]+", ""), matched:1});
+		//regDict.set("rxValuesEreg", {ereg: new EReg("^\\-[0-9.]+$", ""), matched:1});
+		//regDict.set("statusEreg", {ereg: new EReg('^"status": "([0-9a-zA-Z_]+)"', ""), matched:1});
+		regDict.set("idStatusEreg", {ereg: new EReg('^"idStatus": ([0-9a-zA-Z_]+),$', ""), matched:1});
+		regDict.set("eventdateEreg", {ereg: new EReg('^"eventdate": "([0-9_\\-\\:\\. ]+)",$', ""), matched:1});
+		regDict.set("reachableEreg", {ereg: new EReg('^"reachable": (true|false),$', ""), matched:1});
+		regDict.set("tempCpuEreg", {ereg: new EReg('^"tempCpu": ([0-9.]+),$', ""), matched:1});
+		regDict.set("tempTransceiverEreg", {ereg: new EReg('^"tempTransceiver": ([0-9.]+),$', ""), matched:1});
+		regDict.set("uptimeEreg", {ereg: new EReg('^"uptime": ([0-9]+),$', ""), matched:1});
+		regDict.set("statusWanmgtEreg", {ereg: new EReg('^"statusWanmgt": (true|false),$', ""), matched:1});
+		regDict.set("statusWanhsiEreg", {ereg: new EReg('^"statusWanhsi": (true|false),$', ""), matched:1});
+		regDict.set("statusWanvoipEreg", {ereg: new EReg('^"statusWanvoip": (true|false),$', ""), matched:1});
+		regDict.set("statusVoiceRegEreg", {ereg: new EReg('^"statusVoiceReg": (true|false),$', ""), matched:1});
+		regDict.set("nberDectHandsetEreg", {ereg: new EReg('^"nberDectHandset": ([0-9]+),$', ""), matched:1});
+		regDict.set("statusWifi24gEreg", {ereg: new EReg('^"statusWifi24g": (true|false),$', ""), matched:1});
+		regDict.set("statusWifi5gEreg", {ereg: new EReg('^"statusWifi5g": (true|false),$', ""), matched:1});
+		regDict.set("cpuUsageEreg", {ereg: new EReg('^"cpuUsage": ([0-9]+),$', ""), matched:1});
+		regDict.set("usedMemoryEreg", {ereg: new EReg('^"usedMemory": ([0-9]+),$', ""), matched:1});
+		regDict.set("statusFwupgradeEreg", {ereg: new EReg('^"statusFwupgrade": (true|false),$', ""), matched:1});
+		regDict.set("versionEreg", {ereg: new EReg('^"version": "([\\s\\S]+)",$', ""), matched:1});
+		regDict.set("snBoxEreg", {ereg: new EReg('^"snBox": "(SFAA[0-9]{8})",$', ""), matched:1});
+		regDict.set("snTecrepEreg", {ereg: new EReg('^"snTecrep": "(SFAA[0-9]{8})",$', ""), matched:1});
+		regDict.set("rxEreg", {ereg: new EReg('^"rx": (\\-[0-9.]+),$', ""), matched:1});
+		regDict.set("txEreg", {ereg: new EReg('^"tx": ([0-9.]+),$', ""), matched:1});
+		regDict.set("remoteManagementEreg", {ereg: new EReg('^"remoteManagement": (true|false),?$', ""), matched:1});
 		var topics = [
 			"META" => [
 		"lang" => {matched:false, ereg: "getLangEreg"}
@@ -401,9 +433,9 @@ class VTIdataParser
 						{
 							trace(currentSet + " " + currentSubSet + " " + line);
 							var o = topics.get(currentSet).get(key);
-							if ( regDict.get(o.ereg).match( line ))
+							if ( regDict.get(o.ereg).ereg.match( line ))
 							{
-								dataSet.get(currentSet).set(key, regDict.get(o.ereg).matched(1));
+								dataSet.get(currentSet).set(key, regDict.get(o.ereg).ereg.matched(1));
 								topics.get(currentSet).get(key).matched = true;
 								currentSubSet = "";
 							}
@@ -440,7 +472,7 @@ class VTIdataParser
 						{
 							val = line;
 							// set value
-							if (regDict.get(topics.get(currentSet).get(currentSubSet).ereg).match(val) )
+							if (regDict.get(topics.get(currentSet).get(currentSubSet).ereg).ereg.match(val) )
 							{
 								dataSet.get(currentSet).set(currentSubSet, val);
 								topics.get(currentSet).get(currentSubSet).matched = true;
@@ -460,9 +492,9 @@ class VTIdataParser
 				}
 				else
 				{
-					if ( regDict.get(topics.get(currentSet).get("lang").ereg).match(j) )
+					if ( regDict.get(topics.get(currentSet).get("lang").ereg).ereg.match(j) )
 					{
-						dataSet.get(currentSet).set("lang", regDict.get("getLangEreg").matched(2));
+						dataSet.get(currentSet).set("lang", regDict.get("getLangEreg").ereg.matched(2));
 						topics.get(currentSet).get("lang").matched = true;
 						currentSubSet = "";
 					}
@@ -473,7 +505,7 @@ class VTIdataParser
 		trace(topics);
 		trace(dataSet);
 		return dataSet;
-	}
+	}*/
 	function cleanKey(s:String):String
 	{
 		return

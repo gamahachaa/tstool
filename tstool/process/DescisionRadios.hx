@@ -35,11 +35,11 @@ class DescisionRadios extends Descision
 		{
 			if (i.hasTranslation != null && i.hasTranslation == true)
 			{
-				i.titleTranslation = translate(this._name, i.title, "headers");
+				i.titleTranslation = MainApp.translator.translate(_name,this._name, i.title, "headers");
 				labels = [];
 				for (j in i.values)
 				{
-					labels.push(translate(this._name, j, "headers"));
+					labels.push(MainApp.translator.translate(_name,this._name, j, "headers"));
 				}
 			}
 			

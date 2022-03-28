@@ -20,9 +20,15 @@ class ActionMemo extends Action
 	override public function create()
 	{
 		memoTxt = "";
-		//verfifyContctNumber = translate("verifiyContactDetails", "UI1", "meta");
-		memoDefault = translate("describeIssue", "UI1", "meta");
+		
+		
+		memoDefault = "FUCK";
+		
+		memoDefault = MainApp.translator.translate(_name, "describeIssue", "UI1", "meta");
+		
+		
 		memoTxtArea = new BIGUIInputTfCore(750, 50, memoDefault, [bottom, left]);
+		
 		//memoTxtArea = new BIGUIInputTfCore(750, 50, memoDefault, [bottom, left]);
 		defaultMemo = "";
 		
@@ -30,11 +36,17 @@ class ActionMemo extends Action
 		//
 		super.create();
 		//
+		
 		memoTxtArea.inputtextfield.text = defaultMemo;
+		
 		scriptView = new ScriptView(Main.HISTORY.prepareListHistory());
+		
 		scriptView.signal.add(sbStateListener);
+		
 		memoTxtArea.addToParent(this);
+		
 		ui.script.visible = true;
+		
 	}
 	function sbStateListener():Void 
 	{

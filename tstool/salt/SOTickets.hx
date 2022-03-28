@@ -57,6 +57,7 @@ class SOTickets extends SuperOffice
 	public static var FIX_631:SOTickets = new SOTickets('FIX','6.3.1','FIBER_TECH_ESCA_SO','6.Recaller 3.Technical 1.Technical Issue (Recaller)','fiber.tech.qtool@salt.ch');
 	//public static var FIX_641:SOTickets = new SOTickets('FIX','6.4.1','FIBER_WINBACK_SO','6.Recaller 4.Winback 1.Termination - TECH Reason (only Backoffice)','fiber.tech.qtool@salt.ch');
 	public static var FIX_641_NONTECH:SOTickets = new SOTickets('FIX','6.4.1','FIBER_WINBACK_SO','6.Recaller 4.Winback 1.Termination - TECH Reason (only Backoffice)','fiber.tech.qtool@salt.ch');
+	public static var FIX_641_NONTECH_PROMO:SOTickets = new SOTickets('FIX','6.4.1','FIBER_WINBACK_SO','PROMO 6.Recaller 4.Winback 1.Termination - TECH Reason (only Backoffice)','fiber.tech.qtool@salt.ch');
 	public static var FIX_641_TECH:SOTickets = new SOTickets('FIX','6.4.1','FIBER_WINBACK_TECH_SO','6.Recaller 4.Winback 1.Termination - TECH Reason (only Backoffice)','fiber.tech.qtool@salt.ch');
 	public static var FIX_711:SOTickets = new SOTickets('FIX','7.1.1','NW_OPS_SERVICE_DESK_SO','7.Escalation (Only for Backoffice) 1.Technical (Escalation to SD Only) 1.Escalation - Voip Calls - Backoffice to SD','fiber.tech.qtool@salt.ch');
 	public static var FIX_712:SOTickets = new SOTickets('FIX','7.1.2','FIBER_PARTS_REQUEST_SO','NEVER EVER REOPEN. 7.Escalation 1.Technical 2.New Fibre Cable request','fiber.tech.qtool@salt.ch');
@@ -194,7 +195,8 @@ class SOTickets extends SuperOffice
 	public static var MOBILE_441:SOTickets = new SOTickets('MOBILE','4.4.1','B2C_SA_COMPLAINT_SO','4.Poor Service Provided 4.Email 1.Complaint','mobile.qtool@salt.ch');
 	//public static var MOBILE_511:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_FINANCIAL_COMPLAINT_SO','5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch');
 	public static var MOBILE_511_ACCEPT:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_FINANCIAL_BILLSHOCK_SO','5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch');
-	public static var MOBILE_511_REFUSES:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_FINANCIAL_COMPLAINT_SO','5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch');
+	public static var MOBILE_511_REFUSES:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_SA_COMPLAINT_SO',' REFUSES 5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch');
+	public static var MOBILE_511:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_FINANCIAL_COMPLAINT_SO','5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch');
 	public static var MOBILE_521:SOTickets = new SOTickets('MOBILE','5.2.1','LIDL_REGISTRATION_SO','5.Escalation 2.Registration 1.ID Check - Escalation to Care','mobile.qtool@salt.ch');
 	public static var MOBILE_611:SOTickets = new SOTickets('MOBILE','6.1.1','IDCHECK_FAILED_SO','6.Ordering 1.Prepay Order 1.Prepay ID Check Failed','mobile.qtool@salt.ch');
 	public static var MOBILE_621:SOTickets = new SOTickets('MOBILE','6.2.1','IDCHECK_FAILED_SO','6.Ordering 2.Postpay Order 1.Postpay ID Check Failed','mobile.qtool@salt.ch');

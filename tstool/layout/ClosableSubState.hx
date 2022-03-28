@@ -23,8 +23,7 @@ class ClosableSubState extends FlxSubState
 	{
 		if ( FlxG.keys.justReleased.ESCAPE )
 		{
-			signal.dispatch
-();
+			signal.dispatch();
 			close();
 		}
 		if ( FlxG.mouse.justReleased )
@@ -34,8 +33,7 @@ class ClosableSubState extends FlxSubState
 				(FlxG.mouse.x  - h.x > 0 &&  FlxG.mouse.x - h.x < h.width) 
 				&& ( FlxG.mouse.y - h.y> 0 && FlxG.mouse.y - h.y < h.height))
 			{
-				signal.dispatch
-();
+				signal.dispatch();
 				close();
 			}
 			
@@ -52,4 +50,19 @@ class ClosableSubState extends FlxSubState
 		closeBtn.y = 20;
 		super.create();
 	}
+	/*function registerButton(btn:Dynamic)
+	{
+		btn.onOver.callback = onButtonOver;
+		btn.onOut.callback = onOut;
+	}
+	//ui
+	function onButtonOver()
+	{
+		Mouse.cursor = MouseCursor.BUTTON;
+	}
+	//ui
+	function onOut()
+	{
+		Mouse.cursor = MouseCursor.ARROW;
+	}*/
 }

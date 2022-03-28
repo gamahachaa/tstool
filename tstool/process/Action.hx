@@ -24,7 +24,7 @@ class Action extends Process
 
 	override public function create():Void
 	{
-		_buttonTxt = translate( _buttonTxt, "MID-BTN" );
+		_buttonTxt = MainApp.translator.translate(_name, _buttonTxt, "MID-BTN" );
 		super.create();
 
 		btn = new FlxButton(0, 0, _buttonTxt, onClick);

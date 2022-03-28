@@ -1,5 +1,5 @@
 package tstool.salt;
-using tstool.utils.StringUtils;
+using string.StringUtils;
 import tstool.process.Process;
 import tstool.utils.Mail;
 
