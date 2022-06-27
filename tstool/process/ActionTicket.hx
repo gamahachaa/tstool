@@ -91,13 +91,7 @@ class ActionTicket extends ActionMemo
 		closeSubState();
 		//#if debug
 		Main.trackH.setVerb(Verb.submitted);
-		Main.trackH.setContext(
-			null, 
-			Browser.location.protocol + Browser.location.hostname + Browser.location.pathname,
-			"trouble", 
-			MainApp.translator.locale, 
-			null
-			);
+
          
 		cast(Main.trackH.object, Activity).definition.extensions.set("https://cs.salt.ch", this.ticket.toString() );
 
@@ -108,7 +102,7 @@ class ActionTicket extends ActionMemo
 
 		switch data.status {
 		case "success" : super.onClick();
-			case "failed" : openSubState(new DataView(UI.THEME.bg, this._name, '\nFailed to create the ticket !!!\n\nPlease do a print screen of this and send it to qook@salt.ch\n+${data.error} (${data.additional}). Also make note of the steps and raise the same S.O. ${ticket.number} ticket manually '));
+		case "failed" : openSubState(new DataView(UI.THEME.bg, this._name, '\nFailed to create the ticket !!!\n\nPlease do a print screen of this and send it to qook@salt.ch\n+${data.error} (${data.additional}). Also make note of the steps and raise the same S.O. ${ticket.number} ticket manually '));
 		}
 	}
 

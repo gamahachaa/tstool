@@ -6,6 +6,7 @@ import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxAssets;
 import flixel.util.FlxTimer;
 import haxe.Timer;
+import tstool.utils.XapiTracker;
 
 import haxe.Serializer;
 import haxe.Unserializer;
@@ -21,7 +22,7 @@ import tstool.salt.Customer;
 import tstool.utils.Translator;
 import tstool.utils.VersionTracker;
 
-import tstool.utils.XapiHelper;
+//import tstool.utils.XapiHelper;
 
 /**
  * ...
@@ -42,7 +43,7 @@ class MainApp extends Sprite
 
 	static var debug:Bool;
 
-	static var xapiHelper:XapiHelper;
+	static var xapiHelper:XapiTracker;
 
 	static public var location:Location;
 
@@ -92,7 +93,7 @@ class MainApp extends Sprite
 		else
 		{
 			#if debug
-			trace("tstool.MainApp::MainApp::", "COOKIE NOT EXISTS" );
+			//trace("tstool.MainApp::MainApp::", "COOKIE NOT EXISTS" );
 			#end
 			#if debug
 			//agent = Agent.cretaDummyAgent();
@@ -102,7 +103,9 @@ class MainApp extends Sprite
 		}
 
 		translator = new Translator();
-		xapiHelper = new XapiHelper( location.origin +  config.libFolder );
+		//xapiHelper = new XapiHelper( location.origin +  config.libFolder);
+		xapiHelper = new XapiTracker( location.origin +  config.libFolder);
+		
 		#if debug
 		versionTracker = new VersionTracker( location.origin + config.libFolder, config.scriptName, true);
 
@@ -147,7 +150,7 @@ class MainApp extends Sprite
 			Main.VERSION_TRACKER.scriptChangedSignal.addOnce(onNewVersion);
 			Main.VERSION_TRACKER.request();
 			#if debug
-			trace("tstool.MainApp::onTimer::MainApp.VERSION_TIMER_value", VERSION_TIMER_value );
+			//trace("tstool.MainApp::onTimer::MainApp.VERSION_TIMER_value", VERSION_TIMER_value );
 			#end
 		}
 		else
@@ -156,13 +159,13 @@ class MainApp extends Sprite
 
 		}
 		#if debug
-		trace(MainApp.VERSION_TIMER_value);
+		//trace(MainApp.VERSION_TIMER_value);
 		#end
 	}
 	public static function onNewVersion(needsUpdate:Bool):Void
 	{
 		#if debug
-		trace("MainApp::onNewVersion::needsUpdate", needsUpdate );
+		//trace("MainApp::onNewVersion::needsUpdate", needsUpdate );
 		#end
 		if (needsUpdate)
 		{

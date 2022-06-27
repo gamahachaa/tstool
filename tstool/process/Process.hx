@@ -1,5 +1,6 @@
 package tstool.process;
 
+import haxe.Exception;
 import tstool.layout.History;
 import tstool.layout.PageLoader;
 import tstool.layout.ScriptView;
@@ -346,55 +347,13 @@ class Process extends FlxState
 
 		content += "DETAILS:\n" + History.stripTags(_detailTxt) + doubleBreak ;
 		content += "HISTORY:\n" + Main.HISTORY.getLocalizedStepsStringsList() + doubleBreak;
-
-		Browser.window.location.href = to + subject + "?&body=" + StringTools.urlEncode(content);
-
-	}
-
-	/*
-	public function translate(txt:String, ?suffix:String="", ?context="data"):String
-	{
-
-		var tString = switch (context)
-		{
-			case "data" : "$" + this._name + "_" + suffix;
-			case "headers" : "$" + txt + "." + suffix.removeWhite();
-			case _ : "$" + txt + "_" + suffix;
-		}
-
-		//var t = context == "data" ? MainApp.translator.get(customString, context) : MainApp.translator.get(defaultString, context);
-
-		var t = MainApp.translator.get(tString, context);
-		//var s = t.indexOf("$") == 0 || StringTools.trim(t) == "" ? context == "headers"? suffix: txt : t;
-		var s = if (t.indexOf("$") == 0 || StringTools.trim(t) == "")
-		{
-			//couldn't translate
-			if (context == "headers")
-			{
-				//then show the suffix
-				suffix;
-			}
-			else
-			{
-				//or show the original string not translated
-				txt;
-			}
-		}
-		else {
-			//could translate
-			t;
-		}
-		#if debug
-		if (Main.DEBUG || Main.DEBUG_LEVEL == 0)
-			return s;
-		else
-			return StringTools.trim(t) == "" ? context == "headers"? suffix: txt : t;
-		#else
-		return s;
-		#end
+        commentDebounce = 300;
+		if(commentDebounce == 300)
+			Browser.window.location.href = to + subject + "?&body=" + StringTools.urlEncode(content);
 
 	}
-	*/
+
+
 	/**
 	 * Override when child class takes contructor parameters
 	 * @param	buttonTxt
@@ -404,10 +363,6 @@ class Process extends FlxState
 	 */
 	function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
-		//Main.HISTORY.add({step:_class, params:[]}, interactionType, _titleTxt, buttonTxt, values);
-		#if debug
-		//trace("tstool.process.Process::pushToHistory::question.text", question.text );
-		#end
 		Main.HISTORY.add({step:_class, params:[]}, interactionType, question.text, buttonTxt, values);
 	}
 
@@ -425,17 +380,7 @@ class Process extends FlxState
 	{
 		return _illustration = value;
 	}
-	/**
-	 *
-	 *
-	function move_to_next(nexts:Array<Process>, interaction:Interactions)
-	{
-		//trace("tstool.process.Process::move_to_next");
 
-		var iteration = Main.HISTORY.getIterations(_name, interaction) - 1;
-		var index = iteration >= nexts.length ? nexts.length - 1 : iteration;
-		FlxG.switchState(nexts[index]);
-	}*/
 	/**
 	 * @param	interaction
 	 */
@@ -458,22 +403,27 @@ class Process extends FlxState
 			#end
 		}
 
+		try{
 		FlxG.switchState(Type.createInstance(_nexts[index].step, _nexts[index].params));
+		}
+		catch (e:Exception)
+		{
+			trace(e.message);
+			trace(e.details);
+			trace(e.stack);
+		}
 
 	}
 	override public function update(elapsed):Void
 	{
 		super.update(elapsed);
-		//#if debug
-		//trace("tstool.process.Process::update::commentDebounce", commentDebounce );
-		//#end
-		if (commentDebounce != 0)
+
+		if (commentDebounce > 0)
 		{
 			commentDebounce--;
 		}
 		if (FlxG.mouse.justReleased)
-		{
-			
+		{			
             MainApp.VERSION_TIMER_value = MainApp.VERSION_TIMER_DURATION;
 		}
 		

@@ -1,181 +1,299 @@
 package tstool.utils;
 
-import flixel.util.FlxSignal.FlxTypedSignal;
 import haxe.Exception;
 import haxe.Http;
 import haxe.Json;
-import tstool.salt.SOTickets;
+import haxe.Serializer;
+import http.XapiHelper;
+import js.Browser;
+import signals.Signal1;
+import xapi.Activity;
+import xapi.Agent;
+import xapi.Context;
+import xapi.Statement;
+import xapi.Verb;
+import xapi.activities.Definition;
+import xapi.types.IObject;
+//import xapi.types.Score;
+import xapi.Result;
+import xapi.types.StatementRef;
+using StringTools;
 
 /**
  * ...
  * @author bb
  */
-class XapiTracker
+class XapiTracker extends XapiHelper
 {
-	var u:Http;
-	static inline var PARAM_STATEMENTREF:String = "statement";
-	static inline var PARAM_VERB:String = "verb";
-	static inline var PARAM_MBOX:String = "mbox";
-	static inline var PARAM_NAME:String = "name";
-	static inline var PARAM_MSISDN:String = "msisdn";
-	static inline var PARAM_CONTRACTOR:String = "contractor";
-	static inline var PARAM_VOIP:String = "voip";
-	static inline var PARAM_CASE:String = "case";
-	static inline var PARAM_TOTAL_STEPS:String = "total_steps";
-	static inline var PARAM_VALUES:String = "values";
-	static inline var PARAM_STEPS:String = "steps";
-	static inline var PARAMS_ACTIVITY:String = "activity";
-	static var INITABLE = [PARAM_STATEMENTREF, PARAM_VERB,PARAM_MSISDN, PARAM_CONTRACTOR, PARAM_VOIP, PARAM_CASE, PARAM_TOTAL_STEPS, PARAM_VALUES, PARAM_STEPS, PARAMS_ACTIVITY]; 
-	public var dispatcher(get, null):FlxTypedSignal<Bool->Void>;
-
-	public function new(wraperPath:String) 
+	public static inline var VERB_RECIEVED:String = "http://activitystrea.ms/schema/1.0/receive";
+	public static inline var VERB_MENTORED:String = "http://id.tincanapi.com/verb/mentored";
+	//var map:Map<String, String>;
+	//var nullKeys:Array<String>;
+	//var canRequest:Bool;
+	//var statementsRefs:Array<StatementRef>;
+	var statement: xapi.Statement;
+	@:isVar public var object(get, set):IObject;
+	var verb:Verb;
+	var result:xapi.Result;
+	var context:Context;
+	var _mainDebug:Bool;
+	var _start:Float;
+	@:isVar var actor(get, set):Agent;
+	//public var dispatcher:Signal1<Bool>;
+	public function new(url:String)
 	{
-		dispatcher = new FlxTypedSignal<Bool->Void>();
-		u = new Http(wraperPath + "xapi/index.php");
-		u.async = true;
-		u.onData = onData;
+		super(url + "xapi-new/index.php");
+		#if debug
+		trace('tstool.utils.XapiHelper::XapiHelper::url', this.url);
+		#end
+		_mainDebug = Browser.location.origin.indexOf("salt.ch") > -1;
+		//this.async = true;
+		//Serializer.USE_CACHE = true;
+		//Serializer.USE_ENUM_INDEX = true;
+		//serializer = new Serializer();
+		//statementsRefs = [];
+		statement = null;
+		actor = null;
+		object = null;
+		verb = null;
+		context = null;
+		result = new xapi.Result();
+		//dispatcher = new Signal1<Bool>();
+		_start = Date.now().getTime();
+		//map = new Map<String,String>();
+		// minimal statement needs
+		//map.set("mbox", "");
+		//map.set("activity", "");
+		//map.set("verb", "");
+		//canRequest = true;
+		this.onData = onMyData;
+	}
+	override public function reset(?referenceLast:Bool=false)
+	{
+		if (!referenceLast){
+			statementsRefs = [];
+			_start = Date.now().getTime();
+		}
+		else{
+			
+		}
+		statement = null;
+		actor = null;
+		object = null;
+		verb = null;
+		context = null;
+		
+	}
+	public function validateBeforeSending()
+	{
+		if (actor == null || object == null || verb == null) return false;
+		return true;
+	}
+	public function setActor( agent:Agent)
+	{
+		actor = agent;
+	}
+	public function setActivityObject(objectID:String, ?name:Map<String,String>=null, ?description:Map<String,String>=null, ?type:String="", ?extensions:Map<String,Dynamic>=null,?moreInfo:String="")
+	{
+		var def:Definition = null;
+		if (type != "" || moreInfo != "" || extensions != null || name != null || description != null)
+		{
+			def = new Definition();
+			if (type != "")
+			{
+				def.type = type;
+			}
+			if (moreInfo != "")
+			{
+				def.type = type;
+			}
+			if (extensions != null)
+			{
+				def.extensions = extensions;
+			}
+			if (description != null)
+			{
+				def.description = description;
+			}
+			if (name != null)
+			{
+				def.name = name;
+			}
+		}
+
+		object = new Activity(Browser.location.origin + Browser.location.pathname + objectID, def);
+
+		//map.set("activity", object.indexOf("http")==0? object: Browser.location.origin + Browser.location.pathname + object);
+	}
+	public function setAgentObject(agent:Agent)
+	{
+		object = agent;
+	}
+	public function setVerb(did:Verb)
+	{
+		//verb = new Verb(did.id);
+		verb = did;
+	}
+	/*
+	public function setResult(
+		?scoreScaled:Float,
+		?extensions:Map<String,Dynamic>,
+		?success:Bool,
+		?completion:Bool,
+		?response:String,
+		?duration:Float)
+	{
+		result = new Result(
+			scoreScaled == null ? scoreScaled : new Score(scoreScaled * 100),
+			success,
+			completion,
+			null,
+			duration,
+			extensions
+		);
+	}*/
+	/**/
+	public function setDefaultContext(locale:String, instructor:String)
+	{
+		setContext(
+			new Agent(instructor), 
+			Browser.location.protocol + Browser.location.hostname + Browser.location.pathname,
+			"trouble", 
+			locale, 
+			null
+			);
 	}
 	
-	function onData(data:String) 
+	public function setContext(instructor:Agent, parentActivity:String, platform:String, language:String, extensions:Map<String,Dynamic>)
 	{
-		#if debug
-		if (Main.DEBUG) trace(data);
-		#end
-		try{
+
+		context = new Context(
+			null, 
+			instructor, 
+			null,
+			null, 
+			null, 
+			platform, 
+			language, 
+			statementsRefs.length > 0?statementsRefs[statementsRefs.length - 1]:null, 
+			extensions
+			);
+			if (parentActivity != null)
+				context.addContextActivity(parent, new Activity(parentActivity));
+	}
+	public function updateStatementRef()
+	{
+		context.statement = statementsRefs.length > 0?statementsRefs[statementsRefs.length - 1]:null;
+	}
+	/**/
+	/*public function setStatementRefs(statementRef:StatementRef)
+	{
+		statementsRefs = [statementRef];
+	}
+	public function addStatementRef(id:StatementRef)
+	{
+		statementsRefs.push(id);
+	}
+	public function getStatementRef():Array<StatementRef>
+	{
+		return statementsRefs;
+	}
+	public function getLastStatementRef():StatementRef
+	{
+		return statementsRefs[statementsRefs.length -1];
+	}*/
+	public function send()
+	{
+		//prepareParams();
+		try
+		{
+			this.result.toISO8601Duration( Date.now().getTime() - _start );
+            statement = new Statement(actor, verb, object, result, context);
+			sendMany([statement]);
+			//sendSignle(statement);
+			#if debug
+			
+			//var serialized = Serializer.run(statement);
+			//trace(statement);
+			//trace(serialized);
+			/*if (_mainDebug)
+			{
+				this.setParameter("statement", serialized);
+				this.request(true);
+			}
+			else
+			{
+				//trace(serialized);
+				onMyData(Json.stringify({status:"success", statementsIds:["24b31561-6138-4dbc-995e-d725b8b39dda"]}));
+			}*/
+
+			#else
+			//statement = new Statement(actor, verb, object, result, context);
+			//var serialized = Serializer.run(cast statement);
+			
+			/*this.setParameter("statement", Serializer.run(statement));
+			this.request(true);
+			*/
+			#end
+		}
+		catch (e:Exception)
+		{
+			#if debug
+			trace(e.message);
+			trace(e.stack);
+			trace(e.details());
+			#end
+		}
+
+	}
+
+	/*function onMyData(data:String)
+	{
+		//trace(data);
+		try
+		{
 			var d = Json.parse(data);
-			if (d.status == "success") 
+			#if debug
+			trace(d);
+			#end
+			if (d.status == "success")
 			{
 				//data.indexOf("success")>-1)
-				var s:Array<String> = cast d.statementsIds;
-				setStatementRef(s[0]);
-				setVerb("resolved");
+				statementsRefs.push(new StatementRef(d.statementsIds[0]));
+				//setStatementRef(statementsRef[0]);
 				dispatcher.dispatch(true);
 			}
-			else{
-				setVerb("initialized");
+			else
+			{
 				dispatcher.dispatch(false);
 			}
 		}
 		catch (e:Exception)
 		{
-			trace(e);
-			trace(data);
+			//trace(e);
+			//trace(data);
+			dispatcher.dispatch(false);
 		}
-	}
-	public function setActor()
+	}*/
+
+	function get_actor():xapi.Agent
 	{
-		u.setParameter(PARAM_MBOX, MainApp.agent.iri);
-		u.setParameter(PARAM_NAME, MainApp.agent.sAMAccountName);
+		return actor;
 	}
-	public function setCustomer(?mobile=false)
+
+	function set_actor(value:xapi.Agent):xapi.Agent
 	{
-		if (mobile)
-		{
-			u.setParameter(PARAM_MSISDN, Main.customer.iri);
-		}
-		else{
-			u.setParameter(PARAM_CONTRACTOR, Main.customer.contract.contractorID);
-			u.setParameter(PARAM_VOIP, Main.customer.voIP);
-		}
+		return actor = value;
 	}
-	public function setCase( soTicket:SOTickets )
+
+	function get_object():IObject
 	{
-		//setVerb("submitted");
-		u.setParameter(PARAM_CASE, soTicket.domain + "_" + soTicket.number );
+		return object;
 	}
-	public function setResolution()
+
+	function set_object(value:IObject):IObject
 	{
-		//setVerb("resolved");
-		var steps = "";
-		var step = "";
-		var interaction = "";
-		var values = "";
-		/**
-		 * @todo String to Class<Process> / isInHistory
-		 */
-		
-		var h = Main.HISTORY.getStoredStepsTranslatedArray();
-		for (i in h)
-		{
-			step = StringTools.replace(i.step, "\n", " ");
-			interaction = StringTools.replace(i.interaction, "\n", " ");
-			step = StringTools.replace(i.step, "\r", " ");
-			interaction = StringTools.replace(i.interaction, "\r", " ");
-			steps += '$step|$interaction£';
-		}
-		for (j in h)
-		{
-			if(j.values != "") values += '${j.values}|';
-		}
-		u.setParameter(PARAM_TOTAL_STEPS,  Std.string(h.length) );
-		u.setParameter(PARAM_VALUES, values );
-		u.setParameter(PARAM_STEPS,  steps);
+		return object = value;
 	}
-	function init(?filter:Array<String>)
-	{
-		for (i  in INITABLE)
-		{
-			if( filter.indexOf(i) == -1) u.setParameter(i, null);
-		}
-	}
-	public function initKeepActor()
-	{
-		init([PARAM_MBOX,PARAM_NAME]);
-	}
-	public function initKeepActorAndStatementRef()
-	{
-		init([PARAM_MBOX,PARAM_NAME, PARAM_STATEMENTREF]);
-	}
-	public function setActivity(object:String)
-	{
-		u.setParameter(PARAMS_ACTIVITY, object.indexOf("http")==0? object: MainApp.location.origin + MainApp.location.pathname + object);
-	}
-	public function setVerb(did:String)
-	{
-		u.setParameter(PARAM_VERB, did);
-	}
-	public function setStatementRef(id:String)
-	{
-		u.setParameter(PARAM_STATEMENTREF, id);
-	}
-	/*
-	public function sendInitial(activity:String)
-	{
-		Main.track.initKeepActor();
-		Main.track.setVerb("initialized");
-		Main.track.setStatementRef(null);
-		Main.track.setCustomer(true);
-		Main.track.setActivity( activity);
-        Main.track.send();
-		Main.track.setVerb("resolved");
-	}
-	  */
-	function get_dispatcher():FlxTypedSignal<Bool->Void> 
-	{
-		return dispatcher;
-	}
-	
-	public function send()
-	{
-		//trace(u);
-		//trace("statementSent");
-		#if !debug
-		u.request(true);
-		#else
-		if (Main.DEBUG) u.request(true);
-		else{
-			onData("{'status':'success'}");
-		}
-		#end
-	}
-	
+
 }
-//if(!params.exists("mbox")) params.set("mbox","bruno.baudry@salt.ch");
-//if(!params.exists("name"))params.set("name", "bbaudry");
-//if(!params.exists("verb"))params.set("verb", "resolved");
-//if(!params.exists("activity"))params.set("activity", "https://qook.test.salt.ch/trouble");
-//if(!params.exists("contractor"))params.set("contractor", "31234567");
-//if(!params.exists("voip"))params.set("voip", "0234567891");
-//if(!params.exists("case"))params.set("case","FIX_521");
-//var tab = ['flow.nointernet.GetContractorVTI', 'flow.saltv.cannontCNX'];
-//if(!params.exists("steps")) params.set("steps", Json.stringify(tab));

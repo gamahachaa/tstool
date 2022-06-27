@@ -112,8 +112,8 @@ class SwiftMailWrapper extends Http
 	{
 		var b = '<style type="text/css">';
 		b += 'table {border-collapse: collapse;}';
-		b += '@font-face {font-family: "Superior"; src: url("http://intranet.salt.ch/static/fonts/superior/SuperiorTitle-Black.woff") format("woff"); font-weight: normal;}';
-		b += '@font-face {font-family: "Univers"; src: url("http://intranet.salt.ch/static/fonts/univers/ecf89914-1896-43f6-a0a0-fe733d1db6e7.woff") format("woff"); font-weight: normal;}';
+		b += '@font-face {font-family: "Superior"; src: url("https://fiber.salt.ch/themes/custom/salt_details_base/salt-common-style/assets/fonts/SuperiorTitleBlack.woff2") format("woff"); font-weight: normal;}';
+		b += '@font-face {font-family: "Univers"; src: url("https://fonts.gstatic.com/s/opensans/v28/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsiH0B4gaVI.woff2") format("woff"); font-weight: normal;}';
 		b += 'h3,h4,h5,h5 {color: #65a63c;}';
 		b += 'body, table, td, li, span, h3,h4,h5,h5  {font-family: "Univers", Arial, Helvetica, sans-serif !important;}';
 		b += 'h2{color: #000000; font-family: "Superior" !important;}';

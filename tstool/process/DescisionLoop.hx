@@ -17,10 +17,10 @@ class DescisionLoop extends Descision
 		super();
 		_nextYesProcess = yesProcess;
 		_nextNoProcess = noProcess;
-		#if debug
-		trace("tstool.process.DescisionLoop::DescisionLoop::_nextYesProcess", _nextYesProcess );
-		trace("tstool.process.DescisionLoop::DescisionLoop::_nextNoProcess", _nextNoProcess );
-		#end
+		//#if debug
+		//trace("tstool.process.DescisionLoop::DescisionLoop::_nextYesProcess", _nextYesProcess );
+		//trace("tstool.process.DescisionLoop::DescisionLoop::_nextNoProcess", _nextNoProcess );
+		//#end
 	}
 	/**
 	* @todo String to Class<Process>

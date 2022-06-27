@@ -308,7 +308,7 @@ class UI extends FlxTypedSpriteGroup<FlxSprite>
 			/***************************************/
 			//onComment();
 			//trace("combo");
-			stringSignal.dispatch("onComment");
+			//stringSignal.dispatch("onComment");
 		}
 		else if (qook.visible == true && FlxG.keys.pressed.Q && FlxG.keys.pressed.SHIFT)
 		{

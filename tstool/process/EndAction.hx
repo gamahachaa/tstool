@@ -83,6 +83,7 @@ class EndAction extends Action
 		{
 			stepsCode += '${i.processName}|${i.interaction}£';
 		}
+		Main.trackH.updateStatementRef();
 //#if debug
 		cast(Main.trackH.object, Activity).definition.extensions.set(Browser.location.origin + "/troubleshooting/total_steps/", Std.string(h.length));
 		cast(Main.trackH.object, Activity).definition.extensions.set(Browser.location.origin +"/troubleshooting/steps/", steps);

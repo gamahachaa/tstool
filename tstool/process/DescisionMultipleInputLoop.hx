@@ -128,7 +128,14 @@ class DescisionMultipleInputLoop extends DescisionLoop
 		{
 
 			if (i.ereg == null) continue;
-			if (i.input.mustValidate != null && i.input.mustValidate.indexOf(interaction) == -1) continue;
+			if (i.input.mustValidate != null && i.input.mustValidate.indexOf(interaction) == -1) {
+				#if debug
+				trace("tstool.process.DescisionMultipleInputLoop::validate");
+				trace(i.input.mustValidate);
+				trace(interaction);
+				#end
+				continue;
+			}
 			inp = this.multipleInputs.inputs.get(i.input.prefix);
 			//trace("tstool.process.DescisionMultipleInput::validate::inp", inp );
 			if (!i.ereg.match(StringTools.trim(inp.getInputedText())))

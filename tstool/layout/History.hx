@@ -149,6 +149,9 @@ class History
 	}
 	inline public function getPreviousClass():ProcessContructor
 	{
+		/**
+		 * @todo rename getPreviousProcessConstructor 
+		 */
 		return getPreviousProcess().step;
 	}
 

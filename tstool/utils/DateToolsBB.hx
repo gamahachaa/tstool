@@ -126,8 +126,8 @@ class DateToolsBB
 		if (date == null) date = Date.now();
 		var hoursMin:Float = date.getUTCHours() + (date.getUTCMinutes() / 100);
 		#if debug
-		//trace("tstool.utils.DateToolsBB::isWithinUTCHoursMinutes::start", start );
-		//trace("tstool.utils.DateToolsBB::isWithinUTCHoursMinutes::stopExcluded", stopExcluded );
+		trace("tstool.utils.DateToolsBB::isWithinUTCHoursMinutes::start", start );
+		trace("tstool.utils.DateToolsBB::isWithinUTCHoursMinutes::stopExcluded", stopExcluded );
 		//trace("tstool.utils.DateToolsBB::isWithinUTCHoursMinutes::hoursMin", hoursMin );
 		//trace("tstool.utils.DateToolsBB::isWithinUTCHoursMinutes::(start <= hoursMin) && (hoursMin < stopExcluded)", (start <= hoursMin) && (hoursMin < stopExcluded) );
 		

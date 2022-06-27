@@ -36,8 +36,6 @@ class TranslationVerificator
 		for (i in locales)
 		{
 			mainPath = Path.directory(i);
-			//Sys.println(i);
-			//Sys.println(mainPath);
 			if (localeMap.exists(mainPath))
 			{
 				localeMap.set(mainPath, localeMap.get(mainPath).concat(readFlags(i)));
@@ -80,29 +78,17 @@ class TranslationVerificator
 		var t = [];
 		var dir = FileSystem.readDirectory(sourceDir);
 		dir = dir.filter(filter);
-		//Sys.println(dir);
+		
 		for (entry in dir )
 		{
-			//Sys.println(entry);
 			var child:String = Path.join([sourceDir, entry]);
-			
-			//var pChild = new Path(child);
-
-			//var dstFile:String = Path.join([targetDir, entry]);
-			//if (child.indexOf("_icon") > 0) continue;
 			if (FileSystem.isDirectory(child)  )
 			{
 				t = t.concat(recurse(child,ext));
-				//numCopied += copy(srcFile, dstFile);
 			}
-			//else if(child.indexOf(".txt") !=-1){
 			else if (Path.extension(child) == ext)
 			{
-				//trace(pChild.dir, pChild.ext, pChild.file);
-				//Sys.println(child);
 				t.push(child);
-				//Sys.println(Path.extension(child));
-
 			}
 		}
 		return t;

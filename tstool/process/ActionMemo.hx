@@ -8,7 +8,7 @@ import tstool.layout.ScriptView;
  * ...
  * @author bb
  */
-class ActionMemo extends Action 
+class ActionMemo extends Action
 {
 	var verfifyContctNumber:String;
 	var memoDefault:String;
@@ -16,39 +16,37 @@ class ActionMemo extends Action
 	var memoTxtArea:tstool.layout.BIGUIInputTfCore;
 	var scriptView:tstool.layout.ScriptView;
 	var memoTxt:String;
-	
+
 	override public function create()
 	{
 		memoTxt = "";
-		
-		
-		memoDefault = "FUCK";
-		
+
+		//memoDefault = "FUCK";
+
 		memoDefault = MainApp.translator.translate(_name, "describeIssue", "UI1", "meta");
-		
-		
-		memoTxtArea = new BIGUIInputTfCore(750, 50, memoDefault, [bottom, left]);
-		
+
+		memoTxtArea = new BIGUIInputTfCore(750, 250, memoDefault, [bottom, left]);
+
 		//memoTxtArea = new BIGUIInputTfCore(750, 50, memoDefault, [bottom, left]);
 		defaultMemo = "";
-		
+
 		//_detailTxt = verfifyContctNumber + _detailTxt;
 		//
 		super.create();
 		//
-		
+
 		memoTxtArea.inputtextfield.text = defaultMemo;
-		
+
 		scriptView = new ScriptView(Main.HISTORY.prepareListHistory());
-		
+
 		scriptView.signal.add(sbStateListener);
-		
+
 		memoTxtArea.addToParent(this);
-		
+
 		ui.script.visible = true;
-		
+
 	}
-	function sbStateListener():Void 
+	function sbStateListener():Void
 	{
 		memoTxtArea.show();
 	}
@@ -61,9 +59,10 @@ class ActionMemo extends Action
 	{
 		super.positionThis();
 		var p = this.memoTxtArea.positionMe(this.question.boundingRect, 0);
-		positionBottom(p);
-		positionButtons(p);
+		//var p = this.memoTxtArea.positionMe(this.memoTxtArea.boundingRect, 0);
 		
+		positionButtons(p);
+		positionBottom(new FlxPoint(memoTxtArea.boundingRect.x, memoTxtArea.y + memoTxtArea.height));
 
 	}
 	override public function onClick()
@@ -77,19 +76,22 @@ class ActionMemo extends Action
 	function validate()
 	{
 		var check = memoTxt.split(" ").length >= 3 && StringTools.trim(memoTxt) != defaultMemo;
-		if (check){
+		if (check)
+		{
 			memoTxtArea.show(false);
 			return true;
 		}
-		else{
+		else
+		{
 			memoTxtArea.blink(true);
 			return false;
 		}
 		//return  ;
 	}
-	override function listener(s:String):Void 
+	override function listener(s:String):Void
 	{
-		switch (s){
+		switch (s)
+		{
 			case "en-GB" : switchLang("en-GB");
 			case "it-IT" : switchLang("it-IT");
 			case "de-DE" : switchLang("de-DE");
@@ -105,7 +107,7 @@ class ActionMemo extends Action
 			case "openSubState" : openSubState(dataView);
 		}
 	}
-	function onScript() 
+	function onScript()
 	{
 		memoTxtArea.show( false );
 		memoTxtArea.inputtextfield.visible = false;
