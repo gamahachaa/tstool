@@ -138,7 +138,16 @@ class SOTickets extends SuperOffice
 	//public static var MOBILE_131:SOTickets = new SOTickets('MOBILE','1.3.1','B2C_SA_TICKET_SO','1.Admin 3.Logistics 1.Issue with Shipment','mobile.qtool@salt.ch');
 	public static var MOBILE_132:SOTickets = new SOTickets('MOBILE','1.3.2','B2C_SA_TICKET_SO','1.Admin 3.Logistics 2.Issue with Repair','mobile.qtool@salt.ch');
 	public static var MOBILE_133:SOTickets = new SOTickets('MOBILE','1.3.3','B2B_SA_TECH_SO','1.Admin 3.Self Care 3.Salt Mobile App (for iPhone and Android)','mobile.qtool@salt.ch');
-	public static var MOBILE_134:SOTickets = new SOTickets('MOBILE','1.3.4','B2B_SA_TECH_SO','1.Admin 3.Self Care 4.Mobile Self Service (#121, #123)','mobile.qtool@salt.ch');
+	public static var MOBILE_134:SOTickets = new SOTickets('MOBILE', '1.3.4', 'B2B_SA_TECH_SO', '1.Admin 3.Self Care 4.Mobile Self Service (#121, #123)', 'mobile.qtool@salt.ch');
+	
+	// REZON 
+	public static var MOBILE_131_CREDITLIMIT:SOTickets = new SOTickets('MOBILE', '1.3.1b', 'FS_CREDIT_LIMIT_MOBILE_SO', '1.Admin 3.Subscription Management 1b.Rezoning – Unblocking', 'mobile.qtool@salt.ch');
+	public static var MOBILE_131_B2C:SOTickets = new SOTickets('MOBILE', '1.3.1', 'B2C_REZON_ADD_OPTION_TT3', '1.Admin 3.Subscription Management 1.Rezoning - Billshock', 'mobile.qtool@salt.ch');
+	public static var MOBILE_142_B2B:SOTickets = new SOTickets('MOBILE', '1.3.1', 'B2B_REZON_ADD_OPTION_TT3', '1.Admin 4.Subscription Management 1.Rezoning - Billshock', 'mobile.qtool@salt.ch');
+	
+	//
+	
+	
 	public static var MOBILE_211:SOTickets = new SOTickets('MOBILE','2.1.1','B2C_SA_MAS_SO','2.Billing 1.Bill & charging content 1.Contestation of premium SMS/MMS','mobile.qtool@salt.ch');
 	public static var MOBILE_212:SOTickets = new SOTickets('MOBILE','2.1.2','B2C_SA_TICKET_SO','2.Billing 1.Bill & charging content 2.Data','mobile.qtool@salt.ch');
 	public static var MOBILE_213:SOTickets = new SOTickets('MOBILE','2.1.3','B2C_SA_TICKET_SO','2.Billing 1.Bill & charging content 3.Messages (SMS/MMS)','mobile.qtool@salt.ch');
@@ -192,8 +201,12 @@ class SOTickets extends SuperOffice
 	public static var MOBILE_411:SOTickets = new SOTickets('MOBILE','4.1.1','LS_REPAIR_COMPLAIN_SO','4.Poor Service Provided 1.Salt 1.Logistic repair','mobile.qtool@salt.ch');
 	public static var MOBILE_412:SOTickets = new SOTickets('MOBILE','4.1.2','B2C_SA_COMPLAINT_SO','4.Poor Service Provided 1.Salt 2.Direct Channels (OC)','mobile.qtool@salt.ch');
 	public static var MOBILE_413:SOTickets = new SOTickets('MOBILE','4.1.3','B2B_SA_NONTECH_SO','4.Poor Service Provided 1.Salt 3.Online','mobile.qtool@salt.ch');
-	public static var MOBILE_422:SOTickets = new SOTickets('MOBILE','4.2.2','B2C_SA_COMPLAINT_SO','4.Poor Service Provided 2.Indirect  & Partners 2.Partners','mobile.qtool@salt.ch');
-	public static var MOBILE_441:SOTickets = new SOTickets('MOBILE','4.4.1','B2C_SA_COMPLAINT_SO','4.Poor Service Provided 4.Email 1.Complaint','mobile.qtool@salt.ch');
+	public static var MOBILE_422:SOTickets = new SOTickets('MOBILE', '4.2.2', 'B2C_SA_COMPLAINT_SO', '4.Poor Service Provided 2.Indirect  & Partners 2.Partners', 'mobile.qtool@salt.ch');
+	///
+	public static var MOBILE_441_B2C:SOTickets = new SOTickets('MOBILE','4.4.1','B2C_SA_COMPLAINT_SO','4.Poor Service Provided 4.Email 1.Complaint','mobile.qtool@salt.ch');
+	public static var MOBILE_511_B2B:SOTickets = new SOTickets('MOBILE', '5.1.1', 'B2B_SA_NONTECH_SO', '4.Poor Service Provided 4.Email 1.Complaint', 'mobile.qtool@salt.ch');
+	
+	
 	//public static var MOBILE_511:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_FINANCIAL_COMPLAINT_SO','5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch');
 	public static var MOBILE_511_ACCEPT:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_FINANCIAL_BILLSHOCK_SO','5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch');
 	//public static var MOBILE_511_REFUSES:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_SA_COMPLAINT_SO',' REFUSES 5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch'); // changed from mail ngil @ 30.05.2022

@@ -105,7 +105,7 @@ class MainApp extends Sprite
 		translator = new Translator();
 		//xapiHelper = new XapiHelper( location.origin +  config.libFolder);
 		xapiHelper = new XapiTracker( location.origin +  config.libFolder);
-		
+		//xapiHelper.setActor(new Agent( MainApp.agent.iri, MainApp.agent.sAMAccountName));
 		#if debug
 		versionTracker = new VersionTracker( location.origin + config.libFolder, config.scriptName, true);
 
@@ -113,7 +113,7 @@ class MainApp extends Sprite
 		//
 
 		#else
-		versionTracker = new VersionTracker( location.origin + config.libFolder, config.scriptName);
+		
 		//xapiTracker =  new XapiTracker( location.origin +  "/trouble/php/");
 		#end
 

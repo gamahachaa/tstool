@@ -183,6 +183,7 @@ class XapiTracker extends XapiHelper
 	}
 	public function updateStatementRef()
 	{
+		if (context == null) setDefaultContext(MainApp.translator.locale, "mobile.qtool@salt.ch");
 		context.statement = statementsRefs.length > 0?statementsRefs[statementsRefs.length - 1]:null;
 	}
 	/**/

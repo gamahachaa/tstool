@@ -31,8 +31,16 @@ class Customer extends Actor
 		this.contract.reset();
 		this.shipingAdress = null;
 		this.iri = TEST_IRI;
+		for (k => i in dataSet)
+		{
+			for (j in i)
+			{
+				i.remove(j);
+			}
+			dataSet.remove(k);
+		}
 		this.dataSet = [];
-		//this.voIP = "";
+		this.voIP = "";
 	}
 	public function isInitial()
 	{

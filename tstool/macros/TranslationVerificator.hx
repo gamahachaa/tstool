@@ -55,7 +55,7 @@ class TranslationVerificator
 			{
 				if (!relativesClasses.exists((e)->(return e == v2.flag)))
 				{
-					Sys.println(v2.flag + " flag has no matching class. see file:///" + Path.withoutDirectory(v2.file) + " line:" + v2.line);
+					Sys.println(v2.flag + " flag has no matching class. see file:///" + k1 +"/" + Path.withoutDirectory(v2.file) + " line:" + v2.line);
 				}
 				
 				
