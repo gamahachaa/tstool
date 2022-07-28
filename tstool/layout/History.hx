@@ -449,9 +449,9 @@ class History
 		{        
 			t = Lambda.concat( t, Replace.TAGS);
 		}
-		#if debug
-		trace("tstool.layout.History::stripTags::t", t );
-		#end
+		//#if debug
+		//trace("tstool.layout.History::stripTags::t", t );
+		//#end
 		for (i in t)
 		{
 			if (skip != null && skip.indexOf(i) != -1) continue;
