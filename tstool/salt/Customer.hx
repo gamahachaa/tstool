@@ -1,6 +1,7 @@
 package tstool.salt;
+import string.StringUtils;
 import tstool.process.Actor;
-
+using StringTools;
 /**
  * ...
  * @author bbaudry
@@ -52,9 +53,20 @@ class Customer extends Actor
 		var  b = '<h2>';
 		try
 		{
+			//var isFiber = false;
+			#if debug
+			trace(this.get_voIP());
+			trace(this);
+			#else
 			
-			if(contract.contractorID != null && contract.contractorID != "" && contract.contractorID != Customer.TEST_IRI)
-				b += 'ID: ${contract.contractorID}<br/>';
+			#end
+			if (contract.contractorID != null && contract.contractorID != "" && contract.contractorID != Customer.TEST_IRI){
+				//b += 'ID: <a href="https://vti.salt.ch/index.php?module=Contractors&action=BasicAjax&mode=redirectToContractor&phone=${voIP}">${contract.contractorID}</a><br/>';
+				if(Main.customer.contract.fix != null && Main.customer.contract.fix.trim()!="")
+				b += 'ID: ${StringUtils.buildVtiProneLink(contract.fix, contract.contractorID)}<br/>';
+				else
+					b += 'ID: ${contract.contractorID}';
+			}
 			else{
 				b += 'ID: ${iri}<br/>';
 			}
@@ -65,7 +77,7 @@ class Customer extends Actor
 			if(contract.mobile !="" && addMobileContact )
 				b += '<h3>CONTACT: ${contract.mobile}</h3>';
 			b += "<p>";
-			if(contract.owner != null && contract.owner.name !="")
+			if(contract.owner != null && contract.owner.name !=null && contract.owner.name !="")
 				b += '${contract.owner.name}<br/>';
 			if (shipingAdress != null && shipingAdress._zip != "")
 			{

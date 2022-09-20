@@ -85,7 +85,10 @@ class Process extends FlxState
 		_titleTxt = MainApp.translator.translate(_name, _titleTxt, "TITLE");
 		_detailTxt = MainApp.translator.translate(_name, _detailTxt, "DETAILS");
 		_illustration = MainApp.translator.translate(_name, _illustration, "ILLUSTRATION");
-		_qookLink = MainApp.translator.translate(_name,_qook, "QOOK").split("|");
+		_qookLink = MainApp.translator.translate(_name, _qook, "QOOK").split("|");
+		#if debug
+		trace(_qookLink);
+		#end
 	}
 
 	override public function create()
@@ -312,14 +315,18 @@ class Process extends FlxState
 	}
 	function onQook():Void
 	{
-		var str;
+		var str="";
 		var resW = Capabilities.screenResolutionX;
 		var resH = Capabilities.screenResolutionY;
 		var split = Math.round(resW / _qookLink.length);
 		var x:Float = 0;
 		for (i in _qookLink)
 		{
-			str = ('menubar=0,toolbar=0,location=0,status=0,width=$split,height=$resH,top=0,left=$x');
+			str = 'menubar=0,toolbar=0,location=0,status=0,width=$split,height=$resH,top=0,left=$x';
+			#if debug
+			trace("tstool.process.Process::onQook::str ", str  );
+			#end
+			Browser.window.focus();
 			Browser.window.open(i, "_blank", str);
 			x = x + split;
 		}

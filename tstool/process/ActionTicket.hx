@@ -75,7 +75,7 @@ class ActionTicket extends ActionMemo
 		}
 		catch (e:Exception)
 		{
-			trace(e);
+			//trace(e);
 		}
 	}
 
@@ -118,10 +118,11 @@ class ActionTicket extends ActionMemo
 		{
 			//var txt = memoTxtArea.getInputedText();
 			memoTxtArea.show(false);
-			
-			openSubState(new TicketSendSub());
 			mail.successSignal.addOnce(onMailSuccess);
+			openSubState(new TicketSendSub());
+			
 			mail.build( buildMemo(memoTxt, defaultMemo) );
+			
 			mail.send();
 		}
 	}

@@ -142,8 +142,10 @@ class SOTickets extends SuperOffice
 	
 	// REZON 
 	public static var MOBILE_131_CREDITLIMIT:SOTickets = new SOTickets('MOBILE', '1.3.1b', 'FS_CREDIT_LIMIT_MOBILE_SO', '1.Admin 3.Subscription Management 1b.Rezoning – Unblocking', 'mobile.qtool@salt.ch');
-	public static var MOBILE_131_B2C:SOTickets = new SOTickets('MOBILE', '1.3.1', 'B2C_REZON_ADD_OPTION_TT3', '1.Admin 3.Subscription Management 1.Rezoning - Billshock', 'mobile.qtool@salt.ch');
-	public static var MOBILE_142_B2B:SOTickets = new SOTickets('MOBILE', '1.3.1', 'B2B_REZON_ADD_OPTION_TT3', '1.Admin 4.Subscription Management 1.Rezoning - Billshock', 'mobile.qtool@salt.ch');
+	//public static var MOBILE_131_B2C:SOTickets = new SOTickets('MOBILE', '1.3.1', 'B2C_REZON_ADD_OPTION_TT3', '1.Admin 3.Subscription Management 1.Rezoning - Billshock', 'mobile.qtool@salt.ch');
+	public static var MOBILE_131_B2C:SOTickets = new SOTickets('MOBILE', '1.3.1', 'B2C_FINANCIAL_COMPLAINT_SO', '1.Admin 3.Subscription Management 1.Rezoning - Billshock', 'mobile.qtool@salt.ch');
+	//public static var MOBILE_142_B2B:SOTickets = new SOTickets('MOBILE', '1.3.1', 'B2B_REZON_ADD_OPTION_TT3', '1.Admin 4.Subscription Management 1.Rezoning - Billshock', 'mobile.qtool@salt.ch');
+	public static var MOBILE_142_B2B:SOTickets = new SOTickets('MOBILE', '1.3.1', 'B2C_FINANCIAL_COMPLAINT_SO', '1.Admin 4.Subscription Management 1.Rezoning - Billshock', 'mobile.qtool@salt.ch');
 	
 	//
 	
@@ -168,7 +170,7 @@ class SOTickets extends SuperOffice
 	public static var MOBILE_3101:SOTickets = new SOTickets('MOBILE','3.10.1','B2C_SA_TECH_SO','3.Technical 10.Modem 1.Troubleshooting','mobile.qtool@salt.ch');
 	public static var MOBILE_311:SOTickets = new SOTickets('MOBILE','3.1.1','B2C_SA_TECH_SO','3.Technical 1.Network Coverage 1.No coverage','mobile.qtool@salt.ch');
 	public static var MOBILE_3111:SOTickets = new SOTickets('MOBILE','3.11.1','B2C_SA_EXPERT_SO','3.Technical 11.Femto 1.Troubleshooting','mobile.qtool@salt.ch');
-	public static var MOBILE_312:SOTickets = new SOTickets('MOBILE','3.1.2','B2C_SA_TECH_SO','3.Technical 1.Network Coverage 2.No coverage','mobile.qtool@salt.ch');
+	public static var MOBILE_312:SOTickets = new SOTickets('MOBILE','3.1.2','B2C_SA_TECH_ESCA_SO','3.Technical 1.Network Coverage 2.No coverage','mobile.qtool@salt.ch');
 	public static var MOBILE_3121:SOTickets = new SOTickets('MOBILE','3.12.1','B2C_SA_TECH_SO','3.Technical 12.Self Care 1.My Account','mobile.qtool@salt.ch');
 	//public static var MOBILE_3123:SOTickets = new SOTickets('MOBILE','3.12.3','B2C_SA_TICKET_SO','3.Technical 12.Self Care 3.Salt Mobile App (for iPhone and Android)','mobile.qtool@salt.ch');
 	//public static var MOBILE_3124:SOTickets = new SOTickets('MOBILE','3.12.4','B2C_SA_TICKET_SO','3.Technical 12.Self Care 4.Mobile Self Service (#121, #123)','mobile.qtool@salt.ch');
@@ -185,7 +187,7 @@ class SOTickets extends SuperOffice
 	public static var MOBILE_331:SOTickets = new SOTickets('MOBILE','3.3.1','B2C_SA_TECH_SO','3.Technical 3.SMS/MMS 1.Cannot send & receive','mobile.qtool@salt.ch');
 	public static var MOBILE_332:SOTickets = new SOTickets('MOBILE','3.3.2','B2C_SA_TECH_SO','3.Technical 3.SMS/MMS 2.Send & Receive multiple time','mobile.qtool@salt.ch');
 	public static var MOBILE_333:SOTickets = new SOTickets('MOBILE','3.3.3','B2C_SA_TECH_SO','3.Technical 3.SMS/MMS 3.Value added services','mobile.qtool@salt.ch');
-	public static var MOBILE_341:SOTickets = new SOTickets('MOBILE','3.4.1','B2C_SA_TECH_SO','3.Technical 4.Data 1.No / intermittent connection','mobile.qtool@salt.ch');
+	public static var MOBILE_341:SOTickets = new SOTickets('MOBILE','3.4.1','B2C_SA_TECH_ESCA_SO','3.Technical 4.Data 1.No / intermittent connection','mobile.qtool@salt.ch');
 	public static var MOBILE_341_ESCA:SOTickets = new SOTickets('MOBILE','3.4.1','B2C_SA_TECH_ESCA_SO','3.Technical 4.Data 1.No / intermittent connection','mobile.qtool@salt.ch');
 	public static var MOBILE_342:SOTickets = new SOTickets('MOBILE','3.4.2','B2C_SA_TECH_SO','3.Technical 4.Data 2.Speed','mobile.qtool@salt.ch');
 	public static var MOBILE_342_BLACKCELLS:SOTickets = new SOTickets('MOBILE','3.4.2','B2C_SA_TECH_SO','3.Technical 4.Data 2.Speed - BLACKCELL','mobile.qtool@salt.ch');
@@ -212,6 +214,7 @@ class SOTickets extends SuperOffice
 	//public static var MOBILE_511_REFUSES:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_SA_COMPLAINT_SO',' REFUSES 5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch'); // changed from mail ngil @ 30.05.2022
 	public static var MOBILE_511_REFUSES:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_FINANCIAL_BILLSHOCK_REFUSED_SO',' REFUSES 5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch');
 	public static var MOBILE_511:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_FINANCIAL_COMPLAINT_SO','5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch');
+	public static var MOBILE_511_SERENITY:SOTickets = new SOTickets('MOBILE','5.1.1','B2C_FINANCIAL_BILLSHOCK_SO','5.Escalation 1.Compensation 1.Request for Compensation','mobile.qtool@salt.ch');
 	public static var MOBILE_521:SOTickets = new SOTickets('MOBILE','5.2.1','LIDL_REGISTRATION_SO','5.Escalation 2.Registration 1.ID Check - Escalation to Care','mobile.qtool@salt.ch');
 	public static var MOBILE_611:SOTickets = new SOTickets('MOBILE','6.1.1','IDCHECK_FAILED_SO','6.Ordering 1.Prepay Order 1.Prepay ID Check Failed','mobile.qtool@salt.ch');
 	public static var MOBILE_621:SOTickets = new SOTickets('MOBILE','6.2.1','IDCHECK_FAILED_SO','6.Ordering 2.Postpay Order 1.Postpay ID Check Failed','mobile.qtool@salt.ch');
