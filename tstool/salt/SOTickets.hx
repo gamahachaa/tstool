@@ -24,6 +24,7 @@ class SOTickets extends SuperOffice
 	public static var FIX_311:SOTickets = new SOTickets('FIX','3.1.1','FIBER_FINANCIAL_SO','3.Billing 1.Compensation 1.*Request for Compensation','fiber.tech.qtool@salt.ch');
 	public static var FIX_324:SOTickets = new SOTickets('FIX','3.2.4','FIBER_NON_TECH_SO','3.Billing 2.Bill method & delivery 4.Changement mode paiment ou reception','fiber.tech.qtool@salt.ch');
 	public static var FIX_341:SOTickets = new SOTickets('FIX','3.4.1','FS_FIBER_PAY_ARRANGEMENT_SO','3.Billing 4.Collection 1.Payment delay request (1 month)','fiber.tech.qtool@salt.ch');
+	public static var FIX_342:SOTickets = new SOTickets('FIX','3.4.2','FS_CREDIT_LIMIT_FIBER_SO','3.Billing 4.Collection 2. Credit Limit ','fiber.tech.qtool@salt.ch');
 	public static var FIX_351:SOTickets = new SOTickets('FIX','3.5.1','FIBER_MISSING_DISCOUNT_SO','3.Billing 5.Discount (NOT for compensation) 1.Missing discount','fiber.tech.qtool@salt.ch');
 	public static var FIX_411:SOTickets = new SOTickets('FIX','4.1.1','FIBER_NON_TECH_SO','4.Order 1.Order Process 1.New order  / Validation email issue','fiber.tech.qtool@salt.ch');
 	public static var FIX_412:SOTickets = new SOTickets('FIX','4.1.2','FIBER_PLUGINUSE_SO','4.Order 1.Order Process 2.Plug in Use info','fiber.tech.qtool@salt.ch');
@@ -44,6 +45,14 @@ class SOTickets extends SuperOffice
 
 	public static var FIX_526:SOTickets = new SOTickets('FIX','5.2.6','FIBER_LOW_PRIO_TECH_SO','5.Technical 2.Modem - Router 6.IP Option Management','fiber.tech.qtool@salt.ch');
 	public static var FIX_532:SOTickets = new SOTickets('FIX','5.3.2','FIBER_LOW_PRIO_TECH_SO','5.Technical 3.Voip Telephony 2.VTI Voice Service','fiber.tech.qtool@salt.ch');
+	public static var FIX_531_CallerID:SOTickets = new SOTickets('FIX','5.3.1','FIBER_LOW_PRIO_TECH_SO','CallerID 5.Technical 3.Voip Telephony 1.VTI Voice Service','fiber.tech.qtool@salt.ch');
+	public static var FIX_531_Provisioning:SOTickets = new SOTickets('FIX','5.3.1','FIBER_LOW_PRIO_TECH_SO','Provisioning 5.Technical 3.Voip Telephony 1.VTI Voice Service','fiber.tech.qtool@salt.ch');
+	public static var FIX_531_SoundQuality:SOTickets = new SOTickets('FIX','5.3.1','FIBER_LOW_PRIO_TECH_SO','SoundQuality 5.Technical 3.Voip Telephony 1.VTI Voice Service','fiber.tech.qtool@salt.ch');
+	public static var FIX_531_CallDropped:SOTickets = new SOTickets('FIX','5.3.1','FIBER_LOW_PRIO_TECH_SO','CallDropped 5.Technical 3.Voip Telephony 1.VTI Voice Service','fiber.tech.qtool@salt.ch');
+	public static var FIX_531_Calls:SOTickets = new SOTickets('FIX','5.3.1','FIBER_LOW_PRIO_TECH_SO','Calls 5.Technical 3.Voip Telephony 1.VTI Voice Service','fiber.tech.qtool@salt.ch');
+	public static var FIX_531_FNP:SOTickets = new SOTickets('FIX','5.3.1','FIBER_LOW_PRIO_TECH_SO','FNP 5.Technical 3.Voip Telephony 1.VTI Voice Service','fiber.tech.qtool@salt.ch');
+	public static var FIX_531_LOW:SOTickets = new SOTickets('FIX','5.3.1','FIBER_LOW_PRIO_TECH_SO','5.Technical 3.Voip Telephony 1.VTI Voice Service','fiber.tech.qtool@salt.ch');
+	public static var FIX_531_SHOHO:SOTickets = new SOTickets('FIX','5.3.1','FIBER_SOHO_TECH_VOIP_SO','5.Technical 3.Voip Telephony 1.VTI Voice Service','fiber.tech.qtool@salt.ch');
 	public static var FIX_533:SOTickets = new SOTickets('FIX','5.3.3','FIBER_VOIP_MOVE_SO','5.Technical 3.Voip Telephony 3.VOIP Transfer (Move)','fiber.tech.qtool@salt.ch');
 	public static var FIX_541:SOTickets = new SOTickets('FIX','5.4.1','FIBER_TECH_SALTTV_SO','5.Technical 4.TV and Video Services 1.Salt TV problem','fiber.tech.qtool@salt.ch');
 	public static var FIX_542:SOTickets = new SOTickets('FIX','5.4.2','FIBER_LOW_PRIO_TECH_SO','5.Technical 4.TV and Video Services 2.Salt VOD problem','fiber.tech.qtool@salt.ch');

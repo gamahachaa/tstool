@@ -4,6 +4,7 @@ import haxe.DynamicAccess;
 import haxe.Json;
 import js.Browser;
 import lime.utils.Assets;
+import regex.ExpReg;
 //import utils.VTIdataParser.VtiInterface;
 
 /**
@@ -22,7 +23,8 @@ typedef RegexableProfile =
 	var universal:String;
 	var ereg: String;
 }
-typedef MatchedEreg = {
+typedef MatchedEreg =
+{
 	var ereg:EReg;
 	var matched:Int;
 }
@@ -33,6 +35,20 @@ class VTIdataParser
 	//var getLangEreg:EReg;
 	//var allInclusivEreg:EReg;
 	var regDict:Map<String, MatchedEreg>;
+	public static inline var FIBER_FLL:String = "Fiber FLL";
+	public static inline var otoId:String = "otoId";
+	public static inline var otoPortId:String = "otoPortId";
+	public static inline var routerSerialNumber:String = "routerSerialNumber";
+	public static inline var lexId:String = "lexId";
+	public static inline var oltName:String = "oltName";
+	public static inline var oltBoard:String = "oltBoard";
+	public static inline var ponPort:String = "ponPort";
+	public static inline var breakoutCableId:String = "breakoutCableId";
+	public static inline var fiberNumber:String = "fiberNumber";
+	public static inline var oltObject:String = "oltObject";
+	
+	
+	
 	public var signal(get, null):FlxTypedSignal<Map<String,Map<String,String>>->Void>;
 	public function new(what:VtiInterface)
 	{
@@ -42,13 +58,12 @@ class VTIdataParser
 		//this.type = account;
 		#end
 		regDict = [];
-		regDict.set("getLangEreg", {ereg: new EReg("^(PROD|SIT)(EN|FR|IT|DE)", ""), matched:2});
+		regDict.set("getLangEreg", {ereg: new EReg(ExpReg.VTI_LANG_PARSE, ""), matched:2});
 		regDict.set("allInclusivEreg", {ereg: new EReg("^[\\s\\S]+$", ""), matched:0});
-      
 
-		regDict.set("addressEreg",{ereg: new EReg("^[0-9a-zA-Z]+\\s[\\S\\s-.]+,\\s[0-9]{4}\\s[\\S\\s-.]+$", "i"), matched:0});
+		regDict.set("addressEreg", {ereg: new EReg("^[0-9a-zA-Z]+\\s[\\S\\s-.]+,\\s[0-9]{4}\\s[\\S\\s-.]+$", "i"), matched:0});
 
-		regDict.set("moneyEreg",{ereg: new EReg("^\\-?[0-9]+,[0-9]{2}\\sCHF$", ""), matched:0});
+		regDict.set("moneyEreg", {ereg: new EReg("^\\-?[0-9]+,[0-9]{2}\\sCHF$", ""), matched:0});
 		regDict.set("dateEreg", {ereg: new EReg("^(2[0-9]{3}\\-[0-9]{2}\\-[0-9]{2})|(\\-?)$", ""), matched:0});
 		regDict.set("contractorEreg", {ereg: new EReg("^3\\d{7}$", ""), matched:0});
 		regDict.set("personEreg", {ereg: new EReg("^(Mr\\.|Ms\\.|Herr|Personne morale)?\\s[\\S\\s]+$", ""), matched:0});
@@ -58,6 +73,49 @@ class VTIdataParser
 		regDict.set("voipGigaBox", {ereg: new EReg("^([0-9]{11})$", ""), matched:0});   //00000000000
 		regDict.set("optionalPhoneEreg", {ereg: new EReg("(41[0-9]{9})|(\\A\\z)", ""), matched:0});
 		regDict.set("emailEreg", {ereg:~/[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/i, matched:0});
+		regDict.set("otoEreg", {ereg: new EReg(ExpReg.OTO_REG, ""), matched:0});
+		regDict.set("otoPortEreg", {ereg: new EReg(ExpReg.OTO_PORT, ""), matched:1});
+		regDict.set("boxSerialEreg", {ereg: new EReg(ExpReg.BOX_SERIAL_HEALTH, ""), matched:1});
+		regDict.set("oltBoardEreg", {ereg: new EReg(ExpReg.PORTS_ID, ""), matched:1});
+		regDict.set("ponPortEreg", {ereg: new EReg(ExpReg.PORTS_ID, ""), matched:1});
+		regDict.set("breakoutCableIdEreg", {ereg: new EReg(ExpReg.BREAKOUT_CABLE, ""), matched:1});//KP100314-C0010 KP100314-C0009/4
+		regDict.set("fiberNumberEreg", {ereg: new EReg(ExpReg.PORTS_ID, ""), matched:1});//KP100314-C0010 KP100314-C0009/4
+		regDict.set("lexIdEreg", {ereg: new EReg(ExpReg.LEX_ID, ""), matched:1});
+		regDict.set("oltNameEreg", {ereg: new EReg(ExpReg.OLT_NAME, ""), matched:1});
+		regDict.set("oltObject", {ereg: new EReg(ExpReg.OLT_OBJECT, ""), matched:1});
+		//regDict.set("ip4GatewayEreg", {ereg: new EReg("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", ""), matched:1});
+		//regDict.set("providerEreg", {ereg: new EReg('^"provider": "([\\S]+)",$', "i"), matched:1});
+		//regDict.set("providerEreg", {ereg: new EReg('^([\\S]+)"$', "i"), matched:1});
+		//regDict.set("numberOnlyEreg", {ereg: new EReg("^[0-9]+$", ""), matched:1});
+		//regDict.set("eventDateEreg", {ereg: new EReg("^[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}\\s[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]+$", ""), matched:1});
+		//regDict.set("boolEreg", {ereg: new EReg("^true|false$", "i"), matched:1});
+		//regDict.set("decimalNumberEreg", {ereg: new EReg("^[0-9.]+$", ""), matched:1});
+		//regDict.set("numberOnlyFlexibleEreg", {ereg: new EReg("[0-9]+", ""), matched:1});
+		//regDict.set("numberOnlyStartEreg", {ereg: new EReg("^[0-9]+", ""), matched:1});
+		//regDict.set("rxValuesEreg", {ereg: new EReg("^\\-[0-9.]+$", ""), matched:1});
+		//regDict.set("statusEreg", {ereg: new EReg('^"status": "([0-9a-zA-Z_]+)"', ""), matched:1});
+		//regDict.set("idStatusEreg", {ereg: new EReg('^"idStatus": ([0-9a-zA-Z_]+),$', ""), matched:1});
+		//regDict.set("eventdateEreg", {ereg: new EReg('^"eventdate": "([0-9_\\-\\:\\. ]+)",$', ""), matched:1});
+		//regDict.set("reachableEreg", {ereg: new EReg('^"reachable": (true|false),$', ""), matched:1});
+		//regDict.set("tempCpuEreg", {ereg: new EReg('^"tempCpu": ([0-9.]+),$', ""), matched:1});
+		//regDict.set("tempTransceiverEreg", {ereg: new EReg('^"tempTransceiver": ([0-9.]+),$', ""), matched:1});
+		//regDict.set("uptimeEreg", {ereg: new EReg('^"uptime": ([0-9]+),$', ""), matched:1});
+		//regDict.set("statusWanmgtEreg", {ereg: new EReg('^"statusWanmgt": (true|false),$', ""), matched:1});
+		//regDict.set("statusWanhsiEreg", {ereg: new EReg('^"statusWanhsi": (true|false),$', ""), matched:1});
+		//regDict.set("statusWanvoipEreg", {ereg: new EReg('^"statusWanvoip": (true|false),$', ""), matched:1});
+		//regDict.set("statusVoiceRegEreg", {ereg: new EReg('^"statusVoiceReg": (true|false),$', ""), matched:1});
+		//regDict.set("nberDectHandsetEreg", {ereg: new EReg('^"nberDectHandset": ([0-9]+),$', ""), matched:1});
+		//regDict.set("statusWifi24gEreg", {ereg: new EReg('^"statusWifi24g": (true|false),$', ""), matched:1});
+		//regDict.set("statusWifi5gEreg", {ereg: new EReg('^"statusWifi5g": (true|false),$', ""), matched:1});
+		//regDict.set("cpuUsageEreg", {ereg: new EReg('^"cpuUsage": ([0-9]+),$', ""), matched:1});
+		//regDict.set("usedMemoryEreg", {ereg: new EReg('^"usedMemory": ([0-9]+),$', ""), matched:1});
+		//regDict.set("statusFwupgradeEreg", {ereg: new EReg('^"statusFwupgrade": (true|false),$', ""), matched:1});
+		//regDict.set("versionEreg", {ereg: new EReg('^"version": "([\\s\\S]+)",$', ""), matched:1});
+		//regDict.set("snBoxEreg", {ereg: new EReg('^"snBox": "(SFAA[0-9]{8})",$', ""), matched:1});
+		//regDict.set("snTecrepEreg", {ereg: new EReg('^"snTecrep": "(SFAA[0-9]{8})",$', ""), matched:1});
+		//regDict.set("rxEreg", {ereg: new EReg('^"rx": (\\-[0-9.]+),$', ""), matched:1});
+		//regDict.set("txEreg", {ereg: new EReg('^"tx": ([0-9.]+),$', ""), matched:1});
+		//regDict.set("remoteManagementEreg", {ereg: new EReg('^"remoteManagement": (true|false),?$', ""), matched:1});
 		signal = new FlxTypedSignal<Map<String,Map<String,String>>->Void>();
 		Browser.document.addEventListener("paste", onPaste);
 	}
@@ -70,7 +128,7 @@ class VTIdataParser
 	{
 		case account : parseCustomerProfile(content);
 			//case healtcheck : parseHealthCheckDashboard(content);
-			case events : [];
+			case events : parseHealthCheckDashboard(content);
 		}
 		);
 	}
@@ -103,6 +161,10 @@ class VTIdataParser
 		/**
 		 * GET TOPICS FOR CONFIG
 		 */
+		var currentTopic = "";
+		var currentSubTopic = "";
+		var currentEreg = "";
+		var dataMainTopic = "";
 		var topicsLoded = Json.parse(Assets.getText("assets/data/customerProfile.json"));
 
 		var topics:Map<String, Map<String, Map<String, RegexableProfile>>> = [];
@@ -129,13 +191,10 @@ class VTIdataParser
 				}
 			}
 		}
-		var currentTopic = "";
-		var currentSubTopic = "";
-		var currentEreg = "";
-		var dataMainTopic = "";
+
 		for (line in t)
 		{
-              
+
 			if (LANG =="" && regDict.get("getLangEreg").ereg.match(line))
 			{
 				//#if debug
@@ -192,13 +251,13 @@ class VTIdataParser
 						//#if debug
 						//trace('3.B.1 $dataMainTopic is not in the profile --> added now');
 						//#end
-						profile.set( dataMainTopic, 
-									[topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal => matched]);
+						profile.set( dataMainTopic,
+									 [topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal => matched]);
 						if (dataMainTopic == "plan")
 						{
 							//#if debug
-						//trace('3.B.1.A dataMainTopic $dataMainTopic is of type PLAN  --> set ', currentTopic);
-						//#end
+							//trace('3.B.1.A dataMainTopic $dataMainTopic is of type PLAN  --> set ', currentTopic);
+							//#end
 							profile.get(dataMainTopic).set(dataMainTopic, currentTopic);
 						}
 					}
@@ -209,7 +268,7 @@ class VTIdataParser
 						//#end
 						profile.get( dataMainTopic ).set( topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal, matched);
 					}
-					
+
 					topics.get(LANG).get( currentTopic ).get(currentSubTopic).matched = true;
 					//#if debug
 					//trace('3.B.LAST tell topic parser that it matched --> topics.get($LANG).get( $currentTopic ).get($currentSubTopic).matched SET TO TRUE now ', topics.get(LANG).get( currentTopic ).get(currentSubTopic) );
@@ -223,16 +282,19 @@ class VTIdataParser
 					//#end
 					currentSubTopic = line;
 				}
-				else{
+				else
+				{
 					//#if debug
 					//trace('3.D Line ($line) Not matched ($currentEreg) and $currentTopic not in TOPICS ', line );
 					//#end
 				}
-			}else{
-				
+			}
+			else
+			{
+
 				//#if debug
-				  //trace("1.B line SKIPED", line );
-				  //#end
+				//trace("1.B line SKIPED", line );
+				//#end
 			}
 
 		}
@@ -289,16 +351,20 @@ class VTIdataParser
 		}
 
 	}*/
-	/*
+	/**/
 	function parseHealthCheckDashboard(s:String):Map<String,Map<String,String>>
 	{
-		var mainTopics:Array<String> = ["META", "CRM", "TV", "VOD", "Selfcare", "Voice", "Fiber FLL", "IPs", "DHCP", "ONT Config TFTP", "OLT (nokia/huawei)", "Router"];
-		var dataSet:Map<String, Map<String,String>> = [];
+		var profile:Map<String,Map<String,String>> = [];
+		var t:Array<String> = s.split("\n");
+		//var mainTopics:Array<String> = ["META", "CRM", "TV", "VOD", "Selfcare", "Voice", "Fiber FLL", "IPs", "DHCP", "ONT Config TFTP", "OLT (nokia/huawei)", "Router"];
+		var mainTopics:Array<String> = ["META", FIBER_FLL];
+		var topicsLoded = Json.parse(Assets.getText("assets/data/dashboardSante.json"));
+		//var dataSet:Map<String, Map<String,String>> = [];
 		for ( f in mainTopics)
 		{
-			dataSet.set(f, new Map<String,String>());
+			profile.set(f, new Map<String,String>());
 		}
-		var t:Array<String> = s.split("\n");
+
 		//trace(t);
 		var n:Array<String> = [];
 		var trimed = "";
@@ -314,58 +380,24 @@ class VTIdataParser
 		var hasCollum = 0;
 		var hasEqual = 0;
 		//regDict.set("
-		regDict.set("otoEreg", {ereg: new EReg("^[A-B.0-9]+$", ""), matched:1});
-		regDict.set("otoPortEreg", {ereg: new EReg("^[A-D1-4]$", ""), matched:1});
-		regDict.set("boxSerialEreg", {ereg: new EReg("^SFAA[0-9]{8}$", ""), matched:1});
-		regDict.set("lexIdEreg", {ereg: new EReg("^[A-Z0-9]+$", ""), matched:1});
-		regDict.set("oltNameEreg", {ereg: new EReg("^[0-9]{2}$", ""), matched:1});
-		regDict.set("oltObject", {ereg: new EReg("^[0-9A-Z_\\-:]+$", ""), matched:1});
-		regDict.set("ip4GatewayEreg", {ereg: new EReg("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", ""), matched:1});
-		regDict.set("providerEreg", {ereg: new EReg('^"provider": "([\\S]+)",$', "i"), matched:1});
-		//regDict.set("providerEreg", {ereg: new EReg('^([\\S]+)"$', "i"), matched:1});
-		regDict.set("numberOnlyEreg", {ereg: new EReg("^[0-9]+$", ""), matched:1});
-		regDict.set("eventDateEreg", {ereg: new EReg("^[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}\\s[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]+$", ""), matched:1});
-		regDict.set("boolEreg", {ereg: new EReg("^true|false$", "i"), matched:1});
-		regDict.set("decimalNumberEreg", {ereg: new EReg("^[0-9.]+$", ""), matched:1});
-		regDict.set("numberOnlyFlexibleEreg", {ereg: new EReg("[0-9]+", ""), matched:1});
-		regDict.set("numberOnlyStartEreg", {ereg: new EReg("^[0-9]+", ""), matched:1});
-		//regDict.set("rxValuesEreg", {ereg: new EReg("^\\-[0-9.]+$", ""), matched:1});
-		//regDict.set("statusEreg", {ereg: new EReg('^"status": "([0-9a-zA-Z_]+)"', ""), matched:1});
-		regDict.set("idStatusEreg", {ereg: new EReg('^"idStatus": ([0-9a-zA-Z_]+),$', ""), matched:1});
-		regDict.set("eventdateEreg", {ereg: new EReg('^"eventdate": "([0-9_\\-\\:\\. ]+)",$', ""), matched:1});
-		regDict.set("reachableEreg", {ereg: new EReg('^"reachable": (true|false),$', ""), matched:1});
-		regDict.set("tempCpuEreg", {ereg: new EReg('^"tempCpu": ([0-9.]+),$', ""), matched:1});
-		regDict.set("tempTransceiverEreg", {ereg: new EReg('^"tempTransceiver": ([0-9.]+),$', ""), matched:1});
-		regDict.set("uptimeEreg", {ereg: new EReg('^"uptime": ([0-9]+),$', ""), matched:1});
-		regDict.set("statusWanmgtEreg", {ereg: new EReg('^"statusWanmgt": (true|false),$', ""), matched:1});
-		regDict.set("statusWanhsiEreg", {ereg: new EReg('^"statusWanhsi": (true|false),$', ""), matched:1});
-		regDict.set("statusWanvoipEreg", {ereg: new EReg('^"statusWanvoip": (true|false),$', ""), matched:1});
-		regDict.set("statusVoiceRegEreg", {ereg: new EReg('^"statusVoiceReg": (true|false),$', ""), matched:1});
-		regDict.set("nberDectHandsetEreg", {ereg: new EReg('^"nberDectHandset": ([0-9]+),$', ""), matched:1});
-		regDict.set("statusWifi24gEreg", {ereg: new EReg('^"statusWifi24g": (true|false),$', ""), matched:1});
-		regDict.set("statusWifi5gEreg", {ereg: new EReg('^"statusWifi5g": (true|false),$', ""), matched:1});
-		regDict.set("cpuUsageEreg", {ereg: new EReg('^"cpuUsage": ([0-9]+),$', ""), matched:1});
-		regDict.set("usedMemoryEreg", {ereg: new EReg('^"usedMemory": ([0-9]+),$', ""), matched:1});
-		regDict.set("statusFwupgradeEreg", {ereg: new EReg('^"statusFwupgrade": (true|false),$', ""), matched:1});
-		regDict.set("versionEreg", {ereg: new EReg('^"version": "([\\s\\S]+)",$', ""), matched:1});
-		regDict.set("snBoxEreg", {ereg: new EReg('^"snBox": "(SFAA[0-9]{8})",$', ""), matched:1});
-		regDict.set("snTecrepEreg", {ereg: new EReg('^"snTecrep": "(SFAA[0-9]{8})",$', ""), matched:1});
-		regDict.set("rxEreg", {ereg: new EReg('^"rx": (\\-[0-9.]+),$', ""), matched:1});
-		regDict.set("txEreg", {ereg: new EReg('^"tx": ([0-9.]+),$', ""), matched:1});
-		regDict.set("remoteManagementEreg", {ereg: new EReg('^"remoteManagement": (true|false),?$', ""), matched:1});
+		
 		var topics = [
 			"META" => [
 		"lang" => {matched:false, ereg: "getLangEreg"}
 			],
-		"Fiber FLL" => [
-		"otoId" =>{matched:false, ereg: "otoEreg"},
-		"otoPortId"=>{matched:false, ereg: "otoPortEreg"},
-		"routerSerialNumber"=>{matched:false, ereg: "boxSerialEreg"},
-		"lexId"=>{matched:false, ereg: "lexIdEreg"},
-		"oltName"=>{matched:false, ereg: "oltNameEreg"},
-		"status"=>{matched:false, ereg: "allInclusivEreg"},
-		"oltObject" =>{matched:false, ereg: "oltObject"}
-		],
+		FIBER_FLL => [
+			otoId =>{matched:false, ereg: "otoEreg"},
+			otoPortId=>{matched:false, ereg: "otoPortEreg"},
+			routerSerialNumber=>{matched:false, ereg: "boxSerialEreg"},
+			lexId=>{matched:false, ereg: "lexIdEreg"},
+			oltName=>{matched:false, ereg: "oltNameEreg"},
+			oltBoard=>{matched:false, ereg: "oltBoardEreg"},
+			ponPort=>{matched:false, ereg: "ponPortEreg"},
+			breakoutCableId=>{matched:false, ereg: "breakoutCableIdEreg"},
+			fiberNumber=>{matched:false, ereg: "fiberNumberEreg"},
+			//"status"=>{matched:false, ereg: "allInclusivEreg"},
+			oltObject =>{matched:false, ereg: "oltObject"}
+		]/*,
 		"ONT Config TFTP"=>[
 		"ARC_WAN_1_IP4_Gateway" =>{matched:false, ereg: "ip4GatewayEreg"},
 		"ARC_WAN_1_IP6_StaticGateway"=>{matched:false, ereg: "allInclusivEreg"}
@@ -396,12 +428,13 @@ class VTIdataParser
 		"rx"=>{matched:false, ereg: "rxEreg"},
 		"tx"=>{matched:false, ereg: "txEreg"},
 		"remoteManagement"=>{matched:false, ereg: "remoteManagementEreg"}
-		]
+		] */
 		];
 		var line = "";
 		var key = "";
 		var val = "";
 		var tmp = [];
+		try{
 		for (j in n)
 		{
 			line = StringTools.trim(j);
@@ -435,7 +468,7 @@ class VTIdataParser
 							var o = topics.get(currentSet).get(key);
 							if ( regDict.get(o.ereg).ereg.match( line ))
 							{
-								dataSet.get(currentSet).set(key, regDict.get(o.ereg).ereg.matched(1));
+								profile.get(currentSet).set(key, regDict.get(o.ereg).ereg.matched(1));
 								topics.get(currentSet).get(key).matched = true;
 								currentSubSet = "";
 							}
@@ -451,7 +484,7 @@ class VTIdataParser
 						val = StringTools.trim(tmp[1]);
 						if (topics.get(currentSet).exists(key))
 						{
-							dataSet.get(currentSet).set(key, val);
+							profile.get(currentSet).set(key, val);
 							topics.get(currentSet).get(key).matched = true;
 							currentSubSet = "";
 						}
@@ -474,7 +507,7 @@ class VTIdataParser
 							// set value
 							if (regDict.get(topics.get(currentSet).get(currentSubSet).ereg).ereg.match(val) )
 							{
-								dataSet.get(currentSet).set(currentSubSet, val);
+								profile.get(currentSet).set(currentSubSet, val);
 								topics.get(currentSet).get(currentSubSet).matched = true;
 								currentSubSet = "";
 							}
@@ -492,9 +525,15 @@ class VTIdataParser
 				}
 				else
 				{
-					if ( regDict.get(topics.get(currentSet).get("lang").ereg).ereg.match(j) )
+					var regex = regDict.get(topics.get(currentSet).get("lang").ereg).ereg;
+					if ( regex.match(j) )
 					{
-						dataSet.get(currentSet).set("lang", regDict.get("getLangEreg").ereg.matched(2));
+						var matches = regex.matched(2);
+						#if debug
+						trace('tstool.utils.VTIdataParser::parseHealthCheckDashboard::matches ${matches}');
+						#end
+						//trace("currentSet " + currentSet + " " + line +" " + regex.matched + " " + regex.matched(0)+ " " + regex.matched(1)+ " " + regex.matched(2));
+						profile.get(currentSet).set("lang", matches);
 						topics.get(currentSet).get("lang").matched = true;
 						currentSubSet = "";
 					}
@@ -502,10 +541,17 @@ class VTIdataParser
 			}
 
 		}
-		trace(topics);
-		trace(dataSet);
-		return dataSet;
-	}*/
+		}
+		catch (e)
+		{
+			trace(e);
+			trace(currentSet);
+			trace(currentSubSet);
+		}
+		//trace(topics);
+		//trace(profile);
+		return profile;
+	}
 	function cleanKey(s:String):String
 	{
 		return

@@ -29,7 +29,12 @@ class Translator extends FireTongue
 	}
 	public function translate(fullClassName: String, txt:String, ?suffix:String="", ?context="data"):String
 	{
-
+        //#if debug
+		//trace('tstool.utils.Translator::translate::fullClassName ${fullClassName}');
+		//trace('tstool.utils.Translator::translate::txt ${txt}');
+		//trace('tstool.utils.Translator::translate::suffix ${suffix}');
+		//trace('tstool.utils.Translator::translate::context ${context}');
+		//#end
 		var tString = switch (context)
 		{
 			//case "data" : "$" + this._name + "_" + suffix;

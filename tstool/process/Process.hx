@@ -10,6 +10,7 @@ import tstool.layout.UI;
 import tstool.layout.Question;
 import tstool.layout.History.Interactions;
 import tstool.layout.Instructions;
+import tstool.process.types.INamableClass;
 //import tstool.utils.Mail;
 
 import flixel.FlxG;
@@ -37,6 +38,7 @@ typedef ProcessContructor =
  * @author
  */
 
+//class Process implements INamableClass extends FlxState
 class Process extends FlxState
 {
 	static public var STORAGE:Map<String,Dynamic> = new Map<String,Dynamic>();

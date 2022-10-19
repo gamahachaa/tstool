@@ -79,7 +79,8 @@ class Contractor
 		payer=null;
 		user=null;
 		ownerValidateEmail=false;
-		balance=null;
+		balance = null;
+		service = null;
 	}
 	public function getEmails():Array<String>
 	{

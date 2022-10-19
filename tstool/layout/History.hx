@@ -302,8 +302,9 @@ class History
 		return findFirstStepsClassInHistory(step).values;
 	}
 	public function findValueOfFirstClassInHistory(step:Class<Process>, valueIndex:String, ?fromBegining:Bool = true):ValueReturn{
-		var v:Snapshot = findStepsClassInHistory(step, 1, fromBegining)[0];
-		if (v.values == null || !v.values.exists(valueIndex)){
+		var steps = findStepsClassInHistory(step, 1, fromBegining);
+		var v:Snapshot = steps[0];
+		if ( steps.length == 0 || v.values == null || !v.values.exists(valueIndex)){
 			return {exists:false, value: null};
 		}
 		else
