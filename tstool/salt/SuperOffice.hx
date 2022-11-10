@@ -4,6 +4,10 @@ package tstool.salt;
  * ...
  * @author bb
  */
+enum ChangeableAttributes{
+	 queues;
+	 descs;
+}
 class SuperOffice 
 {
 	public var domain(get, null):String;
@@ -19,6 +23,23 @@ class SuperOffice
 		this.queue = queue;
 		this.number = number;
 		this.domain = domain;
+	}
+	public function clone():SuperOffice
+	{
+		return new SuperOffice(this.domain, this.number, this.queue, this.desc, this.email);
+	}
+	public function cloneWithNewAttributes(attr:Map<ChangeableAttributes, String>):SuperOffice
+	{
+		var clone = this.clone();
+		if (attr.exists(queues))
+		{
+			clone.queue = attr.get(queues);
+		}
+		if (attr.exists(descs))
+		{
+			clone.desc = attr.get(descs);
+		}
+		return clone;
 	}
 	public function toString():String
 	{

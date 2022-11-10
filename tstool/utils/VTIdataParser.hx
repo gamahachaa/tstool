@@ -81,7 +81,7 @@ class VTIdataParser
 		regDict.set("breakoutCableIdEreg", {ereg: new EReg(ExpReg.BREAKOUT_CABLE, ""), matched:1});//KP100314-C0010 KP100314-C0009/4
 		regDict.set("fiberNumberEreg", {ereg: new EReg(ExpReg.PORTS_ID, ""), matched:1});//KP100314-C0010 KP100314-C0009/4
 		regDict.set("lexIdEreg", {ereg: new EReg(ExpReg.LEX_ID, ""), matched:1});
-		regDict.set("oltNameEreg", {ereg: new EReg(ExpReg.OLT_NAME, ""), matched:1});
+		regDict.set("oltNameEreg", {ereg: new EReg(ExpReg.OLT_NAME, "i"), matched:1});
 		regDict.set("oltObject", {ereg: new EReg(ExpReg.OLT_OBJECT, ""), matched:1});
 		//regDict.set("ip4GatewayEreg", {ereg: new EReg("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", ""), matched:1});
 		//regDict.set("providerEreg", {ereg: new EReg('^"provider": "([\\S]+)",$', "i"), matched:1});
@@ -151,10 +151,10 @@ class VTIdataParser
 
 		var LANG = "";
 		var mainTopics:Map<String,Map<String,String>> = [
-			"FR" => ["meta"=>"meta", "Owner"=>"owner", "Payeur"=>"payer", "Solde courant"=>"balance", "Offre : Salt Fiber"=>"plan","Offre : Salt GigaBox"=>"plan", "Offre : Salt Office"=>"plan"],
-			"IT" => ["meta"=>"meta", "Owner"=>"owner", "Pagatore"=>"payer", "Saldo"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan",  "Abo : Salt Office"=>"plan"],
-			"DE" => ["meta"=>"meta", "Owner"=>"owner", "Zahler"=>"payer", "Aktueller Saldo"=>"balance", "Angebot : Salt Fiber"=>"plan", "Angebot : Salt GigaBox"=>"plan", "Angebot : Salt Office"=>"plan"],
-			"EN" => ["meta"=>"meta", "Owner"=>"owner", "Payer"=>"payer", "Current Balance"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan",  "Abo : Salt Office"=>"plan"],
+			"FR" => ["meta"=>"meta", "Owner"=>"owner", "Payeur"=>"payer", "Solde courant"=>"balance", "Offre : Salt Fiber"=>"plan","Offre : Salt GigaBox"=>"plan", "Offre : Salt Office"=>"plan", "Offre : Pro Office"=>"plan"],
+			"IT" => ["meta"=>"meta", "Owner"=>"owner", "Pagatore"=>"payer", "Saldo"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan",  "Abo : Salt Office"=>"plan",  "Abo : Pro Office"=>"plan"],
+			"DE" => ["meta"=>"meta", "Owner"=>"owner", "Zahler"=>"payer", "Aktueller Saldo"=>"balance", "Angebot : Salt Fiber"=>"plan", "Angebot : Salt GigaBox"=>"plan", "Angebot : Salt Office"=>"plan", "Angebot : Pro Office"=>"plan"],
+			"EN" => ["meta"=>"meta", "Owner"=>"owner", "Payer"=>"payer", "Current Balance"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan",  "Abo : Salt Office"=>"plan",  "Abo : Pro Office"=>"plan"],
 		];
 
 		///////////////////////////////////////////////////////////////////////////////
@@ -292,9 +292,9 @@ class VTIdataParser
 			else
 			{
 
-				//#if debug
-				//trace("1.B line SKIPED", line );
-				//#end
+				#if debug
+				trace("1.B line SKIPED", line );
+				#end
 			}
 
 		}

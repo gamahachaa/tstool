@@ -22,7 +22,7 @@ class TripletTemplate extends TripletMultipleInput
 
 	public function new (soTemplate:SOTemplate)
 	{
-		mobileReg = new EReg(ExpReg.MISIDN_UNIVERAL, "i");
+		mobileReg = new EReg(ExpReg.MISIDN_MOBILE_NOCHEATING, "i");
 		super(
 		[{
 			ereg: new EReg(ExpReg.EMAIL,"i"),

@@ -2,14 +2,17 @@ package tstool.process;
 import Main;
 import haxe.Exception;
 import js.Browser;
+import lime.utils.AssetType;
 import lime.utils.Assets;
 import tstool.layout.UI;
+import tstool.salt.SuperOffice;
 import tstool.utils.SwiftMailWrapper.Result;
 import tstool.salt.TicketMail;
 import tstool.salt.SOTickets;
 import xapi.Activity;
 import xapi.Verb;
 //import xapi.activities.Definition;
+using StringTools;
 
 /**
  * ...
@@ -18,7 +21,7 @@ import xapi.Verb;
 class ActionTicket extends ActionMemo
 {
 	var mail:TicketMail;
-	var ticket:SOTickets;
+	var ticket:SuperOffice;
 	var resolved:Bool;
 
 	public function new(ticket: SOTickets, ?resolved:Bool=false)
@@ -26,24 +29,24 @@ class ActionTicket extends ActionMemo
 		try
 		{
 			super();
-
-			this.ticket = ticket;
-			/**
-			 * @todo FIX out of main classes
-			 */
-			#if fiber
-			this.resolved = resolved;
-			var fut = Assets.getText("assets/data/ipv4_fut.txt");
-			var fut_start:Float = new Date(2022, 1, 17, 0, 0, 0).getTime();
-
-			if (fut.indexOf(Main.customer.contract.contractorID) >-1 && Date.now().getTime()>fut_start)
+            
+			//this.ticket = ticket;
+            var description = ticket.desc;
+			var a:String = "";
+			for (i in Assets.list(AssetType.TEXT))
 			{
-				//this.ticket.desc = "MIGipV6 " + this.ticket.desc;
+				if (i.indexOf(Main.TMP_FILTER_ASSET_PATH) >-1)
+				{
+					a =  Assets.getText(i);
 
-				this.ticket.queue = "FIBER_IP_MIGRATION_SO";
+					if ( a.indexOf( Main.customer.contract.contractorID ) >-1)
+					{
+						description += i.replace(Main.TMP_FILTER_ASSET_PATH,"").replace(".txt","");
+					}
+				}
 			}
-			#end
-			mail = new TicketMail(this.ticket, this, resolved);
+            this.ticket = ticket.cloneWithNewAttributes([descs => description]);
+			mail = new TicketMail(cast this.ticket, this, resolved);
 		}
 		catch (e:Exception)
 		{
@@ -51,6 +54,10 @@ class ActionTicket extends ActionMemo
 		}
 
 	}
+	//function renameticket(s:String, ticket:SOTickets)
+	//{
+		//ticket.desc += ' $s ${this.ticket.desc}';
+	//}
 	override public function create()
 	{
 
@@ -81,28 +88,19 @@ class ActionTicket extends ActionMemo
 
 	function onMailError(parameter0:Dynamic):Void
 	{
-		
+
 		closeSubState();
 	}
 
 	function onMailSuccess(data:Result):Void
 	{
-		
 		closeSubState();
 		//#if debug
 		Main.trackH.setVerb(Verb.submitted);
-
-         
 		cast(Main.trackH.object, Activity).definition.extensions.set("https://cs.salt.ch", this.ticket.toString() );
-
-		//#else
-		//Main.track.setCase(this.ticket);
-		//Main.track.setVerb("submitted");
-		//#end
-
 		switch data.status {
 		case "success" : super.onClick();
-		case "failed" : openSubState(new DataView(UI.THEME.bg, this._name, '\nFailed to create the ticket !!!\n\nPlease do a print screen of this and send it to qook@salt.ch\n+${data.error} (${data.additional}). Also make note of the steps and raise the same S.O. ${ticket.number} ticket manually '));
+			case "failed" : openSubState(new DataView(UI.THEME.bg, this._name, '\nFailed to create the ticket !!!\n\nPlease do a print screen of this and send it to qook@salt.ch\n+${data.error} (${data.additional}). Also make note of the steps and raise the same S.O. ${ticket.number} ticket manually '));
 		}
 	}
 
@@ -120,15 +118,15 @@ class ActionTicket extends ActionMemo
 			memoTxtArea.show(false);
 			mail.successSignal.addOnce(onMailSuccess);
 			openSubState(new TicketSendSub());
-			
+
 			mail.build( buildMemo(memoTxt, defaultMemo) );
-			
+
 			mail.send();
 		}
 	}
 	inline function buildMemo(memo:String, defautlTxt:String)
 	{
-		
+
 		var m = StringTools.trim(memo) ;
 		if (m == "")
 			m = "<p><strong>MEMO:</strong><br/>No memo written by agent</p>";

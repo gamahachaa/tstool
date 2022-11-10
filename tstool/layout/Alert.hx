@@ -2,10 +2,10 @@ package tstool.layout;
 import firetongue.Replace;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.FlxState;
+//import flixel.FlxState;
 import flixel.text.FlxText;
 import tstool.layout.Question;
-import tstool.process.types.INamableClass;
+//import tstool.process.types.INamableClass;
 
 
 /**

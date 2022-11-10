@@ -72,5 +72,14 @@ class Translator extends FireTongue
 		#end
 
 	}
+	public function getPreferedQookLang():String
+	{
+		return switch(this.locale)
+		{
+			case "de-DE": "de";
+			case "en-GB": "de";
+			case _: "fr";
+		}
+	}
 	
 }

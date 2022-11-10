@@ -2,7 +2,7 @@ package tstool.process;
 
 import flixel.FlxG;
 import flixel.math.FlxPoint;
-import flixel.util.FlxSignal.FlxTypedSignal;
+//import flixel.util.FlxSignal.FlxTypedSignal;
 import tstool.layout.History.Interactions;
 import tstool.layout.UIInputTfCore;
 import tstool.process.MultipleInput.ValidatedInputs;

@@ -1,6 +1,7 @@
 package tstool.process;
 import flixel.FlxG;
 import flixel.math.FlxPoint;
+import string.StringUtils;
 import tstool.layout.BIGUIInputTfCore;
 import tstool.layout.ScriptView;
 
@@ -25,7 +26,7 @@ class ActionMemo extends Action
 
 		memoDefault = MainApp.translator.translate(_name, "describeIssue", "UI1", "meta");
 
-		memoTxtArea = new BIGUIInputTfCore(750, 250, memoDefault, [bottom, left]);
+		memoTxtArea = new BIGUIInputTfCore(900, 140, memoDefault, [bottom, left]);
 
 		//memoTxtArea = new BIGUIInputTfCore(750, 50, memoDefault, [bottom, left]);
 		defaultMemo = "";
@@ -75,7 +76,8 @@ class ActionMemo extends Action
 	}
 	function validate()
 	{
-		var check = memoTxt.split(" ").length >= 3 && StringTools.trim(memoTxt) != defaultMemo;
+		//var check = memoTxt.split(" ").length >= 3 && StringTools.trim(memoTxt) != defaultMemo;
+		var check = StringUtils.isMinimalText(memoTxt, memoDefault); 
 		if (check)
 		{
 			memoTxtArea.show(false);

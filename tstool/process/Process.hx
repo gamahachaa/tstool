@@ -26,6 +26,7 @@ import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
 
 using string.StringUtils;
+using StringTools;
 
 typedef ProcessContructor =
 {
@@ -89,7 +90,7 @@ class Process extends FlxState
 		_illustration = MainApp.translator.translate(_name, _illustration, "ILLUSTRATION");
 		_qookLink = MainApp.translator.translate(_name, _qook, "QOOK").split("|");
 		#if debug
-		trace(_qookLink);
+		//trace(_qookLink);
 		#end
 	}
 
@@ -147,6 +148,9 @@ class Process extends FlxState
 		}
 		if (!Lambda.empty(STORAGE))
 		{
+			#if debug
+			trace("tstool.process.Process::create::STORAGE", STORAGE );
+			#end
 			ui.setReminder(buildReminderString());
 		}
 		ui.backBtn.visible = Main.HISTORY.history.length > 0;
@@ -154,15 +158,28 @@ class Process extends FlxState
 	}
 	function buildReminderString():String
 	{
+		#if debug
+		trace("tstool.process.Process::buildReminderString Main.STORAGE_DISPLAY", Main.STORAGE_DISPLAY);
+		#end
 		var s = "";
-		var i = 0;
+		var i = 1;
 		var separator = "\t";
 		for ( k => v in STORAGE )
 		{
-
-			separator = ( i % 2 == 0) ?".\t": "\n";
-			s += k + ": " + v + separator;
-			i++;
+			#if debug
+			trace("tstool.process.Process::buildReminderString::k", k,v );
+			#end
+			if (Main.STORAGE_DISPLAY.indexOf(k) == -1) continue;
+			var val = v.trim();
+			if (val != "")
+			{
+				#if debug
+				trace("tstool.process.Process::buildReminderString::i % 3", i, i % 3 );
+				#end
+				separator = ( i % 3 == 0) ? "\n": ".\t";
+				s += k.toLowerCase() + ": " + val.toUpperCase() + separator;
+				i++;
+			}
 		}
 		return s;
 	}
@@ -356,12 +373,11 @@ class Process extends FlxState
 
 		content += "DETAILS:\n" + History.stripTags(_detailTxt) + doubleBreak ;
 		content += "HISTORY:\n" + Main.HISTORY.getLocalizedStepsStringsList() + doubleBreak;
-        commentDebounce = 300;
-		if(commentDebounce == 300)
+		commentDebounce = 300;
+		if (commentDebounce == 300)
 			Browser.window.location.href = to + subject + "?&body=" + StringTools.urlEncode(content);
 
 	}
-
 
 	/**
 	 * Override when child class takes contructor parameters
@@ -397,7 +413,7 @@ class Process extends FlxState
 	{
 		var slowClasses:Array<Dynamic> = [ActionDropDown, ActionMultipleInput, ActionRadios, ActionTicket, DescisionDropDown, DescisionLoop, DescisionMultipleInput, TripletMultipleInput];
 		var iteration = Main.HISTORY.getClassIterations(_class, interaction);
-		var index = iteration >= _nexts.length ? _nexts.length - 1 : iteration > 0?iteration - 1:0;
+		var index = iteration >= _nexts.length ? _nexts.length - 1 : iteration > 0 ? iteration - 1 : 0;
 		#if debug
 		//trace("tstool.process.Process::moveToNextClassProcess::Type.getSuperClass(_nexts[index].step)", Type.getSuperClass(_nexts[index].step) );
 		#end
@@ -412,8 +428,9 @@ class Process extends FlxState
 			#end
 		}
 
-		try{
-		FlxG.switchState(Type.createInstance(_nexts[index].step, _nexts[index].params));
+		try
+		{
+			FlxG.switchState(Type.createInstance(_nexts[index].step, _nexts[index].params));
 		}
 		catch (e:Exception)
 		{
@@ -432,10 +449,10 @@ class Process extends FlxState
 			commentDebounce--;
 		}
 		if (FlxG.mouse.justReleased)
-		{			
-            MainApp.VERSION_TIMER_value = MainApp.VERSION_TIMER_DURATION;
+		{
+			MainApp.VERSION_TIMER_value = MainApp.VERSION_TIMER_DURATION;
 		}
-		
+
 	}
 	override public function destroy():Void
 	{
@@ -450,12 +467,20 @@ class Process extends FlxState
 
 	public static function STORE(k:String,v:Dynamic):Void
 	{
+
 		//trace("tstool.process.Process::STORE");
-		if (STORAGE.exists(k) && STORAGE.get(k).indexOf(v) == -1)
+		//if (STORAGE.exists(k) && STORAGE.get(k).indexOf(v) == -1)
+		//{
+		//STORAGE.set(k, STORAGE.get(k) + v);
+		//}
+		//else{
+		//STORAGE.set(k, v);
+		//}
+		if (v.trim()!="")
 		{
-			STORAGE.set(k, STORAGE.get(k) + v);
-		}
-		else{
+			#if debug
+			trace("tstool.process.Process::STORE",k,v);
+			#end
 			STORAGE.set(k, v);
 		}
 	}

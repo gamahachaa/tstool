@@ -48,24 +48,25 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 	static var _TFFormat:TextFormat;
 	var pt:FlxPoint;
 	var _label :String;
-	
+
 	//
 	//public function new(textFieldWidth:Int, inputPrefix:String, positionsToParent:Array<Direction>, ?inpuHeight:Int=20)
 	public function new(textFieldWidth:Int, id:String, positionsToParent:Array<Direction>, ?titleTranslated:String="")
 	{
-		
+
 		var inpuHeight:Int = 20;
 		this.id = id;
 		pt = new FlxPoint(0, 0);
 		focusSignal = new FlxTypedSignal<UIInputTfCore->Void>();
 		this.positionsToParent = positionsToParent;
 		if (_TFFormat == null) _TFFormat = new TextFormat(Assets.getFont("assets/fonts/JetBrainsMono-Regular.ttf").name, 13);
-		
+
 		_label = titleTranslated;
 		//_label = titleTranslated == "" ? id : titleTranslated;
 		_labelValidator = "";
 
 		imputLabel = new FlxText(0, 0, textFieldWidth, _label + " :", 20);
+			
 		imputLabel.setFormat(UI.INTERACTION_FMT.font, UI.INTERACTION_FMT.size-2);
 
 		//inputtextfield = new FlxInputText(0, 0, textFieldWidth, 14);
@@ -108,7 +109,7 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 	//public function positionMe(parent:Rectangle, ?padding:Int=20, ?directions:Array<Direction>=null)
 	public function positionMe(p:Rectangle, ?padding:Int=4, ?directions:Array<Direction>=null):FlxPoint
 	{
-		
+
 		//trace(parent);
 		//trace(parent.y + parent.height + (padding / 4));
 		var d:Array<Direction> = directions == null ? this.positionsToParent : directions;
@@ -118,7 +119,7 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 		switch (d[0])
 		{
 			case bottom:
-				switch(d[1])
+				switch (d[1])
 				{
 					case left : imputLabel.x = p.x;
 					case right : imputLabel.x = p.x + p.width + padding;
@@ -127,9 +128,9 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 				}
 				//inputtextfield.x  = imputLabel.x = p.x + (d[1] == right ? p.width + (padding/4): 0);
 				imputLabel.y = p.y + p.height + padding;
-				
+
 			case top :
-				switch(d[1])
+				switch (d[1])
 				{
 					case left : imputLabel.x = p.x;
 					case right : imputLabel.x = p.x + p.width + padding;
@@ -137,9 +138,9 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 					case top : throw new Exception('cant position $[d[0]} and $[d[1]}');
 				}
 				imputLabel.y = p.y;
-				
+
 			case left:
-				switch(d[1])
+				switch (d[1])
 				{
 					case bottom: imputLabel.y = p.height + p.y + padding ;
 					case top : imputLabel.y = p.y;
@@ -147,9 +148,9 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 					case right : throw new Exception('cant position $[d[0]} and $[d[1]}');
 				}
 				imputLabel.x = p.x - Math.max(inputtextfield.width, imputLabel.width ) + padding ;
-				
+
 			case right:
-				switch(d[1])
+				switch (d[1])
 				{
 					case bottom: imputLabel.y = p.height + p.y + padding ;
 					case top : imputLabel.y = p.y;
@@ -157,20 +158,19 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 					case right : throw new Exception('cant position $[d[0]} and $[d[1]}');
 				}
 				imputLabel.x = p.x + p.width + padding ;
-				
 
 		}
-		
+
 		inputtextfield.y = this.imputLabel.y + this.imputLabel.height;
 		inputtextfield.x  = imputLabel.x;
-		
+
 		this.boundingRect.x = this.imputLabel.x;
 		this.boundingRect.y = this.imputLabel.y;
 		this.boundingRect.width = Math.max(this.imputLabel.width, this.inputtextfield.width);
 		this.boundingRect.height = this.imputLabel.height + this.imputLabel.height;
 		pt.x = boundingRect.x + boundingRect.width;
 		pt.y = boundingRect.y + boundingRect.height;
-		return pt; 
+		return pt;
 	}
 	function onPaste(e: ClipboardEvent):Void
 	{
@@ -231,10 +231,10 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 		//inputtextfield.caretIndex = t.length;
 		inputtextfield.setSelection( t.length, t.length );
 		inputtextfield.invalidate();
-		
+
 		//inputtextfield.draw();
 		//inputtextfield.drawFrame(true);
-		
+
 	}
 	public function blink( start:Bool )
 	{
@@ -284,7 +284,7 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 		return this.imputLabel.y;
 	}
 
-	 function get_boundingRect():Rectangle
+	function get_boundingRect():Rectangle
 	{
 		return boundingRect;
 	}
@@ -294,15 +294,15 @@ class UIInputTfCore implements IFlxDestroyable implements IPositionable
 		return focusSignal;
 	}
 
-function get_positionsToParent():Array<Direction> 
-{
-	return positionsToParent;
-}
+	function get_positionsToParent():Array<Direction>
+	{
+		return positionsToParent;
+	}
 
-function get_id():String 
-{
-	return id;
-}
+	function get_id():String
+	{
+		return id;
+	}
 
 	public function destroy()
 	{

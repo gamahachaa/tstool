@@ -47,8 +47,8 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		
 		menuBG = new FlxShapeBox(0, 0, FlxG.width, 50, {thickness:0, color:SaltColor.BLACK_PURE}, SaltColor.BLACK_PURE);
 		
-		reminderMsgBox = new FlxText(0, 0, 460, "", 10, true);
-		reminderMsgBox.setFormat(UI.INTERACTION_FMT.font, UI.META_FMT.size -2, SaltColor.MUSTARD);
+		reminderMsgBox = new FlxText(0, 0, FlxG.width/2, "", 10, true);
+		reminderMsgBox.setFormat(UI.INTERACTION_FMT.font, UI.META_FMT.size -3, SaltColor.MUSTARD);
 		reminderMsgBox.visible = false;
 		
 		exitBtn = new FlxButton(0, 0, "", onExit );
@@ -144,8 +144,25 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 	
 	public function position()
 	{
+
+		reminderMsgBox.y = 0;
+		reminderMsgBox.x = 0 ;
+		
+		comment.y = bucket.y = fr.y = de.y = it.y = en.y = logout.y = exitBtn.y = trainingMode.y = howTo.y = 4;
+		comment.x = FlxG.width / 2 - UI.PADDING;
+		bucket.x = comment.x + comment.width + UI.PADDING * 2;
+		fr.x = bucket.x + bucket.width + UI.PADDING * 2;
+		de.x = fr.x + fr.width + UI.PADDING/3;
+		it.x = de.x + de.width + UI.PADDING/3;
+		en.x = it.x + it.width + UI.PADDING/3;
+		trainingMode.x = en.x + en.width + UI.PADDING*2;
+		exitBtn.x = trainingMode.x + trainingMode.width + UI.PADDING * 2;
+		logout.x = exitBtn.x + exitBtn.width + UI.PADDING * 2;
+		howTo.x = logout.x + logout.width + UI.PADDING * 2;
+		
+		/*
 		bucket.y = 4;
-		bucket.x = FlxG.width / 2;
+		bucket.x = (FlxG.width / 3)*2;
 
 		fr.y = de.y  = 4;
 		it.y = en.y = 4;
@@ -171,6 +188,7 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		//reminderMsgBox.y = menuBG.height/2 - (reminderMsgBox.height/2);
 		reminderMsgBox.y = 0;
 		reminderMsgBox.x = UI.PADDING/2 ;
+		*/
 	}
 	//function onBack() 
 	//{

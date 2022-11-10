@@ -24,7 +24,7 @@ enum Parameters
 typedef Result =
 {
 	var status:String;
-	var error:String;
+	var error:Dynamic;
 	var additional:String;
 }
 class SwiftMailWrapper extends Http 

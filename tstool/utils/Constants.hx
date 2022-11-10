@@ -1,5 +1,5 @@
 package tstool.utils;
-import tstool.utils.DateToolsBB.Opennings;
+import date.DateToolsBB.Opennings;
 
 /**
  * ...

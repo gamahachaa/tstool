@@ -23,12 +23,14 @@ class DescisionTemplate extends DescisionMultipleInput
 	var clicked:Interactions;
 	var mobileReg:EReg;
 	var fields:TemplateStyle;
+	static inline var JUSTIFICATION:String = "justification";
 
 	public function new (soTemplate:SOTemplate, ?fields:TemplateStyle=BOTH)
 	{
 		this.fields = fields;
-		mobileReg = new EReg(ExpReg.MISIDN_UNIVERAL, "i");
+		mobileReg = new EReg(ExpReg.MISIDN_MOBILE_NOCHEATING, "i");
 		var f:Array<ValidatedInputs> = [];
+		var lastBuddy  = "";
 		if (fields == BOTH || fields == EMAIL)
 		{
 			f.push(
@@ -42,6 +44,7 @@ class DescisionTemplate extends DescisionMultipleInput
 				}
 			}
 			);
+			lastBuddy = EMAIL_INPUT;
 		}
 		if (fields == BOTH || fields == SMS)
 		{
@@ -57,7 +60,20 @@ class DescisionTemplate extends DescisionMultipleInput
 				}
 			}
 			);
+			lastBuddy = MSISDN_INPUT;
 		}
+		f.push(
+		{
+			ereg:new EReg(ExpReg.MINIMAL_3WORDS,"i"),
+			input:{
+				width:450,
+				prefix: JUSTIFICATION,
+				buddy: lastBuddy,
+				position: [bottom, left],
+				mustValidate: [No]
+			}
+		}
+		);
 		super(f);
 
 		clicked = Mid;
@@ -66,7 +82,14 @@ class DescisionTemplate extends DescisionMultipleInput
 	}
 	override public function create():Void
 	{
+
 		super.create();
+		var justification = MainApp.translator.get("$justification_UI1", "meta") +" (" + this._buttonNoTxt +")";
+		/**
+		 * @todo refactor to text field
+		 */
+		this.multipleInputs.inputs.get(JUSTIFICATION).imputLabel.text = justification;
+		//
 		if (fields == BOTH || fields == EMAIL)
 		{
 			if (Main.customer.contract != null && Main.customer.contract.user != null && Main.customer.contract.user.iri.indexOf("@") > -1)
@@ -79,9 +102,9 @@ class DescisionTemplate extends DescisionMultipleInput
 			}
 			else if (Main.customer.contract != null &&  Main.customer.contract.user != null && Main.customer.contract.payer.iri.indexOf("@") > -1)
 			{
-                multipleInputs.setInputDefault(EMAIL_INPUT, Main.customer.contract.payer.iri);
+				multipleInputs.setInputDefault(EMAIL_INPUT, Main.customer.contract.payer.iri);
 			}
-			
+
 		}
 		if ((fields == BOTH || fields == SMS) && (Main.customer.contract != null && mobileReg.match(Main.customer.contract.mobile)))
 		{
@@ -118,6 +141,7 @@ class DescisionTemplate extends DescisionMultipleInput
 	override public function onNoClick():Void
 	{
 		//email
+		var justtifInput = multipleInputs.getText(JUSTIFICATION);
 		if (validateNo())
 		{
 			//mail.setTemplateSubject(EMAIL, StringUtils.removeWhite(multipleInputs.getText(MSISDN_INPUT)), StringUtils.removeWhite(multipleInputs.getText(EMAIL_INPUT)));
@@ -125,13 +149,15 @@ class DescisionTemplate extends DescisionMultipleInput
 			super.onNoClick();
 			//this.clicked = No;
 		}
+		else{
+
+		}
 	}
-	/*
-	override public function validateNo():Bool
+
+	/*override public function validateNo():Bool
 	{
-		return true;
-	}
-	*/
+		return );
+	} */
 	/*override public function onMidClick():Void
 	{
 		//SMS
@@ -179,7 +205,7 @@ class DescisionTemplate extends DescisionMultipleInput
 		#end
 		closeSubState();
 		switch data.status {
-		//case "success" : clickListener();
+			//case "success" : clickListener();
 		case "success" : super.onYesClick();
 			case "failed" : openSubState(new DataView(UI.THEME.bg, this._name, '\nFailed to create the ticket !!!\n\nPlease do a print screen of this and send it to qook@salt.ch\n+${data.error} (${data.additional}). Also make note of the steps and send the same S.O. ${soTemplate.desc} tempalte manually '));
 		}
