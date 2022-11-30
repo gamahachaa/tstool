@@ -33,8 +33,7 @@ class EndAction extends Action
 		//#end
 	}
 	override public function onClick():Void
-	{
-		
+	{	
 		this._nexts = [{step: Main.START_STEP}];
 		super.onClick();
 	}

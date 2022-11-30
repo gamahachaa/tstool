@@ -24,12 +24,13 @@ typedef Snapshot =
 	var start:Date;
 	var ?step:ProcessContructor;
 }
-typedef Steps = {
-			var nb:Int;
-			var processName:String;
-			var interaction:Interactions;
-			var values:String;
-	}
+typedef Steps =
+{
+	var nb:Int;
+	var processName:String;
+	var interaction:Interactions;
+	var values:String;
+}
 enum Interactions
 {
 	Yes;
@@ -38,9 +39,10 @@ enum Interactions
 	Next;
 	Exit;
 }
-typedef ValueReturn = {
+typedef ValueReturn =
+{
 	var exists:Bool;
-	var value:Dynamic;	
+	var value:Dynamic;
 }
 class History
 {
@@ -63,12 +65,12 @@ class History
 	 * @param	values
 	 * @param	Dynamic>=nul
 	 */
-	public function add( 
-		process:ProcessContructor, 
-		interaction:Interactions, 
-		title:String, 
-		iteractionTitle:String, 
-		?values:Map<String,Dynamic>=null)
+	public function add(
+			process:ProcessContructor,
+			interaction:Interactions,
+			title:String,
+			iteractionTitle:String,
+			?values:Map<String,Dynamic>=null)
 	{
 		history.push(
 		{
@@ -85,7 +87,7 @@ class History
 		);
 		//trace(history);
 	}
-	
+
 	public function init():Void
 	{
 		history = [];
@@ -103,7 +105,7 @@ class History
 		//trace(history.length - index -1);
 		#end
 		var old = history.splice(index, history.length - index);
-		
+
 		//return Type.createInstance( Type.resolveClass( old[0].processName), [] );
 		return Type.createInstance( old[0].step.step, old[0].step.params);
 	}
@@ -115,7 +117,7 @@ class History
 	public function getClassIterations(process:Class<Process>, ?interaction:Interactions):Int
 	{
 		//trace("------------");
-		
+
 		var count = 0;
 		for ( i in history )
 		{
@@ -142,7 +144,7 @@ class History
 		}
 		return count;
 	}
-	
+
 	inline function getPreviousProcess()
 	{
 		return history[history.length - 1];
@@ -150,7 +152,7 @@ class History
 	inline public function getPreviousClass():ProcessContructor
 	{
 		/**
-		 * @todo rename getPreviousProcessConstructor 
+		 * @todo rename getPreviousProcessConstructor
 		 */
 		return getPreviousProcess().step;
 	}
@@ -212,12 +214,12 @@ class History
 		}
 		return false;
 	}
-	
+
 	public function isClassInHistory(step:Class<Process>):Bool
 	{
 		for ( i in history )
 		{
-		
+
 			if (i.step.step == step )
 			{
 				return true;
@@ -240,22 +242,22 @@ class History
 				if ( history[i].processName == processName )
 				{
 					tab.push(history[i]);
-					if ( ++count == times) break; 
-					
+					if ( ++count == times) break;
+
 				}
 			}
 		}
 		else{
 			var l = history.length;
-		
+
 			while (l > 0)
 			{
 				--l;
 				if (history[l].processName == processName )
 				{
 					tab.push(history[l]);
-					if ( ++count == times) break; 
-					
+					if ( ++count == times) break;
+
 				}
 			}
 		}
@@ -272,22 +274,22 @@ class History
 				if ( history[i].step.step == step )
 				{
 					tab.push(history[i]);
-					if ( ++count == times) break; 
-					
+					if ( ++count == times) break;
+
 				}
 			}
 		}
 		else{
 			var l = history.length;
-		
+
 			while (l > 0)
 			{
 				--l;
 				if (history[l].step.step == step )
 				{
 					tab.push(history[l]);
-					if ( ++count == times) break; 
-					
+					if ( ++count == times) break;
+
 				}
 			}
 		}
@@ -301,10 +303,12 @@ class History
 	{
 		return findFirstStepsClassInHistory(step).values;
 	}
-	public function findValueOfFirstClassInHistory(step:Class<Process>, valueIndex:String, ?fromBegining:Bool = true):ValueReturn{
+	public function findValueOfFirstClassInHistory(step:Class<Process>, valueIndex:String, ?fromBegining:Bool = true):ValueReturn
+	{
 		var steps = findStepsClassInHistory(step, 1, fromBegining);
 		var v:Snapshot = steps[0];
-		if ( steps.length == 0 || v.values == null || !v.values.exists(valueIndex)){
+		if ( steps.length == 0 || v.values == null || !v.values.exists(valueIndex))
+		{
 			return {exists:false, value: null};
 		}
 		else
@@ -317,37 +321,42 @@ class History
 		var lang = currentLang;
 		var  b = "";
 		#if debug
-			trace("tstool.utils.Mail::buildHistoryBody::MainApp.agent.mainLanguage", lang );
+		trace("tstool.utils.Mail::buildHistoryBody::MainApp.agent.mainLanguage", lang );
 		#end
 		var needsEnTranslation = lang != "en-GB";
 		var steps = this.getStoredStepsArray();
 		steps.push(
-			{
-				processName: _currentProcess._name,
-				interaction: Next,
-				processTitle: "",
-				iteractionTitle: "",
-				values: null,
-				start:Date.now()
-			}
+		{
+			processName: _currentProcess._name,
+			interaction: Next,
+			processTitle: "",
+			iteractionTitle: "",
+			values: null,
+			start:Date.now()
+		}
 		);
-		
+
 		b += '<h4>Steps:</h4>';
-		b += '<ol>${listSteps(steps)}</ol>';
+		b += '<ol>';
+		b += listSteps(steps);
+		b += '</ol>';
 		if (translate && needsEnTranslation)
 		{
 			b += "<h4>English:</h4>";
 			MainApp.translator.initialize( "en-GB" );
-			b += '<ol>${listSteps(steps)}</ol>';
+			//b += '<ol>${listSteps(steps)}</ol>';
+			b += '<ol>';
+			b += listSteps(steps);
+			b += '</ol>';
 			#if debug
-				MainApp.translator.initialize(Main.LANGS[0]);
+			MainApp.translator.initialize(Main.LANGS[0]);
 			#else
 			MainApp.translator.initialize(lang);
 			#end
 		}
 		return b;
 	}
-	
+
 	public function getStoredStepsArray( ):Array<Snapshot>
 	{
 		var t = [];
@@ -389,10 +398,11 @@ class History
 		{
 			t.push(
 			{
-				nb:s++, 
-				processName:i.processName, 
-				interaction: i.interaction, 
-				values: i.values==null?"":i.values.toString()});
+				nb:s++,
+				processName:i.processName,
+				interaction: i.interaction,
+				values: i.values==null?"":i.values.toString()
+			});
 		}
 		return t;
 	}
@@ -408,7 +418,7 @@ class History
 		#end
 		var t = [];
 		//var s = 0;
-		
+
 		var question = "";
 		var choice = "";
 		MainApp.translator.initialize( toLangPair );
@@ -447,7 +457,7 @@ class History
 	{
 		var t = ["<B>", "<b>", "<N>", "<T>", "<EM>", "<em>", "\t", "\n"];
 		if (Replace.TAGS.length>0)
-		{        
+		{
 			t = Lambda.concat( t, Replace.TAGS);
 		}
 		//#if debug
@@ -460,7 +470,7 @@ class History
 		}
 		return s;
 	}
-	
+
 	//////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////
 	public function prepareClipboard(additionalText:String)
@@ -469,24 +479,39 @@ class History
 	}
 	//////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////
-	function listSteps(stepsArray:Array<Snapshot>):String
+	function listSteps(stepsArray:Array<Snapshot>, ?pos:haxe.PosInfos):String
 	{
 		var s = "";
-		
+
 		var title ="";
 		var values = "";
 		var interaction = "";
 		if (stepsArray == null) return "";
+		#if debug
+		trace("tstool.layout.History::listSteps::stepsArray", stepsArray );
+		#end
 
 		for (h in stepsArray)
 		{
+			//#if debug
+			//trace("tstool.layout.History::listSteps::h", h );
+			//#end
 			title = stripTags(MainApp.translator.get("$" + h.processName + "_TITLE", "data"));
+			//#if debug
+			//trace('CALLED FROM ${pos.className} ${pos.methodName} ${pos.fileName} ${pos.lineNumber}');
+			//#end
 			interaction = h.interaction == Next ? "" : '... <strong>${getDefaultOrCutomChoice( h.processName, h.interaction)}</strong>';
+			//#if debug
+			//trace('CALLED FROM ${pos.className} ${pos.methodName} ${pos.fileName} ${pos.lineNumber}');
+			//#end
 			values = h.values == null ? "" : formatMapToHtml(h.values, h.processName);
+			//#if debug
+			//trace('CALLED FROM ${pos.className} ${pos.methodName} ${pos.fileName} ${pos.lineNumber}');
+			//#end
 			if (interaction == "") s += '<li>$title $values</li>';
 			else if (values == "" ) s += '<li>$title $interaction</li>';
 			else s +='<li>$title $values $interaction</li>';
-			
+
 		}
 		return s;
 	}
@@ -496,11 +521,12 @@ class History
 		var translation = "";
 		for ( title => value in map)
 		{
-			if (StringTools.trim(value) != "" ) {
-				
+			if (StringTools.trim(Std.string(value)) != "" )
+			{
+
 				translation = MainApp.translator.get("$" + processName + title.removeWhite(), "headers");
 				if (translation == null || translation == "" || translation.indexOf("$") == 0)
-				translation = title;
+					translation = title;
 				//out += '<li>$title ... <strong>$value</strong></li>';
 				out += '<li>$translation ... <strong>$value</strong></li>';
 			}
@@ -517,12 +543,12 @@ class History
 		return choice;
 	}
 	/**
-	 * 
+	 *
 	 * @param	s
 	 */
 	inline function getDefaultInteractionTranslationHeader( interaction:Interactions)
 	{
-		return switch(interaction)
+		return switch (interaction)
 		{
 			case Yes: "UI3";
 			case No: "UI1";
@@ -531,12 +557,12 @@ class History
 		}
 	}
 	/**
-	 * 
+	 *
 	 * @param	s
 	 */
 	inline function getCustomInteractionTranslationHeader( interaction:Interactions)
 	{
-		return switch(interaction)
+		return switch (interaction)
 		{
 			case Yes: "RIGHT-BTN";
 			case No: "LEFT-BTN";

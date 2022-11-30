@@ -69,6 +69,7 @@ class RadioTitle extends FlxGroup implements IPositionable
 		for (i in rd.getRadios())
 		{
 			i.button.label.size = RADIO_SIZE;
+			
 		}
 		
 	}

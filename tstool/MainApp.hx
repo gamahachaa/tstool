@@ -1,5 +1,6 @@
 package tstool;
 
+import date.WorldTimeAPI;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.input.keyboard.FlxKey;
@@ -59,6 +60,7 @@ class MainApp extends Sprite
 	public static var idleTimer:Timer = new Timer(1000);
 	static public var VERSION_TIMER_DURATION:Float = 300;
 	static public var VERSION_TIMER_value:Float = VERSION_TIMER_DURATION;
+	static public var WORD_TIME:WorldTimeAPI = new WorldTimeAPI();
 
 	public function new(?cfg:Config)
 	{

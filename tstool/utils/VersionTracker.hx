@@ -38,7 +38,8 @@ class VersionTracker extends Http
 			//trace('^./${scriptStart}_(\\d{8}_\\d{6}).js$');
 			reg = new EReg('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).js$', "g");
 		}
-		
+		#elseif DEMO
+		reg = new EReg('^\\.\\/${scriptStart}_.js$', "g");
 		#else
 		//reg = ~/^\.\/scriptStart(\d{8}_\d{6}).min.js$/;
 		reg = new EReg('^\\.\\/${scriptStart}_(\\d{8}_\\d{6}).min.js$', "g");
@@ -47,11 +48,9 @@ class VersionTracker extends Http
 		var scripts:HTMLCollection = Browser.document.getElementsByTagName("script");
 		//trace(scripts.length);
 		for (i in 0...scripts.length){
-			//trace(scripts[i]);
-			//trace(scripts[i].attributes.getNamedItem('src'));
-			if (scripts[i].attributes.getNamedItem('src') != null && scripts[i].attributes.getNamedItem('src').nodeValue.indexOf("./"+scriptStart+"_") == 0)
+			if (scripts[i].attributes.getNamedItem('src') != null 
+			&& scripts[i].attributes.getNamedItem('src').nodeValue.indexOf("./"+scriptStart+"_") == 0)
 			{
-				//trace(scripts[i].attributes.getNamedItem('src').nodeValue);
 				scriptFileVersion = scripts[i].attributes.getNamedItem('src').nodeValue;
 				break;
 			}

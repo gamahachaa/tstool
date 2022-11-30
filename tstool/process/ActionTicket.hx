@@ -39,9 +39,9 @@ class ActionTicket extends ActionMemo
 				{
 					a =  Assets.getText(i);
 
-					if ( a.indexOf( Main.customer.contract.contractorID ) >-1)
+					if ( a.indexOf( Main.customer.iri ) >-1)
 					{
-						description += i.replace(Main.TMP_FILTER_ASSET_PATH,"").replace(".txt","");
+						description += " | " + i.replace(Main.TMP_FILTER_ASSET_PATH,"").replace(".txt","");
 					}
 				}
 			}
@@ -60,10 +60,8 @@ class ActionTicket extends ActionMemo
 	//}
 	override public function create()
 	{
-
 		try
 		{
-
 			super.create();
 			if (Main.customer.contract.mobile != "" || Main.customer.contract.getEmails() != [])
 			{

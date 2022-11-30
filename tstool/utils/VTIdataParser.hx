@@ -151,7 +151,15 @@ class VTIdataParser
 
 		var LANG = "";
 		var mainTopics:Map<String,Map<String,String>> = [
-			"FR" => ["meta"=>"meta", "Owner"=>"owner", "Payeur"=>"payer", "Solde courant"=>"balance", "Offre : Salt Fiber"=>"plan","Offre : Salt GigaBox"=>"plan", "Offre : Salt Office"=>"plan", "Offre : Pro Office"=>"plan"],
+			"FR" => [
+						"meta" => "meta", 
+						"Owner" => "owner", 
+						"Payeur" => "payer", 
+						"Solde courant" => "balance", 
+						"Offre : Salt Fiber" => "plan",
+						"Offre : Salt GigaBox" => "plan", 
+						"Offre : Salt Office" => "plan", 
+						"Offre : Pro Office"=>"plan"],
 			"IT" => ["meta"=>"meta", "Owner"=>"owner", "Pagatore"=>"payer", "Saldo"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan",  "Abo : Salt Office"=>"plan",  "Abo : Pro Office"=>"plan"],
 			"DE" => ["meta"=>"meta", "Owner"=>"owner", "Zahler"=>"payer", "Aktueller Saldo"=>"balance", "Angebot : Salt Fiber"=>"plan", "Angebot : Salt GigaBox"=>"plan", "Angebot : Salt Office"=>"plan", "Angebot : Pro Office"=>"plan"],
 			"EN" => ["meta"=>"meta", "Owner"=>"owner", "Payer"=>"payer", "Current Balance"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan",  "Abo : Salt Office"=>"plan",  "Abo : Pro Office"=>"plan"],
@@ -194,12 +202,14 @@ class VTIdataParser
 
 		for (line in t)
 		{
-
+			var logReg:EReg = ~/logoSalt\.png/i; 
+            line = StringTools.trim(line);
+			if (logReg.match(line)) line = "logoSalt"; // trick for the first line grabbing the contractor
 			if (LANG =="" && regDict.get("getLangEreg").ereg.match(line))
 			{
-				//#if debug
+				#if debug
 				//trace('0. tstool.utils.LANG ${LANG}', line);
-				//#end
+				#end
 				//LANG = getLangEreg.matched(2);
 				LANG = regDict.get("getLangEreg").ereg.matched(regDict.get("getLangEreg").matched);
 				currentTopic = "meta";
@@ -208,10 +218,11 @@ class VTIdataParser
 			else if (LANG !="")
 			{
 				dataMainTopic = mainTopics.get(LANG).get(currentTopic);
-				//#if debug
-				//trace("1.A lang, line, dataMainTopic --> ", LANG, line, dataMainTopic, currentTopic );
-				//trace(mainTopics.get(LANG));
-				//#end
+				#if debug
+				trace("1.A lang, line, dataMainTopic, currentTopic --> ", LANG, line, dataMainTopic, currentTopic );
+				trace(currentTopic, topics.get(LANG).exists( currentTopic ));
+				trace(line, topics.get(LANG).get( currentTopic ).exists(line));
+				#end
 
 				/**
 				 * FIND current sub topic
@@ -234,59 +245,59 @@ class VTIdataParser
 
 					currentTopic = line;
 					currentSubTopic = "";
-					//#if debug
+					#if debug
 					////trace(" dataMainTopic ", dataMainTopic );
-					//trace("3.A CHANGE OF currentTopic --> line, currentTopic ", line, currentTopic );
-					//#end
+					trace("3.A CHANGE OF currentTopic --> line, currentTopic ", line, currentTopic );
+					#end
 				}
 				//else if (currentSubTopic != "" && topics.get(LANG).get( mainTopics.get(LANG).get(currentTopic) ).get(currentSubTopic).ereg.match(line))
 				else if (currentSubTopic != "" && regDict.get(currentEreg).ereg.match(line))
 				{
-					//#if debug
-					//trace("3.B MATCH line, currentEreg --> ", line, currentEreg);
-					//#end
+					#if debug
+					trace("3.B MATCH line, currentEreg --> ", line, currentEreg);
+					#end
 					var matched = regDict.get(currentEreg).ereg.matched(regDict.get(currentEreg).matched);
 					if (!profile.exists( dataMainTopic ))
 					{
-						//#if debug
-						//trace('3.B.1 $dataMainTopic is not in the profile --> added now');
-						//#end
+						#if debug
+						trace('3.B.1 $dataMainTopic is not in the profile --> added now');
+						#end
 						profile.set( dataMainTopic,
 									 [topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal => matched]);
 						if (dataMainTopic == "plan")
 						{
-							//#if debug
-							//trace('3.B.1.A dataMainTopic $dataMainTopic is of type PLAN  --> set ', currentTopic);
-							//#end
+							#if debug
+							trace('3.B.1.A dataMainTopic $dataMainTopic is of type PLAN  --> set ', currentTopic);
+							#end
 							profile.get(dataMainTopic).set(dataMainTopic, currentTopic);
 						}
 					}
 					else
 					{
-						//#if debug
-						//trace('3.B.2 Set dataMainTopic to topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal, line) -->', dataMainTopic, topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal, matched);
-						//#end
+						#if debug
+						trace('3.B.2 Set dataMainTopic to topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal, line) -->', dataMainTopic, topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal, matched);
+						#end
 						profile.get( dataMainTopic ).set( topics.get(LANG).get( currentTopic ).get(currentSubTopic).universal, matched);
 					}
 
 					topics.get(LANG).get( currentTopic ).get(currentSubTopic).matched = true;
-					//#if debug
-					//trace('3.B.LAST tell topic parser that it matched --> topics.get($LANG).get( $currentTopic ).get($currentSubTopic).matched SET TO TRUE now ', topics.get(LANG).get( currentTopic ).get(currentSubTopic) );
-					//#end
+					#if debug
+					trace('3.B.LAST tell topic parser that it matched --> topics.get($LANG).get( $currentTopic ).get($currentSubTopic).matched SET TO TRUE now ', topics.get(LANG).get( currentTopic ).get(currentSubTopic) );
+					#end
 					currentSubTopic = "";
 				}
 				else if (topics.get(LANG).get( currentTopic ).exists(line))
 				{
-					//#if debug
-					//trace('3.C temporary store the currentSubTopic ($currentSubTopic) now set to ', line );
-					//#end
+					#if debug
+					trace('3.C temporary store the currentSubTopic ($currentSubTopic) now set to ', line );
+					#end
 					currentSubTopic = line;
 				}
 				else
 				{
-					//#if debug
-					//trace('3.D Line ($line) Not matched ($currentEreg) and $currentTopic not in TOPICS ', line );
-					//#end
+					#if debug
+					trace('3.D Line ($line) Not matched ($currentEreg) and $currentTopic not in TOPICS ', line );
+					#end
 				}
 			}
 			else
@@ -298,10 +309,10 @@ class VTIdataParser
 			}
 
 		}
-		//#if debug
+		#if debug
 		//trace("profile --> ", profile );
 		//trace("topics.get(LANG)",  topics.get(LANG));
-		//#end
+		#end
 		/**
 		 * @todo manage vti oparsing error send email to agent
 		 */
