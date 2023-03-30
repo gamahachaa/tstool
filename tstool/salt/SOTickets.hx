@@ -26,10 +26,15 @@ class SOTickets extends SuperOffice
 	static inline var FIBER_ACTIVATION_CHECK_SO:String = 'FIBER_ACTIVATION_CHECK_SO';
 	static inline var FIBER_LOGISTICS_SO:String = 'FIBER_LOGISTICS_SO';
 	static inline var FIBER_TECH_SO:String = 'FIBER_TECH_SO';
+	//
 	static inline var FIBER_SOHO_TECH_VOIP_SO:String = 'FIBER_SOHO_TECH_VOIP_SO';
+	public static inline var FIBER_SOHO_MOVE_SO:String = 'FIBER_SOHO_MOVE_SO';
+	public static inline var FIBER_SOHO_TERMINATION_SO:String = 'FIBER_SOHO_TERMINATION_SO';
+	public static inline var FIBER_SOHO_MIGRATION_SO:String = 'FIBER_SOHO_MIGRATION_SO';
+	//
 	static inline var FIBER_CALLBACK_BACKOFFICE_SO:String = 'FIBER_CALLBACK_BACKOFFICE_SO';
 	static inline var FS_PAYMENT_SEARCH_SO:String = 'FS_PAYMENT_SEARCH_SO';
-	static inline var FIBER_WINBACK_SO:String = 'FIBER_WINBACK_SO';
+	static public inline var FIBER_WINBACK_SO:String = 'FIBER_WINBACK_SO';
 	static inline var FIBER_TECH_ESCA_SO:String = 'FIBER_TECH_ESCA_SO';
 	static inline var NW_OPS_SERVICE_DESK_SO:String = 'NW_OPS_SERVICE_DESK_SO';
 	static inline var FS_CREDICT_CHECK_SO:String = 'FS_CREDICT_CHECK_SO';
@@ -49,6 +54,7 @@ class SOTickets extends SuperOffice
 	static inline var FIBER_TECH_SALTTV_SO:String = 'FIBER_TECH_SALTTV_SO';
 	static inline var FIBER_WRONG_OTO_SO:String = 'FIBER_WRONG_OTO_SO';
 	static inline var FWA_TECH_SO:String = 'FWA_TECH_SO';
+	static inline var FIBER_FINANCIAL_SO:String = 'FIBER_FINANCIAL_SO';
 
 	//public static var FIX_111:SOTickets = new SOTickets(FIX_DOMAIN,'1.1.1','FIBER_SALES_FEEDBACK_SO','1.Sales (Telesales) 1.eShop 1.Eligibility','fiber.tech.qtool@salt.ch');
 	//public static var FIX_112:SOTickets = new SOTickets(FIX_DOMAIN,'1.1.2','FIBER_SALES_FEEDBACK_SO','1.Sales (Telesales) 1.eShop 2.Missing Address','fiber.tech.qtool@salt.ch');
@@ -56,6 +62,7 @@ class SOTickets extends SuperOffice
 	//public static var FIX_114:SOTickets = new SOTickets(FIX_DOMAIN,'1.1.4','FIBER_SALES_FEEDBACK_SO','1.Sales (Telesales) 1.eShop 4.Cannot finalize order / payment','fiber.tech.qtool@salt.ch');
 	public static var FIX_211:SOTickets = new SOTickets(FIX_DOMAIN,'2.1.1',FIBER_NON_TECH_SO,'2.Admin 1.Account Management 1.Contacts changes','fiber.tech.qtool@salt.ch');
 	public static var FIX_212:SOTickets = new SOTickets(FIX_DOMAIN,'2.1.2',FIBER_TERMINATION_SO,'2.Admin 1.Account Management 2.Termination','fiber.tech.qtool@salt.ch');
+	public static var FIX_212_DATE_MODIFY:SOTickets = new SOTickets(FIX_DOMAIN,'2.1.2',FIBER_TERMINATION_SO,'2.Admin 1.Account Management 2.Termination - MODIFY DATE','fiber.tech.qtool@salt.ch');
 	public static var FIX_213:SOTickets = new SOTickets(FIX_DOMAIN,'2.1.3',FIBER_MOVE_SO,'2.Admin 1.Account Management 3.Move','fiber.tech.qtool@salt.ch');
 	public static var FIX_215:SOTickets = new SOTickets(FIX_DOMAIN,'2.1.5','FIBER_OPTION_DEACTIVATION_SO','2.Admin 1.Account Management 5.Add / Reactivate TV Services','fiber.tech.qtool@salt.ch');
 	public static var FIX_216:SOTickets = new SOTickets(FIX_DOMAIN,'2.1.6',B2C_SA_MAS_SO,'2.Admin 1.Account Management 6.Death','fiber.tech.qtool@salt.ch');
@@ -63,10 +70,11 @@ class SOTickets extends SuperOffice
 	public static var FIX_222:SOTickets = new SOTickets(FIX_DOMAIN,'2.2.2',B2C_SA_MAS_SO,'2.Admin 2.Document (Contract / Warranty) 2.Warranty Copy','fiber.tech.qtool@salt.ch');
 	public static var FIX_241:SOTickets = new SOTickets(FIX_DOMAIN,'2.4.1',FIBER_TERMINATION_ESCA_SO,'2.Admin 4.Gigabox (FWA) - Account Management 1.Gigabox (FWA) - Termination / Cancellation','fiber.tech.qtool@salt.ch');
 	//public static var FIX_313:SOTickets = new SOTickets(FIX_DOMAIN, '3.1.3', 'FIBER_REMINDER_FEE_SO', '3.Billing 1.Compensation 3.Compensation for reminder costs', 'fiber.tech.qtool@salt.ch');
-	//public static var FIX_311:SOTickets = new SOTickets(FIX_DOMAIN,'3.1.1','FIBER_FINANCIAL_SO','3.Billing 1.Compensation 1.*Request for Compensation','fiber.tech.qtool@salt.ch');
+	static public  var FIX_2110:SOTickets = new SOTickets(FIX_DOMAIN,'2.1.10',FIBER_SOHO_MIGRATION_SO,'2.Admin 1.Account Managt 10. Migration','fiber.tech.qtool@salt.ch');
+	public static var FIX_311:SOTickets = new SOTickets(FIX_DOMAIN,'3.1.1',FIBER_FINANCIAL_SO,'3.Billing 1.Compensation 1.*Request for Compensation','fiber.tech.qtool@salt.ch');
 	public static var FIX_324:SOTickets = new SOTickets(FIX_DOMAIN,'3.2.4',FIBER_NON_TECH_SO,'3.Billing 2.Bill method & delivery 4.Changement mode paiment ou reception','fiber.tech.qtool@salt.ch');
 	//public static var FIX_341:SOTickets = new SOTickets(FIX_DOMAIN,'3.4.1','FS_FIBER_PAY_ARRANGEMENT_SO','3.Billing 4.Collection 1.Payment delay request (1 month)','fiber.tech.qtool@salt.ch');
-	//public static var FIX_342:SOTickets = new SOTickets(FIX_DOMAIN,'3.4.2','FS_CREDIT_LIMIT_FIBER_SO','3.Billing 4.Collection 2. Credit Limit ','fiber.tech.qtool@salt.ch');
+	public static var FIX_342:SOTickets = new SOTickets(FIX_DOMAIN,'3.4.2','FS_CREDIT_LIMIT_FIBER_SO','3.Billing 4.Collection 2. Credit Limit ','fiber.tech.qtool@salt.ch');
 	public static var FIX_351:SOTickets = new SOTickets(FIX_DOMAIN,'3.5.1','FIBER_MISSING_DISCOUNT_SO','3.Billing 5.Discount (NOT for compensation) 1.Missing discount','fiber.tech.qtool@salt.ch');
 	public static var FIX_411:SOTickets = new SOTickets(FIX_DOMAIN,'4.1.1',FIBER_NON_TECH_SO,'4.Order 1.Order Process 1.New order  / Validation email issue','fiber.tech.qtool@salt.ch');
 	//public static var FIX_412:SOTickets = new SOTickets(FIX_DOMAIN,'4.1.2','FIBER_PLUGINUSE_SO','4.Order 1.Order Process 2.Plug in Use info','fiber.tech.qtool@salt.ch');
@@ -108,6 +116,7 @@ class SOTickets extends SuperOffice
 	public static var FIX_631:SOTickets = new SOTickets(FIX_DOMAIN,'6.3.1',FIBER_TECH_ESCA_SO,'6.Recaller 3.Technical 1.Technical Issue (Recaller)','fiber.tech.qtool@salt.ch');
 	//public static var FIX_641:SOTickets = new SOTickets(FIX_DOMAIN,'6.4.1',FIBER_WINBACK_SO,'6.Recaller 4.Winback 1.Termination - TECH Reason (only Backoffice)','fiber.tech.qtool@salt.ch');
 	public static var FIX_641_NONTECH:SOTickets = new SOTickets(FIX_DOMAIN,'6.4.1',FIBER_WINBACK_SO,'6.Recaller 4.Winback 1.Termination - TECH Reason (only Backoffice)','fiber.tech.qtool@salt.ch');
+	public static var FIX_641_CANCEL:SOTickets = new SOTickets(FIX_DOMAIN,'6.4.1',FIBER_WINBACK_SO,'6.Recaller 4.Winback 1.Termination - CANCEL','fiber.tech.qtool@salt.ch');
 	public static var FIX_641_NONTECH_PROMO:SOTickets = new SOTickets(FIX_DOMAIN,'6.4.1',FIBER_WINBACK_SO,'PROMO 6.Recaller 4.Winback 1.Termination - TECH Reason (only Backoffice)','fiber.tech.qtool@salt.ch');
 	public static var FIX_641_TECH:SOTickets = new SOTickets(FIX_DOMAIN,'6.4.1',FIBER_WINBACK_TECH_SO,'6.Recaller 4.Winback 1.Termination - TECH Reason (only Backoffice)','fiber.tech.qtool@salt.ch');
 	public static var FIX_711:SOTickets = new SOTickets(FIX_DOMAIN,'7.1.1',NW_OPS_SERVICE_DESK_SO,'7.Escalation (Only for Backoffice) 1.Technical (Escalation to SD Only) 1.Escalation - Voip Calls - Backoffice to SD','fiber.tech.qtool@salt.ch');
@@ -250,6 +259,7 @@ class SOTickets extends SuperOffice
 	 */
 	public static var MOBILE_531:SOTickets = new SOTickets(MOBILE_DOMAIN,'5.3.1',ESC_SM_SO,'5.*Escalation 3.*Care Channel 1.REF Defect','mobile.qtool@salt.ch');
 	public static var MOBILE_531_ESCA:SOTickets = new SOTickets(MOBILE_DOMAIN,'5.3.1',B2C_SA_TECH_ESCA_SO,'5.*Escalation 3.*Care Channel 1.REF Defect 600','mobile.qtool@salt.ch');
+
 	
 
 }

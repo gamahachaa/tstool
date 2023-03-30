@@ -16,6 +16,7 @@ enum VtiInterface
 	//healtcheck;
 	account;
 	events;
+	//super_office_termination;
 }
 typedef RegexableProfile =
 {
@@ -46,9 +47,7 @@ class VTIdataParser
 	public static inline var breakoutCableId:String = "breakoutCableId";
 	public static inline var fiberNumber:String = "fiberNumber";
 	public static inline var oltObject:String = "oltObject";
-	
-	
-	
+
 	public var signal(get, null):FlxTypedSignal<Map<String,Map<String,String>>->Void>;
 	public function new(what:VtiInterface)
 	{
@@ -129,9 +128,12 @@ class VTIdataParser
 		case account : parseCustomerProfile(content);
 			//case healtcheck : parseHealthCheckDashboard(content);
 			case events : parseHealthCheckDashboard(content);
+			//case super_office_termination : parseSOTermination(content);
 		}
 		);
 	}
+	
+	
 	public function destroy()
 	{
 		Browser.document.removeEventListener("paste", onPaste);
@@ -152,14 +154,14 @@ class VTIdataParser
 		var LANG = "";
 		var mainTopics:Map<String,Map<String,String>> = [
 			"FR" => [
-						"meta" => "meta", 
-						"Owner" => "owner", 
-						"Payeur" => "payer", 
-						"Solde courant" => "balance", 
-						"Offre : Salt Fiber" => "plan",
-						"Offre : Salt GigaBox" => "plan", 
-						"Offre : Salt Office" => "plan", 
-						"Offre : Pro Office"=>"plan"],
+				"meta" => "meta",
+				"Owner" => "owner",
+				"Payeur" => "payer",
+				"Solde courant" => "balance",
+				"Offre : Salt Fiber" => "plan",
+				"Offre : Salt GigaBox" => "plan",
+				"Offre : Salt Office" => "plan",
+				"Offre : Pro Office"=>"plan"],
 			"IT" => ["meta"=>"meta", "Owner"=>"owner", "Pagatore"=>"payer", "Saldo"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan",  "Abo : Salt Office"=>"plan",  "Abo : Pro Office"=>"plan"],
 			"DE" => ["meta"=>"meta", "Owner"=>"owner", "Zahler"=>"payer", "Aktueller Saldo"=>"balance", "Angebot : Salt Fiber"=>"plan", "Angebot : Salt GigaBox"=>"plan", "Angebot : Salt Office"=>"plan", "Angebot : Pro Office"=>"plan"],
 			"EN" => ["meta"=>"meta", "Owner"=>"owner", "Payer"=>"payer", "Current Balance"=>"balance", "Abo : Salt Fiber"=>"plan", "Abo : Salt GigaBox"=>"plan",  "Abo : Salt Office"=>"plan",  "Abo : Pro Office"=>"plan"],
@@ -202,8 +204,8 @@ class VTIdataParser
 
 		for (line in t)
 		{
-			var logReg:EReg = ~/logoSalt\.png/i; 
-            line = StringTools.trim(line);
+			var logReg:EReg = ~/logoSalt\.png/i;
+			line = StringTools.trim(line);
 			if (logReg.match(line)) line = "logoSalt"; // trick for the first line grabbing the contractor
 			if (LANG =="" && regDict.get("getLangEreg").ereg.match(line))
 			{
@@ -391,23 +393,23 @@ class VTIdataParser
 		var hasCollum = 0;
 		var hasEqual = 0;
 		//regDict.set("
-		
+
 		var topics = [
 			"META" => [
 		"lang" => {matched:false, ereg: "getLangEreg"}
 			],
 		FIBER_FLL => [
-			otoId =>{matched:false, ereg: "otoEreg"},
-			otoPortId=>{matched:false, ereg: "otoPortEreg"},
-			routerSerialNumber=>{matched:false, ereg: "boxSerialEreg"},
-			lexId=>{matched:false, ereg: "lexIdEreg"},
-			oltName=>{matched:false, ereg: "oltNameEreg"},
-			oltBoard=>{matched:false, ereg: "oltBoardEreg"},
-			ponPort=>{matched:false, ereg: "ponPortEreg"},
-			breakoutCableId=>{matched:false, ereg: "breakoutCableIdEreg"},
-			fiberNumber=>{matched:false, ereg: "fiberNumberEreg"},
-			//"status"=>{matched:false, ereg: "allInclusivEreg"},
-			oltObject =>{matched:false, ereg: "oltObject"}
+		otoId =>{matched:false, ereg: "otoEreg"},
+		otoPortId=>{matched:false, ereg: "otoPortEreg"},
+		routerSerialNumber=>{matched:false, ereg: "boxSerialEreg"},
+		lexId=>{matched:false, ereg: "lexIdEreg"},
+		oltName=>{matched:false, ereg: "oltNameEreg"},
+		oltBoard=>{matched:false, ereg: "oltBoardEreg"},
+		ponPort=>{matched:false, ereg: "ponPortEreg"},
+		breakoutCableId=>{matched:false, ereg: "breakoutCableIdEreg"},
+		fiberNumber=>{matched:false, ereg: "fiberNumberEreg"},
+		//"status"=>{matched:false, ereg: "allInclusivEreg"},
+		oltObject =>{matched:false, ereg: "oltObject"}
 		]/*,
 		"ONT Config TFTP"=>[
 		"ARC_WAN_1_IP4_Gateway" =>{matched:false, ereg: "ip4GatewayEreg"},
@@ -446,112 +448,112 @@ class VTIdataParser
 		var val = "";
 		var tmp = [];
 		try{
-		for (j in n)
-		{
-			line = StringTools.trim(j);
-			if (skip.indexOf(line) >-1 )
+			for (j in n)
 			{
-				continue;
-			}
-
-			if ( mainTopics.indexOf(line) > -1 )
-			{
-				currentSet = line;
-				currentSubSet = "";
-				continue;
-			}
-			else
-			{
-				//trace(currentSet + " " + currentSubSet + " " + line);
-				if (currentSet != "META" )
+				line = StringTools.trim(j);
+				if (skip.indexOf(line) >-1 )
 				{
-					if (currentSet == "Router" || currentSet == "OLT (nokia/huawei)")
+					continue;
+				}
+
+				if ( mainTopics.indexOf(line) > -1 )
+				{
+					currentSet = line;
+					currentSubSet = "";
+					continue;
+				}
+				else
+				{
+					//trace(currentSet + " " + currentSubSet + " " + line);
+					if (currentSet != "META" )
 					{
-						//object parsing in one line
-						tmp = line.split(":");
-						if (tmp.length < 2) continue;
-						key = StringTools.replace(StringTools.trim(tmp[0]),'"',"");
-						val = StringTools.trim(tmp[1]);
-						//trace(key, val);
-						if (topics.get(currentSet).exists(key))
+						if (currentSet == "Router" || currentSet == "OLT (nokia/huawei)")
 						{
-							trace(currentSet + " " + currentSubSet + " " + line);
-							var o = topics.get(currentSet).get(key);
-							if ( regDict.get(o.ereg).ereg.match( line ))
+							//object parsing in one line
+							tmp = line.split(":");
+							if (tmp.length < 2) continue;
+							key = StringTools.replace(StringTools.trim(tmp[0]),'"',"");
+							val = StringTools.trim(tmp[1]);
+							//trace(key, val);
+							if (topics.get(currentSet).exists(key))
 							{
-								profile.get(currentSet).set(key, regDict.get(o.ereg).ereg.matched(1));
+								trace(currentSet + " " + currentSubSet + " " + line);
+								var o = topics.get(currentSet).get(key);
+								if ( regDict.get(o.ereg).ereg.match( line ))
+								{
+									profile.get(currentSet).set(key, regDict.get(o.ereg).ereg.matched(1));
+									topics.get(currentSet).get(key).matched = true;
+									currentSubSet = "";
+								}
+
+							}
+						}
+						else if (currentSet == "ONT Config TFTP")
+						{
+							// key=value lines
+							var tmp = j.split("=");
+							if (tmp.length < 2) continue;
+							key = StringTools.trim(tmp[0]);
+							val = StringTools.trim(tmp[1]);
+							if (topics.get(currentSet).exists(key))
+							{
+								profile.get(currentSet).set(key, val);
 								topics.get(currentSet).get(key).matched = true;
 								currentSubSet = "";
 							}
-
 						}
-					}
-					else if (currentSet == "ONT Config TFTP")
-					{
-						// key=value lines
-						var tmp = j.split("=");
-						if (tmp.length < 2) continue;
-						key = StringTools.trim(tmp[0]);
-						val = StringTools.trim(tmp[1]);
-						if (topics.get(currentSet).exists(key))
+						else
 						{
-							profile.get(currentSet).set(key, val);
-							topics.get(currentSet).get(key).matched = true;
-							currentSubSet = "";
+							//all others
+							if (!topics.exists(currentSet))
+							{
+								continue;
+							}
+							if (currentSubSet == "")
+							{
+								currentSubSet = topics.get(currentSet).exists(line)? line :"";
+								continue;
+							}
+							else if (topics.get(currentSet).exists(currentSubSet) )
+							{
+								val = line;
+								// set value
+								if (regDict.get(topics.get(currentSet).get(currentSubSet).ereg).ereg.match(val) )
+								{
+									profile.get(currentSet).set(currentSubSet, val);
+									topics.get(currentSet).get(currentSubSet).matched = true;
+									currentSubSet = "";
+								}
+								else
+								{
+									trace("no match for " + currentSubSet + " " + val  + " (ereg) " + regDict.get(topics.get(currentSet).get(currentSubSet).ereg ));
+								}
+
+							}
+							else
+							{
+								trace("UNKNOW currentSubSet " + currentSubSet);
+							}
 						}
 					}
 					else
 					{
-						//all others
-						if (!topics.exists(currentSet))
+						var regex = regDict.get(topics.get(currentSet).get("lang").ereg).ereg;
+						if ( regex.match(j) )
 						{
-							continue;
+							var matches = regex.matched(2);
+							#if debug
+							trace('tstool.utils.VTIdataParser::parseHealthCheckDashboard::matches ${matches}');
+							#end
+							//trace("currentSet " + currentSet + " " + line +" " + regex.matched + " " + regex.matched(0)+ " " + regex.matched(1)+ " " + regex.matched(2));
+							profile.get(currentSet).set("lang", matches);
+							topics.get(currentSet).get("lang").matched = true;
+							currentSubSet = "";
 						}
-						if (currentSubSet == "")
-						{
-							currentSubSet = topics.get(currentSet).exists(line)? line :"";
-							continue;
-						}
-						else if (topics.get(currentSet).exists(currentSubSet) )
-						{
-							val = line;
-							// set value
-							if (regDict.get(topics.get(currentSet).get(currentSubSet).ereg).ereg.match(val) )
-							{
-								profile.get(currentSet).set(currentSubSet, val);
-								topics.get(currentSet).get(currentSubSet).matched = true;
-								currentSubSet = "";
-							}
-							else
-							{
-								trace("no match for " + currentSubSet + " " + val  + " (ereg) " + regDict.get(topics.get(currentSet).get(currentSubSet).ereg ));
-							}
+					}
+				}
 
-						}
-						else
-						{
-							trace("UNKNOW currentSubSet " + currentSubSet);
-						}
-					}
-				}
-				else
-				{
-					var regex = regDict.get(topics.get(currentSet).get("lang").ereg).ereg;
-					if ( regex.match(j) )
-					{
-						var matches = regex.matched(2);
-						#if debug
-						trace('tstool.utils.VTIdataParser::parseHealthCheckDashboard::matches ${matches}');
-						#end
-						//trace("currentSet " + currentSet + " " + line +" " + regex.matched + " " + regex.matched(0)+ " " + regex.matched(1)+ " " + regex.matched(2));
-						profile.get(currentSet).set("lang", matches);
-						topics.get(currentSet).get("lang").matched = true;
-						currentSubSet = "";
-					}
-				}
 			}
-
-		}
 		}
 		catch (e)
 		{

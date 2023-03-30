@@ -30,6 +30,7 @@ class Customer extends Actor
 	{
 		super.reset();
 		this.contract.reset();
+		this.contract = new Contractor(TEST_IRI, "");
 		this.shipingAdress = null;
 		this.iri = TEST_IRI;
 		for (k => i in dataSet)

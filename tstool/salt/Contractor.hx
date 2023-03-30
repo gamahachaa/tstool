@@ -49,6 +49,9 @@ class Contractor
 		ownerValidateEmail=vtiOwnerValidateEmail;
 		balance = vtiBalance;
 		service = serviceVti;
+		#if debug
+		trace('tstool.salt.Contractor::Contractor::service ${service}');
+		#end
 		if(this.owner!=null)
 		setRoles();
 	}

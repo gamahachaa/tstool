@@ -57,11 +57,9 @@ class Login extends FlxState
 	override public function create()
 	{
 		testers_file = Assets.getText("assets/data/testers.txt");
-		//loginUrl = new Http(Main.LOCATION.origin + Main.LIB_FOLDER_LOGIN + "login/index.php" );
 		loginUrl = new Http(MainApp.location.origin + MainApp.LIB_FOLDER + "login/index.php" );
 		MainApp.setUpSystemDefault(false);
-		//lang =  // default
-		//trace(MainApp.save.data.user);
+
 		if (MainApp.agent != null)
 		{
 
@@ -100,38 +98,32 @@ class Login extends FlxState
 			username = new openfl.text.TextField();
 			username.multiline = true;
 			username.type = username.type = openfl.text.TextFieldType.INPUT;
-			//tf.autoSize = TextFieldAutoSize.LEFT;
-			//username.width = 500;
+
 			username.multiline = false;
 			username.height = 16;
-			//username.wordWrap = true;
-			//username.textWidth = 500;
+
 			username.backgroundColor = SaltColor.WHITE;
 			username.textColor = SaltColor.BLACK;
-			//username.text = memoDefault;
 			username.border = true;
 			username.borderColor = SaltColor.BLACK;
 			username.background = true;
-			//username.defaultTextFormat = textFieldFormat;
 
 			FlxG.stage.focus = username;
 			pwd = new openfl.text.TextField();
-			pwd.displayAsPassword = true; //pwd.passwordMode = true;
+			pwd.displayAsPassword = true;
 
 			pwd.type = pwd.type = openfl.text.TextFieldType.INPUT;
-			//tf.autoSize = TextFieldAutoSize.LEFT;
-			//pwd.width = 500;
+			
 			pwd.multiline = false;
 			pwd.height = 16;
-			//pwd.wordWrap = true;
-			//pwd.textWidth = 500;
+			
 			pwd.backgroundColor = SaltColor.WHITE;
 			pwd.textColor = SaltColor.BLACK;
-			//pwd.text = memoDefault;
+			
 			pwd.border = true;
 			pwd.borderColor = SaltColor.BLACK;
 			pwd.background = true;
-			//pwd.defaultTextFormat = textFieldFormat;
+			
 
 			username.tabEnabled = true;
 			username.tabIndex = 1;
@@ -142,16 +134,14 @@ class Login extends FlxState
 			pwd.setTextFormat(textFieldFormat);
 
 			loginTxt.screenCenter();
-			//username.screenCenter();
-			pwdTxt.screenCenter();
 			
-			//pwd.screenCenter();
+			pwdTxt.screenCenter();
 			
 			// special Texfield  positioning
 			FlxG.addChildBelowMouse( username );
-			//add( username );
+			
 			FlxG.addChildBelowMouse( pwd );
-			//add( pwd );
+			
 			//
 			add( logo );
 			add( loginTxt );

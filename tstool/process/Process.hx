@@ -65,7 +65,7 @@ class Process extends FlxState
 	/************************
 	 * UI
 	/************************/
-	var _menu:Menu;
+	//var _menu:Menu;
 	var ui:UI;
 	var howToSubState:Instructions;
 	var dataView:tstool.process.DataView;
@@ -80,7 +80,9 @@ class Process extends FlxState
 	public function new()
 	{
 		super();
-
+       #if debug
+	   trace("tstool.process.Process::Process:: Main.customer",  Main.customer );
+	   #end
 		commentDebounce = 0;// prevent to send share duplicate mails
 		_class = Type.getClass(this);
 		_name = Type.getClassName(_class);
@@ -89,9 +91,9 @@ class Process extends FlxState
 		_detailTxt = MainApp.translator.translate(_name, _detailTxt, "DETAILS");
 		_illustration = MainApp.translator.translate(_name, _illustration, "ILLUSTRATION");
 		_qookLink = MainApp.translator.translate(_name, _qook, "QOOK").split("|");
-		#if debug
-		//trace(_qookLink);
-		#end
+		//#if debug
+		//trace(Main.HISTORY.history);
+		//#end
 	}
 
 	override public function create()
@@ -99,7 +101,9 @@ class Process extends FlxState
 		_nexts = [];
 
 		isAnimated = false;
+		
 		parseAllLinksForNames();
+		
 
 		//FlxG.camera.fade(UI.THEME.bg, 0.33, true);
 
@@ -108,9 +112,13 @@ class Process extends FlxState
 		/************************
 		 * UI
 		/************************/
-
+        //#if debug
+		//trace("tstool.process.Process::create BEFORE");
+		//#end
 		ui = new UI(0, 0);
-
+        //#if debug
+		//trace("tstool.process.Process::create AFTER");
+		//#end
 		ui.stringSignal.add( listener );
 
 		howToSubState = new Instructions();
@@ -146,11 +154,13 @@ class Process extends FlxState
 		{
 			ui.loadIllustrationGraphics(_illustration);
 		}
+		#if debug
+		// used to show test to remid tester that they are view the test platform...
+		Main.STORAGE_DISPLAY.push("PLATFORM");
+		STORAGE.set("PLATFORM", "TEST");
+		#end
 		if (!Lambda.empty(STORAGE))
 		{
-			#if debug
-			trace("tstool.process.Process::create::STORAGE", STORAGE );
-			#end
 			ui.setReminder(buildReminderString());
 		}
 		ui.backBtn.visible = Main.HISTORY.history.length > 0;
@@ -159,7 +169,7 @@ class Process extends FlxState
 	function buildReminderString():String
 	{
 		#if debug
-		trace("tstool.process.Process::buildReminderString Main.STORAGE_DISPLAY", Main.STORAGE_DISPLAY);
+		//trace("tstool.process.Process::buildReminderString Main.STORAGE_DISPLAY", Main.STORAGE_DISPLAY);
 		#end
 		var s = "";
 		var i = 1;
@@ -167,20 +177,25 @@ class Process extends FlxState
 		for ( k => v in STORAGE )
 		{
 			#if debug
-			trace("tstool.process.Process::buildReminderString::k", k,v );
+			//trace("tstool.process.Process::buildReminderString::k", k,v );
 			#end
 			if (Main.STORAGE_DISPLAY.indexOf(k) == -1) continue;
 			var val = v.trim();
 			if (val != "")
 			{
 				#if debug
-				trace("tstool.process.Process::buildReminderString::i % 3", i, i % 3 );
+				//trace("tstool.process.Process::buildReminderString::i % 3", i, i % 3 );
 				#end
 				separator = ( i % 3 == 0) ? "\n": ".\t";
 				s += k.toLowerCase() + ": " + val.toUpperCase() + separator;
 				i++;
 			}
 		}
+		//#if debug
+		//return "TEST " + s;
+		//#else
+		//return s;
+		//#end
 		return s;
 	}
 	function positionMain(btns:Array<FlxButton>, ?offSet:FlxPoint)
@@ -199,7 +214,7 @@ class Process extends FlxState
 	//UI
 	function setStyle()
 	{
-		//trace("tstool.process.Process::setStyle");
+		
 
 		this.bgColor = UI.THEME.bg;
 		//this.bgColor = UI.THEME.bg;
@@ -343,7 +358,7 @@ class Process extends FlxState
 		{
 			str = 'menubar=0,toolbar=0,location=0,status=0,width=$split,height=$resH,top=0,left=$x';
 			#if debug
-			trace("tstool.process.Process::onQook::str ", str  );
+			//trace("tstool.process.Process::onQook::str ", str  );
 			#end
 			Browser.window.focus();
 			Browser.window.open(i, "_blank", str);
@@ -388,6 +403,10 @@ class Process extends FlxState
 	 */
 	function pushToHistory(buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null):Void
 	{
+		//#if debug
+		//trace("tstool.process.Process::pushToHistory::buttonTxt", buttonTxt );
+		//trace("tstool.process.Process::pushToHistory::interactionType", interactionType );
+		//#end
 		Main.HISTORY.add({step:_class, params:[]}, interactionType, question.text, buttonTxt, values);
 	}
 
@@ -430,7 +449,12 @@ class Process extends FlxState
 
 		try
 		{
+			trace("here");
+			trace( _nexts[index].step );
+			trace( _nexts[index].params );
+			
 			FlxG.switchState(Type.createInstance(_nexts[index].step, _nexts[index].params));
+			//trace("there");
 		}
 		catch (e:Exception)
 		{
@@ -452,6 +476,7 @@ class Process extends FlxState
 		{
 			MainApp.VERSION_TIMER_value = MainApp.VERSION_TIMER_DURATION;
 		}
+
 
 	}
 	override public function destroy():Void
@@ -478,9 +503,9 @@ class Process extends FlxState
 		//}
 		if (v.trim()!="")
 		{
-			#if debug
-			trace("tstool.process.Process::STORE",k,v);
-			#end
+			//#if debug
+			//trace("tstool.process.Process::STORE",k,v);
+			//#end
 			STORAGE.set(k, v);
 		}
 	}

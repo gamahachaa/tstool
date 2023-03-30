@@ -39,6 +39,7 @@ class Triplet extends Process
 		_buttonNoTxt =  MainApp.translator.translate(_name,_buttonNoTxt, "LEFT-BTN") ;
 
 		super.create();
+		//trace("tstool.process.Triplet::create::_buttonYesTxt AFTER");
 		btnYes = new FlxButton(0, 0, _buttonYesTxt, onYesClick);
 		registerButton(btnYes);	
 		btnMid = new FlxButton(0, 0, _buttonMidTxt, onMidClick);
@@ -80,18 +81,21 @@ class Triplet extends Process
 		btnYes.updateHitbox();
 		btnNo.updateHitbox();
 		btnMid.updateHitbox();
+		#if debug
+		//trace("tstool.process.Triplet::create BEFORE");
+		#end
 		positionThis();
+		#if debug
+		//trace("tstool.process.Triplet::create MID");
+		#end
 		setStyle();
-		setStyle();
+		#if debug
+		//trace("tstool.process.Triplet::create AFTER");
+		#end
+		//setStyle();
 	}
 	function positionThis(?offSet:FlxPoint)
 	{
-		//var btnSep = (2 * FlxG.width / 3) / 3;
-		//btnNo.x = FlxG.width / 3 + _padding;
-		//btnMid.x = btnNo.x + btnSep;
-		//btnYes.x =  btnMid.x + btnSep;
-//
-		//btnMid.y = btnNo.y = btnYes.y = this.question.y + this.question.height + (_padding * 2);
 		positionMain(  [btnNo,btnMid,btnYes], offSet );
 	}
 	override public function setStyle()
@@ -103,40 +107,16 @@ class Triplet extends Process
 	}
 	public function onMidClick():Void
 	{
-		
 		pushToHistory(_buttonMidTxt, Interactions.Mid);
 		moveToNextClassProcess(Interactions.Mid);
 		
-		/*f (this._nextMidProcesses.length > 0) // @todo 
-		{
-			move_to_next(_nextMidProcesses, Interactions.Mid);
-		}
-		else if (this._nexts.length > 0)
-		{
-			moveToNextClassProcess(Interactions.Mid);
-		}*/
 	}
 	public function onYesClick():Void
 	{
-		//#if debug
-		//trace("tstool.process.Triplet::onYesClick",1);
-		//#end
+
 		pushToHistory(_buttonYesTxt, Interactions.Yes);
-		//#if debug
-		//trace("tstool.process.Triplet::onYesClick",2);
-		//#end
 		moveToNextClassProcess(Interactions.Yes);
-		//#if debug
-		//trace("tstool.process.Triplet::onYesClick",3);
-		//#end
-		//if (this._nextYesProcesses.length > 0) // @todo 
-		//{
-			//move_to_next(_nextYesProcesses, Interactions.Yes);
-		//}
-		//else if (this._nexts.length > 0)
-		//{
-			//moveToNextClassProcess(Interactions.Yes);
-		//}
+		
 	}
 
 	public function onNoClick():Void
@@ -144,15 +124,7 @@ class Triplet extends Process
 		
 		pushToHistory(_buttonNoTxt, Interactions.No);
 		moveToNextClassProcess(Interactions.No);
-		/*if (this._nextNoProcesses.length > 0) 
-		{
-			
-			move_to_next(_nextNoProcesses, Interactions.No);
-		}
-		else if (this._nexts.length > 0)
-		{
-			moveToNextClassProcess(Interactions.No);
-		}*/
+		
 	}
 	override public function update(elapsed:Float):Void
 	{

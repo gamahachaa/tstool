@@ -92,6 +92,10 @@ class TripletRadios extends Triplet
 	{
 		status.set(radioID, value);
 	}
+	public function blinkItemFromTitle(title:String)
+	{
+		this.radiosMap.get(title).blink(true);
+	}
 	public function validate() 
 	{
 		for (i in rds)

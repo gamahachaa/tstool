@@ -1,4 +1,5 @@
 package tstool.process;
+import flixel.FlxG;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUIText;
 import flixel.math.FlxPoint;
@@ -16,13 +17,19 @@ class ActionCheck extends Action
 {
 	var cks:Array<String>;
 	var checkWidth:Int;
+	var mustBeTrue:Array<String>;
+	var mustBeFalse:Array<String>;
+	var skip:Array<String>;
     public var ckMap:Map<String,BBCheckBox>;
     public var status:Map<String,Bool>;
-	public function new(cks:Array<String>, ?checkWidth=null) 
+	public function new(cks:Array<String>, mustBeTrue:Array<String>, mustBeFalse:Array<String>,skipValidation:Array<String>,  ?checkWidth:Int=400) 
 	{
 		super();
 		this.checkWidth = checkWidth;
 		this.cks = cks;
+		this.mustBeTrue = mustBeTrue;
+		this.mustBeFalse = mustBeFalse;
+		this.skip = skipValidation;
 		ckMap = [];
 		status = [];
 	}
@@ -33,7 +40,7 @@ class ActionCheck extends Action
 		//var Y0 = ;
 		for (i in cks)
 		{
-			var ck:BBCheckBox = new BBCheckBox(i, this._name, checkWidth);
+			var ck:BBCheckBox = new BBCheckBox(i, this._name, checkWidth +20);
 			ck.signal.add(onChecked);
 			//ck.callback = ()->trace(i, ck.checked);
 			ck.x = p.x;
@@ -48,32 +55,38 @@ class ActionCheck extends Action
 		p.x = checkWidth; // set it to the width of the check boxes
 		positionButtons(p);
 		positionBottom(p);
-		/*var ck: FlxUICheckBox = new FlxUICheckBox(200, 200, null, null, "", 600, null);
-		ck.callback = ()->trace(ck.text, ck.checked);
-		
-		//ck.textX = 100;
-		ck.textY = -8;
-		ck.button.setLabelFormat(UI.BASIC_FMT.font, UI.TITLE_FMT.size-4);
-		ck.text = "Yo label super nice";
-		add(ck);*/
 	}
 	
 	function onChecked(id:String, checked:Bool) 
 	{
+		stopAllBlinking();
 		#if debug 
 		trace("onChecked", id, checked);
 		#end
 	}
 	public function allChecked()
 	{
-		var missings = [];
 		var complete = true;
+		var wrongs = [];
 		for (k=>v in ckMap)
 		{
-			if (v.checked == false) complete;
+			if (skip.indexOf(k) == -1){
+				if (v.checked && mustBeFalse.indexOf(k) > -1 || !v.checked && mustBeTrue.indexOf(k) > -1)
+				{
+					 complete = false;
+					wrongs.push(k); 
+				} 
+			}
 			status.set(k, v.checked);
 		}
-		//trace(status);
+		for (i in wrongs)
+		{
+			ckMap.get(i).blink(true );
+		}
+		#if debug
+		trace(status);
+		trace(complete);
+		#end
 		return complete;
 	}
 	override public function onClick():Void 
@@ -90,10 +103,17 @@ class ActionCheck extends Action
 	 */
 	function validate() 
 	{
-		return !allChecked();
+		return allChecked();
 	}
 	override function pushToHistory( buttonTxt:String, interactionType:Interactions,?values:Map<String,Dynamic>=null)
 	{
 		super.pushToHistory( buttonTxt, interactionType, status);
+	}
+	function stopAllBlinking()
+	{
+		for (i in ckMap)
+		{
+			i.blink(false );
+		}
 	}
 }

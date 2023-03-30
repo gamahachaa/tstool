@@ -39,13 +39,13 @@ class Question extends FlxText implements IPositionable
 	public function positionMe(parentRectangle:Rectangle, ?padding:Int = 4, ?positionsToParent:Array<Direction> = null):FlxPoint 
 	{
 		#if debug
-		trace("tstool.layout.Question::positionMe");
+		//trace("tstool.layout.Question::positionMe");
 		#end
 		#if debug
-		trace("tstool.layout.Question::positionMe::parentRectangle", parentRectangle );
+		//trace("tstool.layout.Question::positionMe::parentRectangle", parentRectangle );
 		#end
 		#if debug
-		trace("tstool.layout.Question::positionMe::padding", padding );
+		//trace("tstool.layout.Question::positionMe::padding", padding );
 		#end
 		var d:Array<Direction> = positionsToParent==null ? [bottom, left]: positionsToParent;
 		//var p = parent;
@@ -101,7 +101,7 @@ class Question extends FlxText implements IPositionable
 
 		}
 		#if debug
-		trace("tstool.layout.Question::positionMe::boundingRect", boundingRect );
+		//trace("tstool.layout.Question::positionMe::boundingRect", boundingRect );
 		#end
 		pt.x = boundingRect.x + boundingRect.width;
 		pt.y = boundingRect.y + boundingRect.height;
