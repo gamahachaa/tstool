@@ -349,7 +349,7 @@ class History
 			b += listSteps(steps);
 			b += '</ol>';
 			#if debug
-			MainApp.translator.initialize(Main.LANGS[0]);
+			MainApp.translator.initialize(MainApp.LANGS[0]);
 			#else
 			MainApp.translator.initialize(lang);
 			#end

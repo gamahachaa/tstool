@@ -32,7 +32,7 @@ class TicketMail extends Mail
 		var mailBody = memo;
 		mailBody += Main.customer.buildCustomerBody( memo.indexOf( Main.customer.contract.mobile ) >-1);
 		mailBody += Main.HISTORY.buildHistoryEmailBody(MainApp.agent.mainLanguage, _currentProcess);
-		mailBody += MainApp.agent.buildEmailBody( Main.HISTORY.getFirst().start, Main.HISTORY.getLast().start);
+		mailBody += MainApp.agent.buildTSEmailBody( Main.HISTORY.getFirst().start, Main.HISTORY.getLast().start);
 		super.setBody(mailBody);
 	}
 	function setTicketSubject()

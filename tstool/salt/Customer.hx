@@ -1,6 +1,7 @@
 package tstool.salt;
+import roles.Actor;
 import string.StringUtils;
-import tstool.process.Actor;
+//import tstool.process.Actor;
 using StringTools;
 /**
  * ...

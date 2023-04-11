@@ -1,6 +1,7 @@
 package tstool.salt;
+import roles.Actor;
 
-import tstool.process.Actor;
+//import tstool.process.Actor;
 
 /**
  * ...
@@ -13,7 +14,7 @@ enum Roles{
 }
 class Role extends Actor 
 {
-	public var name(get, null):String;
+	//public var name(get, null):String;
 	var role:Roles;
 
 	public function new(role:Roles, name:String, id:String, ?authorised:Bool=true) 
@@ -22,11 +23,6 @@ class Role extends Actor
 		this.role = role;
 		this.name = name;
 		
-	}
-	
-	function get_name():String 
-	{
-		return name;
 	}
 	
 	public function isSameAs(actor:Role)

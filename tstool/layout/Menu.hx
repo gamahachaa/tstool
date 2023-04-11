@@ -113,15 +113,15 @@ class Menu extends FlxTypedSpriteGroup<FlxSprite>
 		
 		add(bucket);
 		add(comment);
-		if (Main.LANGS != null)
+		if (MainApp.LANGS != null)
 		{
-			if( Main.LANGS.indexOf("fr-FR")>-1)
+			if( MainApp.LANGS.indexOf("fr-FR")>-1)
 				add(fr);
-			if(Main.LANGS.indexOf("de-DE")>-1)			
+			if(MainApp.LANGS.indexOf("de-DE")>-1)			
 				add(de);
-			if(Main.LANGS.indexOf("it-IT")>-1)		
+			if(MainApp.LANGS.indexOf("it-IT")>-1)		
 				add(it);
-			if(Main.LANGS.indexOf("en-GB")>-1)		
+			if(MainApp.LANGS.indexOf("en-GB")>-1)		
 				add(en);
 		}
 		else{

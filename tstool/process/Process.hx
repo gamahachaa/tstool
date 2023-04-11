@@ -448,13 +448,9 @@ class Process extends FlxState
 		}
 
 		try
-		{
-			trace("here");
-			trace( _nexts[index].step );
-			trace( _nexts[index].params );
-			
+		{	
 			FlxG.switchState(Type.createInstance(_nexts[index].step, _nexts[index].params));
-			//trace("there");
+			
 		}
 		catch (e:Exception)
 		{

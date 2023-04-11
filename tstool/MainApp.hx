@@ -6,7 +6,11 @@ import flixel.FlxGame;
 import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxAssets;
 import flixel.util.FlxTimer;
+import haxe.Json;
 import haxe.Timer;
+//import lime.tools.Asset;
+import lime.utils.Assets;
+import tstool.salt.SaltAgent;
 import tstool.utils.XapiTracker;
 
 import haxe.Serializer;
@@ -18,7 +22,7 @@ import js.html.Location;
 import tstool.layout.History;
 import tstool.layout.Login;
 
-import tstool.salt.Agent;
+import tstool.salt.SaltAgent;
 import tstool.salt.Customer;
 import tstool.utils.Translator;
 import tstool.utils.VersionTracker;
@@ -43,6 +47,7 @@ class MainApp extends Sprite
 	static inline var SCRIPT_NAME:String = "nointernet"; //historical
 
 	static var debug:Bool;
+	public static var DEBUG_EMAIL_ARRAY:Array<String>;
 
 	static var xapiHelper:XapiTracker;
 
@@ -52,7 +57,7 @@ class MainApp extends Sprite
 	static public var translator:Translator;
 	static var stack:History;
 	static var cust:Customer;
-	public static var agent:Agent;
+	public static var agent:SaltAgent;
 	static var s:Serializer;
 
 	public static var config:Config;
@@ -61,28 +66,19 @@ class MainApp extends Sprite
 	static public var VERSION_TIMER_DURATION:Float = 300;
 	static public var VERSION_TIMER_value:Float = VERSION_TIMER_DURATION;
 	static public var WORD_TIME:WorldTimeAPI = new WorldTimeAPI();
+	public static var LANGS:Array<String> = ["fr-FR", "de-DE", "en-GB", "it-IT"];
+	public static var INTRO_PIC:String = "intro/favicon.png";
 
-	public function new(?cfg:Config)
+	public function new()
 	{
 		super();
 
 		idleTimer.run = onTimer;
-		/*
-		 * scale
-		 *
-		stage.scaleMode = StageScaleMode.NO_SCALE;
-		stage.align = StageAlign.TOP_LEFT;
-		stage.addEventListener (Event.RESIZE, resizeDisplay);
-		*/
+		
 		location = Browser.location;
-		debug = location.origin.indexOf("qook.test.salt.ch") > -1;
+		prepareConfig();
 		FlxAssets.FONT_DEFAULT =  "Consolas";
-		config =
-		{
-			libFolder : cfg.libFolder == null || cfg.libFolder == "" ? LIB_FOLDER : cfg.libFolder,
-			cookie : cfg.cookie == null ? DEFAULT_COOKIE : cfg.cookie,
-			scriptName : cfg.scriptName == null ? SCRIPT_NAME : cfg.scriptName
-		};
+
 
 		stack = History.STACK;
 
@@ -94,30 +90,13 @@ class MainApp extends Sprite
 		}
 		else
 		{
-			#if debug
-			//trace("tstool.MainApp::MainApp::", "COOKIE NOT EXISTS" );
-			#end
-			#if debug
-			//agent = Agent.cretaDummyAgent();
-			#else
 			agent = null;
-			#end
 		}
 
 		translator = new Translator();
-		//xapiHelper = new XapiHelper( location.origin +  config.libFolder);
+
 		xapiHelper = new XapiTracker( location.origin +  config.libFolder);
-		//xapiHelper.setActor(new Agent( MainApp.agent.iri, MainApp.agent.sAMAccountName));
-		#if debug
-		
 
-		//xapiTracker =  new XapiTracker( location.origin +  config.libFolder);
-		//
-
-		#else
-		
-		//xapiTracker =  new XapiTracker( location.origin +  "/trouble/php/");
-		#end
         versionTracker = new VersionTracker( location.origin + config.libFolder, config.scriptName, true);
 		cust = new Customer();
 		//agent= new Agent();
@@ -132,6 +111,24 @@ class MainApp extends Sprite
 			#end
 		});
 
+	}
+	/**
+	 * 11.04.2023 14:32
+	 * externalising in assets the config
+	 */
+	function prepareConfig()
+	{
+		var isTest = location.origin.indexOf("qook.test.salt.ch") > -1;
+		var cfg = Json.parse(Assets.getText("assets/data/dev_config.json"));
+		var c:Dynamic = isTest ? cfg.test : cfg.prod;
+		debug = c.debug ?? isTest;
+		DEBUG_EMAIL_ARRAY = cast(c.debug_mail) ?? ["qook@salt.ch"];
+		INTRO_PIC = c.intro_pic ?? INTRO_PIC;
+		config = {
+			   libFolder: c.libfolder?? "/commonlibs/" ,
+			   cookie: c.cookie ?? "tstoolcookie",
+			   scriptName: c.scriptName ?? "tstool",
+		}
 	}
 	function initScreen()
 	{
@@ -151,18 +148,12 @@ class MainApp extends Sprite
 		{
 			Main.VERSION_TRACKER.scriptChangedSignal.addOnce(onNewVersion);
 			Main.VERSION_TRACKER.request();
-			#if debug
-			//trace("tstool.MainApp::onTimer::MainApp.VERSION_TIMER_value", VERSION_TIMER_value );
-			#end
 		}
 		else
 		{
 			VERSION_TIMER_value--;
 
 		}
-		#if debug
-		//trace(MainApp.VERSION_TIMER_value);
-		#end
 	}
 	public static function onNewVersion(needsUpdate:Bool):Void
 	{
@@ -198,23 +189,12 @@ class MainApp extends Sprite
 	}
 	static function FIND_LANG(?lang:String="")
 	{
-		return  Main.LANGS[Main.LANGS.indexOf(lang)>-1 ? Main.LANGS.indexOf(lang): 0];
+		return  LANGS[LANGS.indexOf(lang)>-1 ? LANGS.indexOf(lang): 0];
 	}
 	function get_location():Location
 	{
 		return location;
 	}
-	/*
-	 * scale
-	function resizeDisplay(e:Event):Void
-	{
-		var width = stage.stageWidth;
-		var height = stage.stageHeight;
-
-		// Resize the main content area
-		this.width = width;
-		this.height = height;
-	}
-	*/
+	
 
 }

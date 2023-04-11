@@ -18,6 +18,8 @@ class Mail
 	
 	//static var PHP_MAIL_PATH:String = "../trouble/php/mail/index.php";
 	static var PHP_MAIL_PATH:String = "/commonlibs/mail/index.php";
+	static inline var DEBUG_EMAIL:String = "bruno.baudry@salt.ch";
+	//static inline var DEBUG_EMAIL_ARRAY:Array<String> = [DEBUG_EMAIL];
 	
 	public function new()
 	{
@@ -54,7 +56,7 @@ class Mail
 	function setFrom()
 	{
 		mailWrapper.setFrom(
-			MainApp.agent.iri == null ? "bruno.baudry@salt.ch" : MainApp.agent.iri, 
+			MainApp.agent.iri == null ? DEBUG_EMAIL : MainApp.agent.iri, 
 			MainApp.agent.sAMAccountName == null ? "bbaudry" : MainApp.agent.sAMAccountName
 		);
 		#if debug
@@ -69,20 +71,20 @@ class Mail
 		#if debug
 			if (!Main.DEBUG)
 			{
-				mailWrapper.setTo(["bruno.baudry@salt.ch"]);
+				mailWrapper.setTo( MainApp.DEBUG_EMAIL_ARRAY );
 			}
 			else{
 				//mailWrapper.setTo(["superofficetest@salt.ch"]);
 				mailWrapper.setTo([setSitMail(to)]);
 				mailWrapper.setCc(['${MainApp.agent.iri}']);
 			}
-			mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
+			mailWrapper.setBcc(MainApp.DEBUG_EMAIL_ARRAY);
 
 		#else
 		//mailWrapper.setTo([_ticket.email]);
 		mailWrapper.setTo([to]);
 		mailWrapper.setCc(['${MainApp.agent.iri}']);
-		mailWrapper.setBcc(["bruno.baudry@salt.ch"]);
+		mailWrapper.setBcc(MainApp.DEBUG_EMAIL_ARRAY);
 		#end
 	}
 	function setSitMail(email:String ):String

@@ -4,32 +4,23 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.addons.ui.FlxUIButton;
-//import flixel.addons.ui.FlxUIButton;
-//import flixel.addons.ui.FlxUIInputText;
+import http.LoginHelper;
+import roles.Actor;
+
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
-//import flixel.util.FlxColor;
-//import flixel.util.FlxSave;
+
 import haxe.Exception;
 import openfl.utils.Assets;
-//import flow.Intro;
-//import flow.TutoTree;
-//import openfl.text.TextField;
-//import openfl.text.TextFieldType;
 
-//import flow.TutoTree;
 import haxe.Http;
 import haxe.Json;
 import haxe.crypto.Base64;
 import haxe.io.Bytes;
 import js.Browser;
-//import js.html.ClipboardEvent;
-//import js.html.Event;
-//import js.html.Permissions;
-//import lime.system.Clipboard;
-import tstool.salt.Agent;
 
-//@:bitmap("assets/images/CustomPreload/default.png") class LogoImage extends BitmapData { }
+import tstool.salt.SaltAgent;
+
 /**
  * ...
  * @author bbaudry
@@ -37,10 +28,8 @@ import tstool.salt.Agent;
 
 class Login extends FlxState
 {
-	//var location:js.html.Location;
-	//var username: flixel.addons.ui.FlxUIInputText;
+
 	var username: openfl.text.TextField;
-	//var pwd:flixel.addons.ui.FlxUIInputText;
 	var pwd: openfl.text.TextField;
 	var _padding:Int = 20;
 
@@ -49,24 +38,30 @@ class Login extends FlxState
 	var pwdTxt:flixel.text.FlxText;
 	var pwdTxtInfo:flixel.text.FlxText;
 	var _focused: openfl.display.InteractiveObject;
-	var loginUrl:haxe.Http;
+	//var loginUrl:haxe.Http;
+	var loginUrl: LoginHelper;
 	var markerFormat:FlxTextFormatMarkerPair;
-	var dummyAgent:tstool.salt.Agent;
+	var dummyAgent: SaltAgent;
 	var submitButton:flixel.ui.FlxButton;
 	var testers_file:String;
+	public function new()
+	{
+		super();
+		testers_file = Assets.getText("assets/data/testers.txt");
+		loginUrl = new LoginHelper(MainApp.location.origin + MainApp.LIB_FOLDER + "login/index.php" );
+		loginUrl.errorSignal.add( onError );
+		loginUrl.statusSignal.add ( onStatus );
+		loginUrl.successSignal.add( onLoginSuccess );
+	}
 	override public function create()
 	{
-		testers_file = Assets.getText("assets/data/testers.txt");
-		loginUrl = new Http(MainApp.location.origin + MainApp.LIB_FOLDER + "login/index.php" );
+
+		//loginUrl = new Http(MainApp.location.origin + MainApp.LIB_FOLDER + "login/index.php" );
+
 		MainApp.setUpSystemDefault(false);
 
 		if (MainApp.agent != null)
 		{
-
-			//MainApp.agent = MainApp.save.data.user;
-			#if debug
-			trace(MainApp.agent.mainLanguage);
-			#end
 
 			MainApp.flush();
 			Main.MOVE_ON(true); // launch APPbbaudry
@@ -76,7 +71,7 @@ class Login extends FlxState
 			var textFieldFormat = new openfl.text.TextFormat( lime.utils.Assets.getFont("assets/fonts/Lato-Regular.ttf").name, 12, 0);
 			var testFormat:FlxTextFormat = new FlxTextFormat(SaltColor.ORANGE, true);
 			markerFormat = new FlxTextFormatMarkerPair( testFormat, "<b>");
-			var logo = new FlxSprite(0, 0, "assets/images/" + Main.INTRO_PIC);
+			var logo = new FlxSprite(0, 0, "assets/images/" + MainApp.INTRO_PIC);
 			var showPwd:FlxUIButton = new FlxUIButton(0, 0, "", onShowPwd);
 			showPwd.loadGraphic("assets/images/ui/showPwd.png", true, 40, 40);
 			showPwd.has_toggle = true;
@@ -88,11 +83,9 @@ class Login extends FlxState
 			logo.y = 50;
 			loginTxt = new FlxText(0, 0, 100, "USERNAME",14);
 			pwdTxt = new FlxText(0, 0, 100, "PASSWORD", 14);
-			
 
 			pwdTxtInfo = new FlxText(0, 0, 1280, Main.DEBUG?"Testing platform\nAUTHORISED PERSON ONLY\nIf you need access contact qook@salt.ch":"", 14);
 			pwdTxtInfo.screenCenter();
-			
 
 			pwdTxtInfo.alignment = "center";
 			username = new openfl.text.TextField();
@@ -113,17 +106,16 @@ class Login extends FlxState
 			pwd.displayAsPassword = true;
 
 			pwd.type = pwd.type = openfl.text.TextFieldType.INPUT;
-			
+
 			pwd.multiline = false;
 			pwd.height = 16;
-			
+
 			pwd.backgroundColor = SaltColor.WHITE;
 			pwd.textColor = SaltColor.BLACK;
-			
+
 			pwd.border = true;
 			pwd.borderColor = SaltColor.BLACK;
 			pwd.background = true;
-			
 
 			username.tabEnabled = true;
 			username.tabIndex = 1;
@@ -134,21 +126,20 @@ class Login extends FlxState
 			pwd.setTextFormat(textFieldFormat);
 
 			loginTxt.screenCenter();
-			
+
 			pwdTxt.screenCenter();
-			
+
 			// special Texfield  positioning
 			FlxG.addChildBelowMouse( username );
-			
+
 			FlxG.addChildBelowMouse( pwd );
-			
+
 			//
 			add( logo );
 			add( loginTxt );
 			add( pwdTxt );
 			add( pwdTxtInfo  );
 
-			
 			add( showPwd );
 
 			submitButton = new FlxButton(0, 0, "LET'S GO", onSubmit);
@@ -173,30 +164,32 @@ class Login extends FlxState
 		}
 		super.create();
 	}
-	inline function cretaDummyAgent() 
+	/*inline function cretaDummyAgent()
 	{
-		return {
-		status : "ldap could bind", 
-		authorized : true, 
-		username : "bbaudry", 
-		attributes : {
-			mail : "Bruno.Baudry@salt.ch", 
-			samaccountname : "bbaudry", 
-			givenname : "Bruno", 
-			sn : "Baudry", 
-			mobile : "+41 78 787 8673", 
-			company : "Salt Mobile SA", 
-			l : "Biel", 
-			division : "Customer Operations", 
-			department : "Process & Quality", 
-			directreports : "CN=qook,OU=Domain-Generic-Accounts,DC=ad,DC=salt,DC=ch", 
-			accountexpires : "0", 
-			msexchuserculture : "fr-FR", 
-			title : "Manager Knowledge & Learning", 
-			initials : "BB", 
-			memberof : ["Microsoft - Teams Members - Standard","Customer Operations - Training","RA-PulseSecure-Laptops-Salt","SG-PasswordSync","RA-EasyConnect-Web-Mobile-Qook","Customer Operations - Knowledge - Management","Customer Operations - Direct Reports","Customer Operations - Fiber Back Office","DOLPHIN_REC","Application-GIT_SALT-Operator","Application-GIT_SALT-Visitor","SG-OCH-WLAN_Users","SG-OCH-EnterpriseVault_DefaultProvisioningGroup","Entrust_SMS","MIS Mobile Users","GI-EBU-OR-CH-MobileUsers","Floor Marshalls Biel","CO_Knowledge And Translation Mgmt","co training admin_ud","Exchange_Customer Operations Management_ud","Exchange_CustomerCareServiceDesign_ud"]
-		}};
-	}
+		return
+				{
+					status : "ldap could bind",
+					authorized : true,
+					username : "bbaudry",
+					attributes : {
+						mail : "Bruno.Baudry@salt.ch",
+						samaccountname : "bbaudry",
+				givenname : "Bruno",
+				sn : "Baudry",
+				mobile : "+41 78 787 8673",
+				company : "Salt Mobile SA",
+				l : "Biel",
+				division : "Customer Operations",
+				department : "Process & Quality",
+				directreports : "CN=qook,OU=Domain-Generic-Accounts,DC=ad,DC=salt,DC=ch",
+				accountexpires : "0",
+				msexchuserculture : "fr-FR",
+				title : "Manager Knowledge & Learning",
+				initials : "BB",
+				memberof : ["Microsoft - Teams Members - Standard","Customer Operations - Training","RA-PulseSecure-Laptops-Salt","SG-PasswordSync","RA-EasyConnect-Web-Mobile-Qook","Customer Operations - Knowledge - Management","Customer Operations - Direct Reports","Customer Operations - Fiber Back Office","DOLPHIN_REC","Application-GIT_SALT-Operator","Application-GIT_SALT-Visitor","SG-OCH-WLAN_Users","SG-OCH-EnterpriseVault_DefaultProvisioningGroup","Entrust_SMS","MIS Mobile Users","GI-EBU-OR-CH-MobileUsers","Floor Marshalls Biel","CO_Knowledge And Translation Mgmt","co training admin_ud","Exchange_Customer Operations Management_ud","Exchange_CustomerCareServiceDesign_ud"]
+			}
+		};
+	}*/
 
 	function onShowPwd()
 	{
@@ -221,15 +214,31 @@ class Login extends FlxState
 		}
 		super.update(elapsed);
 	}
-	function ondata(data:String)
+	function onLoginSuccess(user:Actor)
 	{
-		
+		#if debug
+		trace('tstool.layout.Login::onLoginSuccess::user ${user}');
+		#end
+		if (user == null)
+		{
+			pwdTxtInfo.applyMarkup ("\n\nNT login + password <b>did not match<b>.",[markerFormat]);
+		}
+		else
+		{
+			MainApp.agent = SaltAgent.DECORATE(user);
+			MainApp.flush();
+			Main.MOVE_ON(); // launch APP
+		}
+	}
+	/*function ondata(data:String)
+	{
+
 		var d:Dynamic = parseJsonAgent(data);
 
 		if (d.authorized)
 		{
 			createAgent(d);
-			
+
 			MainApp.flush();
 			Main.MOVE_ON(); // launch APP
 		}
@@ -237,33 +246,35 @@ class Login extends FlxState
 		{
 			pwdTxtInfo.applyMarkup ("\n\nNT login + password <b>did not match<b>.",[markerFormat]);
 		}
-	}
+	}*/
 	function createAgent(jsonAgent:Dynamic)
 	{
-		try{
-				MainApp.agent = new Agent(jsonAgent);
-			}
-			catch (e: Exception)
-			{
-				trace(e.details,e.message,e.previous,e.native, e.stack);
-			}
+		try
+		{
+			MainApp.agent = new SaltAgent(jsonAgent);
+		}
+		catch (e: Exception)
+		{
+			trace(e.details,e.message,e.previous,e.native, e.stack);
+		}
 	}
-	function parseJsonAgent(data:String)
+	/*function parseJsonAgent(data:String)
 	{
 		#if debug
-			//trace(data);
-			if (Main.DEBUG)
-			{
-				return Json.parse(data);
-			}
-			else{
-				return cretaDummyAgent();	
-			}
+		//trace(data);
+		if (Main.DEBUG)
+		{
+			return Json.parse(data);
+		}
+		else
+		{
+			return SaltAgent.CREATE_DUMMY();
+		}
 
 		#else
 		return Json.parse(data);
 		#end
-	}
+	}*/
 	function onSubmit()
 	{
 		/**
@@ -272,14 +283,14 @@ class Login extends FlxState
 		#if debug
 		if (Main.DEBUG)
 		{
-			trace("tstool.layout.Login::onSubmit");
+			//trace("tstool.layout.Login::onSubmit");
 			pwdTxtInfo.text = "";
 			if (StringTools.trim(username.text) == "")
 			{
 				pwdTxtInfo.applyMarkup("Need <b>username<b> (NT login)", [markerFormat]);
 				return;
 			}
-			else if (testers_file.indexOf(username.text) ==-1)
+			else if (false && testers_file.indexOf(username.text) ==-1)
 			{
 				pwdTxtInfo.applyMarkup('<b>${username.text}<b> not authorised\nto use this test platform', [markerFormat]);
 				return;
@@ -289,13 +300,18 @@ class Login extends FlxState
 				pwdTxtInfo.applyMarkup("Need <b>password<b> (Same as your NT one)", [markerFormat]);
 				return;
 			}
-			
+
 			requestLoginToAD();
-		}else{
-			//trace("tstool.layout.Login::onSubmit WARNING LOGIN NOT FECTHING DATA");
-			ondata("");
 		}
-		
+		else
+		{
+			//trace("tstool.layout.Login::onSubmit WARNING LOGIN NOT FECTHING DATA");
+			//ondata("");
+			MainApp.agent = SaltAgent.CREATE_DUMMY();
+			MainApp.flush();
+			Main.MOVE_ON(); // launch APP
+		}
+
 		#else
 		pwdTxtInfo.text = "";
 		if (StringTools.trim(username.text) == "")
@@ -314,23 +330,35 @@ class Login extends FlxState
 			return;
 		}
 		//trace(location);
-		
+
 		requestLoginToAD();
 		//u.request(true);
 		#end
-		
-		
+
 	}
 	function requestLoginToAD()
 	{
-		loginUrl.setParameter("username", username.text);
-		loginUrl.setParameter("pwd",  Base64.encode(Bytes.ofString(pwd.text)));
-		loginUrl.async = true;
-		loginUrl.onData = ondata;
-		loginUrl.onError = onError;
-		loginUrl.onStatus = onStatus;
+		//loginUrl.setParameter("username", username.text);
+		//loginUrl.setParameter("pwd",  Base64.encode(Bytes.ofString(pwd.text)));
+		//loginUrl.async = true;
+		//;
+//
+		//loginUrl.request(true);
+		try
+		{
+			loginUrl.prepareCredentials(username.text, pwd.text, false, null, false);
+			//loginUrl.onData = ondata;
+			//loginUrl.onError = onError;
+			//loginUrl.onStatus = onStatus;
 
-		loginUrl.request(true);
+			loginUrl.send();
+		}
+		catch (e:Exception)
+		{
+			trace("missing credentials " + e.message);
+			pwdTxtInfo.applyMarkup('<b>Credential error<b> ${e.message}', [markerFormat]);
+		}
+
 	}
 
 	function onStatus(s:Int):Void
@@ -344,15 +372,15 @@ class Login extends FlxState
 		pwdTxtInfo.clearFormats();
 		if (s == 500)
 		{
-			pwdTxtInfo.text += "\n\nUnknown user or missing password";
+			pwdTxtInfo.text += "\n\nUnknown user or missing password. Http status = " +s;
 		}
 		else if (s == 404)
 		{
-			pwdTxtInfo.text += "\n\nCannot connect to the directory script";
+			pwdTxtInfo.text += "\n\nCannot connect to the directory script. Http status = " +s;
 		}
 		else if (s != 200 )
 		{
-			pwdTxtInfo.text += "\n\nError " + s;
+			pwdTxtInfo.text += "\n\nError. Http status = " +s;
 		}
 	}
 
@@ -365,5 +393,5 @@ class Login extends FlxState
 		#end
 		//pwdTxtInfo.text += "\n\n"+ e;
 	}
-	
+
 }

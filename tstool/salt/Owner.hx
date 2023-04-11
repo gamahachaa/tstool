@@ -9,7 +9,7 @@ class Owner extends Role
 
 	public function new(name:String, ?id:String, ?authorised:Bool) 
 	{
-		super(name, id, authorised);
+		super(owner, name, id, authorised);
 		
 	}
 	
