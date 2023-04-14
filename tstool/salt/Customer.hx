@@ -1,7 +1,6 @@
 package tstool.salt;
 import roles.Actor;
 import string.StringUtils;
-//import tstool.process.Actor;
 using StringTools;
 /**
  * ...
@@ -20,10 +19,10 @@ class Customer extends Actor
 	@:isVar public var shipingAdress(get, set):Adress;
 	public var voIP(get, set):String;
 	@:isVar public var indexer(get, set):String;
-	public static inline var TEST_IRI:String = "not found";
+	public static inline var TEST_IRI:String = "customer@salt.ch";
 	public function new() 
 	{
-		super(TEST_IRI, true); // for now customers are authorized
+		super({mail:TEST_IRI, samaccountname:"customer"}, true); // for now customers are authorized
 		contract = new Contractor(TEST_IRI, "");
 		dataSet = [];
 	}
@@ -55,15 +54,7 @@ class Customer extends Actor
 		var  b = '<h2>';
 		try
 		{
-			//var isFiber = false;
-			#if debug
-			trace(this.get_voIP());
-			trace(this);
-			#else
-			
-			#end
 			if (contract.contractorID != null && contract.contractorID != "" && contract.contractorID != Customer.TEST_IRI){
-				//b += 'ID: <a href="https://vti.salt.ch/index.php?module=Contractors&action=BasicAjax&mode=redirectToContractor&phone=${voIP}">${contract.contractorID}</a><br/>';
 				if(Main.customer.contract.fix != null && Main.customer.contract.fix.trim()!="")
 				b += 'ID: ${StringUtils.buildVtiProneLink(contract.fix, contract.contractorID)}<br/>';
 				else

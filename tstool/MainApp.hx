@@ -5,12 +5,12 @@ import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxAssets;
-import flixel.util.FlxTimer;
+//import flixel.util.FlxTimer;
 import haxe.Json;
 import haxe.Timer;
 //import lime.tools.Asset;
 import lime.utils.Assets;
-import tstool.salt.SaltAgent;
+//import tstool.salt.SaltAgent;
 import tstool.utils.XapiTracker;
 
 import haxe.Serializer;
@@ -59,11 +59,16 @@ class MainApp extends Sprite
 	static var cust:Customer;
 	public static var agent:SaltAgent;
 	static var s:Serializer;
+	public static var ASSETS_VERSION:String;
 
 	public static var config:Config;
 
 	public static var idleTimer:Timer = new Timer(1000);
+	#if debug
+	static public var VERSION_TIMER_DURATION:Float = 5;
+	#else
 	static public var VERSION_TIMER_DURATION:Float = 300;
+	#end
 	static public var VERSION_TIMER_value:Float = VERSION_TIMER_DURATION;
 	static public var WORD_TIME:WorldTimeAPI = new WorldTimeAPI();
 	public static var LANGS:Array<String> = ["fr-FR", "de-DE", "en-GB", "it-IT"];
@@ -95,21 +100,16 @@ class MainApp extends Sprite
 
 		translator = new Translator();
 
-		xapiHelper = new XapiTracker( location.origin +  config.libFolder);
+		xapiHelper = new XapiTracker( location.origin + config.libFolder);
 
-        versionTracker = new VersionTracker( location.origin + config.libFolder, config.scriptName, true);
+        versionTracker = new VersionTracker( location.origin + config.libFolder, config.scriptName);
+		if (ASSETS_VERSION != "-1")
+		{
+			versionTracker.addAssetsVersion(ASSETS_VERSION);
+		}
 		cust = new Customer();
 		//agent= new Agent();
-		translator.initialize("fr-FR",
-							  function()
-		{
-			/**
-			 * @todo Set a language message
-			 */
-			#if debug
-			//trace(tongue.get("$flow.nointernet.vti.CheckContractorVTI_UI1", "meta"));
-			#end
-		});
+		translator.initialize("fr-FR",function(){});
 
 	}
 	/**
@@ -120,6 +120,7 @@ class MainApp extends Sprite
 	{
 		var isTest = location.origin.indexOf("qook.test.salt.ch") > -1;
 		var cfg = Json.parse(Assets.getText("assets/data/dev_config.json"));
+		ASSETS_VERSION = cfg.assetsVersion ?? "-1";
 		var c:Dynamic = isTest ? cfg.test : cfg.prod;
 		debug = c.debug ?? isTest;
 		DEBUG_EMAIL_ARRAY = cast(c.debug_mail) ?? ["qook@salt.ch"];
