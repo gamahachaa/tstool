@@ -5,14 +5,10 @@ import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxAssets;
-//import flixel.util.FlxTimer;
 import haxe.Json;
 import haxe.Timer;
-//import lime.tools.Asset;
 import lime.utils.Assets;
-//import tstool.salt.SaltAgent;
 import tstool.utils.XapiTracker;
-
 import haxe.Serializer;
 import haxe.Unserializer;
 import js.Browser;
@@ -21,13 +17,11 @@ import openfl.display.Sprite;
 import js.html.Location;
 import tstool.layout.History;
 import tstool.layout.Login;
-
 import tstool.salt.SaltAgent;
 import tstool.salt.Customer;
 import tstool.utils.Translator;
 import tstool.utils.VersionTracker;
 
-//import tstool.utils.XapiHelper;
 
 /**
  * ...
@@ -65,7 +59,7 @@ class MainApp extends Sprite
 
 	public static var idleTimer:Timer = new Timer(1000);
 	#if debug
-	static public var VERSION_TIMER_DURATION:Float = 5;
+	static public var VERSION_TIMER_DURATION:Float = 60;
 	#else
 	static public var VERSION_TIMER_DURATION:Float = 300;
 	#end
